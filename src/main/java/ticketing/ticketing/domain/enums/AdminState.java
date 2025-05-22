@@ -1,4 +1,4 @@
-package domain.enums;
+package ticketing.ticketing.domain.enums;
 
 public enum AdminState {    // 관리자 승인 미승인
     ACTIVE, INACTIVE
