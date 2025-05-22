@@ -1,7 +1,7 @@
-package domain.entity;
+package ticketing.ticketing.domain.entity;
 
-import domain.enums.AdminRole;
-import domain.enums.AdminState;
+import ticketing.ticketing.domain.enums.AdminRole;
+import ticketing.ticketing.domain.enums.AdminState;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -9,18 +9,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA 기본 생성자 (리플렉션을 위해 필수)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)   // Builder 내부에서만 사용
+@Builder(access = AccessLevel.PROTECTED)            // 외부에서 builder 직접 사용 불가
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
