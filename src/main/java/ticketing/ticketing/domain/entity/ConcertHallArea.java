@@ -16,9 +16,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA 기본 생성자 (리플렉션을 위해 필수)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)   // Builder 내부에서만 사용
-@Builder(access = AccessLevel.PROTECTED)            // 외부에서 builder 직접 사용 불가
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PROTECTED)
 @Getter
 public class ConcertHallArea {
     @Id
