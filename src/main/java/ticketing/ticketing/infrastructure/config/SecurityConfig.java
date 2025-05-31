@@ -1,4 +1,4 @@
-package ticketing.ticketing.config;
+package ticketing.ticketing.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,22 +11,23 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
-import ticketing.ticketing.application.service.oauth.CustomOAuth2UserService;
+import ticketing.ticketing.application.service.oauth.CustomOAuth2UserService;   
+import ticketing.ticketing.application.service.oauth.JwtUtil;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
-
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
-        this.customOAuth2UserService = customOAuth2UserService;
-    }
+    private final JwtUtil jwtUtil;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
+                        .antMatchers("/public/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -54,7 +55,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000")); // adjust as needed
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://your-production-domain.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);

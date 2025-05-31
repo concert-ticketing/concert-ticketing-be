@@ -39,4 +39,28 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+
+    public static User create(String userId, String email, String name, String phone, Gender gender, UserState state) {
+        return User.builder()
+                .userId(userId)
+                .email(email)
+                .name(name)
+                .phone(phone)
+                .gender(gender)
+                .state(state)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    public void update(String name, String phone, Gender gender, UserState state) {
+        this.name = name;
+        this.phone = phone;
+        this.gender = gender;
+        this.state = state;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }
