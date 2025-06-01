@@ -1,10 +1,12 @@
-package ticketing.ticketing.application.service.oauth;
+package ticketing.ticketing.infrastructure.handler;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import ticketing.ticketing.infrastructure.security.JwtUtil;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -20,7 +22,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         // JWT 생성
-        String token = jwtUtil.generateToken(authentication);
+        String token = jwtUtil.generateToken(String.valueOf(authentication));
 
         // JWT를 응답 헤더에 추가
         response.addHeader("Authorization", "Bearer " + token);

@@ -18,6 +18,10 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+.env
+/.env
+
+
 
 ### IntelliJ IDEA ###
 .idea
