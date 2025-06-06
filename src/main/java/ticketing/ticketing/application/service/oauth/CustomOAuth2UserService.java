@@ -17,7 +17,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         OAuth2User user = super.loadUser(userRequest);
-        userService.saveOrUpdateUser(user);
+        if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
+
+        }
         return user;
     }
 }

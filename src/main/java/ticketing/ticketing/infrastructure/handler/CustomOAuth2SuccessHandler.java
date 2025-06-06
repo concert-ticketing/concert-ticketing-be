@@ -27,9 +27,6 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         // JWT를 응답 헤더에 추가
         response.addHeader("Authorization", "Bearer " + token);
 
-        // 성공 로그 기록
-        logger.info("Authentication successful for user: " + authentication.getName());
-
         // JSON 형식으로 성공 응답 처리
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
