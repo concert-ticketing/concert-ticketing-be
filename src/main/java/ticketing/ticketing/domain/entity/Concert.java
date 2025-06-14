@@ -43,6 +43,9 @@ public class Concert {
 
     private int rating;
 
+    private int limitAge;
+    private int duration;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private Admin admin;

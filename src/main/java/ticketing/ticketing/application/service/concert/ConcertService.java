@@ -21,8 +21,7 @@ public class ConcertService {
     public final ConcertRepository concertRepository;
     public final ImagesService imagesService;
 
-    public List<ConcertMainPageAddThumbNailReadResponse> getMainPageSearchConcert(Long lastId) {
-        int size = 20;
+    public List<ConcertMainPageAddThumbNailReadResponse> getMainPageSearchConcert(int size, Long lastId) {
         Pageable pageable = PageRequest.of(0, size);
         if(lastId == null){
             List<ConcertMainPageInformationReadResponse> concertList = concertRepository.getConcertSearchBySize(pageable);

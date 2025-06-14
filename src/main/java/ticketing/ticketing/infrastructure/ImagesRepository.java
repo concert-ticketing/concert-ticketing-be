@@ -16,4 +16,6 @@ public interface ImagesRepository extends JpaRepository<Images,Long> {
             "FROM Images i " +
             "WHERE i.concert.id IN :concertIds AND i.imagesRole = ticketing.ticketing.domain.enums.ImagesRole.THUMBNAIL")
     List<ImagesReadResponse> findByThumbailImagesBeforeList(@Param("concertIds") List<Long> concertIds);
+
+
 }

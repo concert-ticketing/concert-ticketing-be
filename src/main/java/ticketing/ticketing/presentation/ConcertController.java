@@ -20,8 +20,8 @@ public class ConcertController {
 
     private final ConcertService concertService;
     @GetMapping("/main-list")
-    public ResponseEntity<List<ConcertMainPageAddThumbNailReadResponse>> getConcerts(@RequestParam(required = false) Long lastId) {
-        List<ConcertMainPageAddThumbNailReadResponse> mainPageList = concertService.getMainPageSearchConcert(lastId);
+    public ResponseEntity<List<ConcertMainPageAddThumbNailReadResponse>> getConcerts(@RequestParam int size ,@RequestParam(required = false) Long lastId) {
+        List<ConcertMainPageAddThumbNailReadResponse> mainPageList = concertService.getMainPageSearchConcert(size, lastId);
         return ResponseEntity.ok(mainPageList);
     }
 }

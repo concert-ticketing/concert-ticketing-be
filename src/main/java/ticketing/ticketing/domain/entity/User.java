@@ -1,19 +1,12 @@
 package ticketing.ticketing.domain.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
 import ticketing.ticketing.domain.enums.Gender;
 import ticketing.ticketing.domain.enums.UserState;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA 기본 생성자 (리플렉션을 위해 필수)
@@ -35,7 +28,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserState state;
-
+    private LocalDate birthday;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
