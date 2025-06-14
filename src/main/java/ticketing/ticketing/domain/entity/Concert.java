@@ -43,7 +43,7 @@ public class Concert {
 
     private LocalDateTime reservationStartDate;
     private LocalDateTime reservationEndDate;
-
+    private String price;
     private int rating;
 
     private int limitAge;
