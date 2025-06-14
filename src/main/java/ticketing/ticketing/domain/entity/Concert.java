@@ -41,10 +41,15 @@ public class Concert {
 
     private LocalDate endDate;
 
+    private LocalDateTime reservationStartDate;
+    private LocalDateTime reservationEndDate;
+
     private int rating;
 
     private int limitAge;
     private int duration;
+
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
