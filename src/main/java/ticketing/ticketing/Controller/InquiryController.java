@@ -6,10 +6,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ticketing.ticketing.DTO.InquiryRequestDto;
 import ticketing.ticketing.DTO.InquiryResponseDto;
 import ticketing.ticketing.Service.InquiryService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/inquiries")
@@ -18,7 +23,7 @@ public class InquiryController {
 
     private final InquiryService inquiryService;
 
-    // ✅ 전체 목록 조회 (페이지네이션)
+    // 전체 목록 조회 (페이지네이션)
     @Operation(summary = "문의 내역 조회", description = "사용자의 문의 내역을 페이지네이션하여 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "문의 내역 조회 성공")
@@ -32,7 +37,7 @@ public class InquiryController {
         return ResponseEntity.ok(inquiries);
     }
 
-    // ✅ 단건 상세 조회
+    // 단건 상세 조회
     @Operation(summary = "문의 상세 조회", description = "ID를 기반으로 문의 상세 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "문의 상세 조회 성공"),
@@ -43,4 +48,16 @@ public class InquiryController {
         InquiryResponseDto inquiry = inquiryService.getInquiryById(id);
         return ResponseEntity.ok(inquiry);
     }
+
+    @Operation(summary = "1:1 문의 등록", description = "문의 제목, 내용, 타입과 최대 5개의 이미지(jpg, png) 파일을 업로드합니다.")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<InquiryResponseDto> createInquiry(
+            @RequestPart("inquiry") InquiryRequestDto requestDto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @RequestHeader("X-USER-ID") Long userId) {
+
+        InquiryResponseDto response = inquiryService.createInquiryWithFiles(userId, requestDto, files);
+        return ResponseEntity.ok(response);
+    }
+
 }
