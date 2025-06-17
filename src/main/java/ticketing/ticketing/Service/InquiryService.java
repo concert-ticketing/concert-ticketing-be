@@ -9,7 +9,7 @@ import ticketing.ticketing.DTO.InquiryRequestDto;
 import ticketing.ticketing.DTO.InquiryResponseDto;
 import ticketing.ticketing.Repository.InquiryFileRepository;
 import ticketing.ticketing.Repository.InquiryRepository;
-import ticketing.ticketing.Repository.UserRepository;
+import ticketing.ticketing.Repository.UserInquiryRepository;
 import ticketing.ticketing.domain.entity.Inquiry;
 import ticketing.ticketing.domain.entity.InquiryFile;
 import ticketing.ticketing.domain.entity.User;
@@ -32,7 +32,7 @@ public class InquiryService {
 
     private final InquiryRepository inquiryRepository;
     private final InquiryFileRepository inquiryFileRepository;
-    private final UserRepository userRepository;
+    private final UserInquiryRepository userInquiryRepository;
 
     private final String uploadPath = "uploads"; // 저장할 경로 지정
 
@@ -56,7 +56,7 @@ public class InquiryService {
         }
 
         // 사용자 조회
-        User user = userRepository.findById(userId)
+        User user = userInquiryRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         // Inquiry 생성자 방식으로 객체 생성
