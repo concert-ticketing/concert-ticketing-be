@@ -2,6 +2,8 @@ package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.ImagesRole;
 
 import java.time.LocalDateTime;
@@ -26,7 +28,10 @@ public class Images {
 
     @Enumerated(EnumType.STRING)
     private ImagesRole imagesRole;
+
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 

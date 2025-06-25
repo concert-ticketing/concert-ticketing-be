@@ -7,12 +7,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.ConcertTag;
 
 @Entity
@@ -48,11 +51,13 @@ public class Concert {
     private int rating;
 
     private int limitAge;
-    private int duration;
+    //소요 시간
+    private int durationTime;
 
+    /*@ElementCollection(targetClass = ConcertTag.class)
     @Enumerated(EnumType.STRING)
-    private ConcertTag concertTag;
-
+    private Set<ConcertTag> concertTag;*/
+    private String concertTag;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
@@ -61,7 +66,9 @@ public class Concert {
     @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL)
     private List<Images> images;
 
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 }

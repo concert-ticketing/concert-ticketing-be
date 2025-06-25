@@ -14,6 +14,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import ticketing.ticketing.domain.enums.CastRole;
+
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,9 +39,12 @@ public class ConcertCast {
     private Cast cast;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private CastRole role;
 
-    public enum Role {
-        LEAD, SUPPORT, GUEST
-    }
+    @CreatedDate
+    private LocalDateTime createdAt;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+
 }

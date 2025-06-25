@@ -1,5 +1,7 @@
 package ticketing.ticketing.domain.entity;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.InquiryStatus;
 import ticketing.ticketing.domain.enums.InquiryType;
 import jakarta.persistence.Entity;
@@ -45,7 +47,9 @@ public class Inquiry {
     private InquiryStatus status;
 
     private LocalDateTime repliedAt;
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 }

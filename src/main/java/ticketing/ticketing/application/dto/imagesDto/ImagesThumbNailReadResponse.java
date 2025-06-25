@@ -1,5 +1,4 @@
 package ticketing.ticketing.application.dto.imagesDto;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class ImagesReadResponse {
-    private Long id;
-    private String image;
-    private Enum imagesRole;
+public class ImagesThumbNailReadResponse {
+
+    private String ThumbNailImageUrl;
+    private Long concertId;
+
 }

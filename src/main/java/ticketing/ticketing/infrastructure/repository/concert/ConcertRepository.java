@@ -3,6 +3,7 @@ package ticketing.ticketing.infrastructure.repository.concert;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse;
 import ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse;
 import ticketing.ticketing.domain.entity.Concert;
 
@@ -40,5 +41,27 @@ public interface ConcertRepository extends JpaRepository<Concert, Integer> {
             "OR (c.rating = (SELECT c2.rating FROM Concert c2 WHERE c2.id = :lastId) AND c.id < :lastId)) " +
             "ORDER BY c.rating DESC, c.id DESC")
     List<ConcertMainPageInformationReadResponse> getHighRatingConcertSearchBySizeAndLastId(Pageable pageable, Long lastId);
+
+    // Repository
+    @Query("""
+                SELECT new ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse(
+                    c.title,
+                    c.description,
+                    c.location,
+                    c.locationX,
+                    c.locationY,
+                    c.startDate,
+                    c.endDate,
+                    c.reservationStartDate,
+                    c.reservationEndDate,
+                    c.price,
+                    c.limitAge,
+                    c.durationTime,
+                    c.concertTag
+                )
+                FROM Concert c
+                WHERE c.id = :id
+            """)
+    ConcertDetailPageReadResponse getConcertById(Long id);
 
 }

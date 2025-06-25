@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse;
 import ticketing.ticketing.application.dto.concertDto.ConcertMainPageAddThumbNailReadResponse;
 import ticketing.ticketing.application.service.concert.ConcertService;
 
@@ -49,8 +50,12 @@ public class ConcertController {
     }
 
 
-/*        @GetMapping("/{id}")
+        @GetMapping("/{id}")
     public ResponseEntity<ConcertDetailPageReadResponse> getConcertDetail(@PathVariable Long id) {
-        return null;
-    }*/
+        ConcertDetailPageReadResponse detailPage = concertService.getConcertDetailPageById(id);
+        if(detailPage == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(detailPage);
+    }
 }

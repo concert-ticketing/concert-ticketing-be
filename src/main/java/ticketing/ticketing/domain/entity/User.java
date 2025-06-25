@@ -2,6 +2,8 @@ package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.Gender;
 import ticketing.ticketing.domain.enums.UserState;
 
@@ -29,10 +31,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserState state;
     private LocalDate birthday;
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
-
     public static User create(String userId, String email, String name, String phone, Gender gender, UserState state) {
         return User.builder()
                 .userId(userId)
