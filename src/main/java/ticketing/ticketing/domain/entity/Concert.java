@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ticketing.ticketing.domain.enums.ConcertTag;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -49,6 +50,8 @@ public class Concert {
     private int limitAge;
     private int duration;
 
+    @Enumerated(EnumType.STRING)
+    private ConcertTag concertTag;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

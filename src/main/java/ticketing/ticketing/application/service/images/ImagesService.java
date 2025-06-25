@@ -2,9 +2,8 @@ package ticketing.ticketing.application.service.images;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse;
 import ticketing.ticketing.application.dto.imagesDto.ImagesReadResponse;
-import ticketing.ticketing.infrastructure.ImagesRepository;
+import ticketing.ticketing.infrastructure.repository.image.ImagesRepository;
 
 import java.util.List;
 

@@ -7,8 +7,9 @@ import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.concertDto.ConcertMainPageAddThumbNailReadResponse;
 import ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse;
 import ticketing.ticketing.application.dto.imagesDto.ImagesReadResponse;
+import ticketing.ticketing.application.service.cast.CastService;
 import ticketing.ticketing.application.service.images.ImagesService;
-import ticketing.ticketing.infrastructure.ConcertRepository;
+import ticketing.ticketing.infrastructure.repository.concert.ConcertRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -20,32 +21,30 @@ public class ConcertService {
 
     public final ConcertRepository concertRepository;
     public final ImagesService imagesService;
+    public final CastService castService;
 
-    public List<ConcertMainPageAddThumbNailReadResponse> getMainPageSearchConcert(int size, Long lastId) {
+    public List<ConcertMainPageAddThumbNailReadResponse> getMainPageSearchConcert(int size) {
         Pageable pageable = PageRequest.of(0, size);
-        if(lastId == null){
-            List<ConcertMainPageInformationReadResponse> concertList = concertRepository.getConcertSearchBySize(pageable);
-            List<ImagesReadResponse> getConcertImagesList = getConcertImagesInfo(concertList);
+        List<ConcertMainPageInformationReadResponse> concertList = concertRepository.getConcertSearchBySize(pageable);
+        return concertMainPageAddThumbNail(concertList);
+    }
 
-            Map<Long, String> concertImagesMap = getConcertImagesList.stream()
-                    .collect(Collectors.toMap(
-                            ImagesReadResponse::getConcertId,
-                            ImagesReadResponse::getThumbNailImageUrl
-                    ));
-            return concertList.stream()
-                    .map(c -> new ConcertMainPageAddThumbNailReadResponse(
-                            c.getId(),
-                            c.getTitle(),
-                            c.getStartDate(),
-                            c.getEndDate(),
-                            concertImagesMap.getOrDefault(c.getId(),null)
-                    )).collect(Collectors.toList());
+    public List<ConcertMainPageAddThumbNailReadResponse> getMainPageSearchConcertAddLastId(int size, Long lastId) {
+        Pageable pageable = PageRequest.of(0, size);
+        List<ConcertMainPageInformationReadResponse> concertList = concertRepository.getConcertSearchBySizeAndLastId(pageable,lastId);
+        return concertMainPageAddThumbNail(concertList);
+    }
 
-        }
-        else{
-            //return concertRepository.getConcertSearchBySizeAndLastId(pageable,lastId);
-            return null;
-        }
+    public List<ConcertMainPageAddThumbNailReadResponse> getHighRatingConcertList(int size) {
+        Pageable pageable = PageRequest.of(0, size);
+        List<ConcertMainPageInformationReadResponse> concertList = concertRepository.getHighRatingConcertSearchBySize(pageable);
+        return concertMainPageAddThumbNail(concertList);
+    }
+
+    public List<ConcertMainPageAddThumbNailReadResponse> getHighRatingConcertListAddLastId(int size,Long lastId) {
+        Pageable pageable = PageRequest.of(0, size);
+        List<ConcertMainPageInformationReadResponse> concertList = concertRepository.getHighRatingConcertSearchBySizeAndLastId(pageable, lastId);
+        return concertMainPageAddThumbNail(concertList);
     }
 
     //콘서트 키 값을 이용한 이미지 parsing
@@ -57,4 +56,24 @@ public class ConcertService {
 
         return imagesService.getThumbNailImagesList(concertIds);
     }
+
+    //콘서트 조회 후 Mapping 하는 기능
+    public List<ConcertMainPageAddThumbNailReadResponse> concertMainPageAddThumbNail(List<ConcertMainPageInformationReadResponse> concertList) {
+        List<ImagesReadResponse> concertImagesList = getConcertImagesInfo(concertList);
+            Map<Long, String> concertImagesMap = concertImagesList.stream()
+                    .collect(Collectors.toMap(
+                            ImagesReadResponse::getConcertId,
+                            ImagesReadResponse::getThumbNailImageUrl
+                    ));
+            return concertList.stream()
+                    .map(c -> new ConcertMainPageAddThumbNailReadResponse(
+                            c.getId(),
+                            c.getTitle(),
+                            c.getStartDate(),
+                            c.getEndDate(),
+                            c.getLocation(),
+                            c.getRating(),
+                            concertImagesMap.getOrDefault(c.getId(),null)
+                    )).collect(Collectors.toList());
+        }
 }

@@ -1,9 +1,8 @@
-package ticketing.ticketing.infrastructure;
+package ticketing.ticketing.infrastructure.repository.image;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse;
 import ticketing.ticketing.application.dto.imagesDto.ImagesReadResponse;
 import ticketing.ticketing.domain.entity.Images;
 

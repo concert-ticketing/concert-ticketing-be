@@ -1,5 +1,5 @@
 /*
-package ticketing.ticketing.application.dto.concert;
+package ticketing.ticketing.application.dto.concertDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class ConcertDetailPageReadResponse {
-
-
 }
 */

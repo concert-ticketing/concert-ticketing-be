@@ -1,0 +1,44 @@
+package ticketing.ticketing.infrastructure.repository.concert;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse;
+import ticketing.ticketing.domain.entity.Concert;
+
+import java.util.List;
+
+public interface ConcertRepository extends JpaRepository<Concert, Integer> {
+
+    // last Id가 있는 메인페이지 콘서트 조회
+    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.location) " +
+            "FROM Concert c " +
+            "WHERE c.endDate >= CURRENT_DATE " +
+            "AND (c.endDate < (SELECT c2.endDate FROM Concert c2 WHERE c2.id = :lastId) " +
+            "OR (c.endDate = (SELECT c2.endDate FROM Concert c2 WHERE c2.id = :lastId) AND c.id < :lastId)) " +
+            "ORDER BY c.endDate DESC, c.id DESC")
+    List<ConcertMainPageInformationReadResponse> getConcertSearchBySizeAndLastId(Pageable pageable, Long lastId);
+
+    // last Id가 없는 메인페이지 콘서트 조회
+    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.location) " +
+            "FROM Concert c " +
+            "WHERE c.endDate >= CURRENT_DATE " +
+            "ORDER BY c.endDate DESC, c.id DESC")
+    List<ConcertMainPageInformationReadResponse> getConcertSearchBySize(Pageable pageable);
+
+
+    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.location,c.rating) " +
+            "FROM Concert c " +
+            "WHERE c.endDate >= CURRENT_DATE " +
+            "ORDER BY c.rating DESC, c.id DESC")
+    List<ConcertMainPageInformationReadResponse> getHighRatingConcertSearchBySize(Pageable pageable);
+
+    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.location, c.rating) " +
+            "FROM Concert c " +
+            "WHERE c.endDate >= CURRENT_DATE " +
+            "AND (c.rating < (SELECT c2.rating FROM Concert c2 WHERE c2.id = :lastId) " +
+            "OR (c.rating = (SELECT c2.rating FROM Concert c2 WHERE c2.id = :lastId) AND c.id < :lastId)) " +
+            "ORDER BY c.rating DESC, c.id DESC")
+    List<ConcertMainPageInformationReadResponse> getHighRatingConcertSearchBySizeAndLastId(Pageable pageable, Long lastId);
+
+}

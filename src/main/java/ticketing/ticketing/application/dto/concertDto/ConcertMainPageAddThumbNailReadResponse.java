@@ -1,4 +1,5 @@
 package ticketing.ticketing.application.dto.concertDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,11 +11,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Data
-
 public class ConcertMainPageAddThumbNailReadResponse {
     private Long id;
     private String title;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String location;
+    private int rating;
     private String ThumbNailImageUrl;
 }
