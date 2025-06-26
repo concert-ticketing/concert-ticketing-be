@@ -45,5 +45,18 @@ public class Review {
     @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+
+
+    public static Review create(User user, Concert concert, int rating, String content) {
+        if(rating < 1 || rating > 5) throw new IllegalArgumentException("Rating must be between 1 and 5");
+        return Review.builder()
+                .user(user)
+                .concert(concert)
+                .rating(rating)
+                .content(content)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
 }
 

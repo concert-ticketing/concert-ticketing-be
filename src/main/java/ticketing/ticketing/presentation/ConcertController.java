@@ -20,7 +20,7 @@ public class ConcertController {
 
 
     @GetMapping("/main-list")
-    public ResponseEntity<List<ConcertMainPageAddThumbNailReadResponse>> getConcerts(@RequestParam int size ,@RequestParam(required = false) Long lastId) {
+    public ResponseEntity<List<ConcertMainPageAddThumbNailReadResponse>> getConcerts(@RequestParam int size, @RequestParam(required = false) Long lastId) {
         List<ConcertMainPageAddThumbNailReadResponse> mainPageList;
         if (lastId != null) {
             mainPageList = concertService.getMainPageSearchConcertAddLastId(size, lastId);
@@ -34,15 +34,14 @@ public class ConcertController {
     }
 
     @GetMapping("/high-rating")
-    public ResponseEntity<List<ConcertMainPageAddThumbNailReadResponse>> getHighRatingConcert(@RequestParam int size ,@RequestParam(required = false) Long lastId) {
-        List <ConcertMainPageAddThumbNailReadResponse> mainPageList;
+    public ResponseEntity<List<ConcertMainPageAddThumbNailReadResponse>> getHighRatingConcert(@RequestParam int size, @RequestParam(required = false) Long lastId) {
+        List<ConcertMainPageAddThumbNailReadResponse> mainPageList;
         if (lastId != null) {
-            mainPageList = concertService.getHighRatingConcertListAddLastId(size,lastId);
+            mainPageList = concertService.getHighRatingConcertListAddLastId(size, lastId);
             if (mainPageList.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
-        }
-        else {
+        } else {
             mainPageList = concertService.getHighRatingConcertList(size);
         }
 
@@ -50,12 +49,14 @@ public class ConcertController {
     }
 
 
-        @GetMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ConcertDetailPageReadResponse> getConcertDetail(@PathVariable Long id) {
         ConcertDetailPageReadResponse detailPage = concertService.getConcertDetailPageById(id);
-        if(detailPage == null) {
+        if (detailPage == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(detailPage);
     }
+
+
 }

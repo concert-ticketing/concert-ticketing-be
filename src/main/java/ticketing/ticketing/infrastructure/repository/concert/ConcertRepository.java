@@ -9,7 +9,7 @@ import ticketing.ticketing.domain.entity.Concert;
 
 import java.util.List;
 
-public interface ConcertRepository extends JpaRepository<Concert, Integer> {
+public interface ConcertRepository extends JpaRepository<Concert, Long> {
 
     // last Id가 있는 메인페이지 콘서트 조회
     @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.location) " +
@@ -63,5 +63,8 @@ public interface ConcertRepository extends JpaRepository<Concert, Integer> {
                 WHERE c.id = :id
             """)
     ConcertDetailPageReadResponse getConcertById(Long id);
+
+    @Query("SELECT c.rating FROM Concert c WHERE c.id = :id ")
+    Integer getConcertRatingById(Long id);
 
 }

@@ -89,4 +89,8 @@ public class ConcertService {
         getConcertDetailPage.setImages(getImagesByConcertId);
         return getConcertDetailPage;
     }
+
+    public Integer getConcertRatingById(Long id) {
+        return concertRepository.getConcertRatingById(id);
+    }
 }
