@@ -1,4 +1,4 @@
-package ticketing.ticketing.infrastructure;
+package ticketing.ticketing.infrastructure.repository.user;
 
 
 import org.springframework.data.repository.CrudRepository;

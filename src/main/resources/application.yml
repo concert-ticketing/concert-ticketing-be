@@ -66,6 +66,8 @@ spring:
             user-name-attribute: response
 
 springdoc:
+  model-converters:
+    use-simple-enum-conversion: true
   swagger-ui:
     path: /docs
     groups-order: DESC

@@ -1,5 +1,7 @@
 package ticketing.ticketing.domain.entity;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.PaymentState;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -37,6 +39,10 @@ public class Payment {
   @Enumerated(EnumType.STRING)
   private PaymentState state;
 
+  @CreatedDate
   private LocalDateTime createdAt;
+  @LastModifiedDate
+  private LocalDateTime updatedAt;
+
 
   }
