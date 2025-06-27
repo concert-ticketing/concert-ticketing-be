@@ -14,6 +14,7 @@ import ticketing.ticketing.domain.entity.User;
 import ticketing.ticketing.infrastructure.repository.concert.ConcertRepository;
 import ticketing.ticketing.infrastructure.repository.review.ReviewRepository;
 import ticketing.ticketing.infrastructure.repository.user.UserRepository;
+import ticketing.ticketing.infrastructure.security.UserContext;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class ReviewService {
     private final ConcertService concertService;
     private final UserRepository userRepository;
     private final ConcertRepository concertRepository;
+    private final UserContext userContext;
 
     public ReviewByConcertListAddRatingReadResponse getReviewByConcertId(Long concertId) {
         Integer concertRating = concertService.getConcertRatingById(concertId);
@@ -34,7 +36,8 @@ public class ReviewService {
 
     @Transactional
     public ResponseEntity<Void> createReview(ReviewCreateRequest reviewCreateRequest) {
-        User user = userRepository.findById(reviewCreateRequest.getUserId())
+        Long userId = userContext.getCurrentUserId();
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         Concert concert = concertRepository.findById(reviewCreateRequest.getConcertId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공연입니다."));

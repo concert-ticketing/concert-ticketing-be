@@ -24,8 +24,6 @@ public class ConcertDetailPageReadResponse {
     private String title;
     private String description;
     private String location;
-    private BigDecimal locationX;
-    private BigDecimal locationY;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDateTime reservationStartDate;
@@ -37,12 +35,10 @@ public class ConcertDetailPageReadResponse {
 
     private List<ImagesReadResponse> images;
 
-    public ConcertDetailPageReadResponse(String title, String description, String location, BigDecimal locationX, BigDecimal locationY, LocalDate startDate, LocalDate endDate, LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, String price, int limitAge, int durationTime, String concertTag) {
+    public ConcertDetailPageReadResponse(String title, String description, String location, LocalDate startDate, LocalDate endDate, LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, String price, int limitAge, int durationTime, String concertTag) {
         this.title = title;
         this.description = description;
         this.location = location;
-        this.locationX = locationX;
-        this.locationY = locationY;
         this.startDate = startDate;
         this.endDate = endDate;
         this.reservationStartDate = reservationStartDate;

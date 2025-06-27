@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse;
 import ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse;
+import ticketing.ticketing.application.dto.concertDto.ConcertMapReadResponse;
 import ticketing.ticketing.domain.entity.Concert;
 
 import java.util.List;
@@ -21,20 +22,20 @@ public interface ConcertRepository extends JpaRepository<Concert, Long> {
     List<ConcertMainPageInformationReadResponse> getConcertSearchBySizeAndLastId(Pageable pageable, Long lastId);
 
     // last Id가 없는 메인페이지 콘서트 조회
-    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.location) " +
+    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.concertHall.concertHallName) " +
             "FROM Concert c " +
             "WHERE c.endDate >= CURRENT_DATE " +
             "ORDER BY c.endDate DESC, c.id DESC")
     List<ConcertMainPageInformationReadResponse> getConcertSearchBySize(Pageable pageable);
 
 
-    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.location,c.rating) " +
+    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.concertHall.concertHallName,c.rating) " +
             "FROM Concert c " +
             "WHERE c.endDate >= CURRENT_DATE " +
             "ORDER BY c.rating DESC, c.id DESC")
     List<ConcertMainPageInformationReadResponse> getHighRatingConcertSearchBySize(Pageable pageable);
 
-    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.location, c.rating) " +
+    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.concertHall.concertHallName, c.rating) " +
             "FROM Concert c " +
             "WHERE c.endDate >= CURRENT_DATE " +
             "AND (c.rating < (SELECT c2.rating FROM Concert c2 WHERE c2.id = :lastId) " +
@@ -47,9 +48,7 @@ public interface ConcertRepository extends JpaRepository<Concert, Long> {
                 SELECT new ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse(
                     c.title,
                     c.description,
-                    c.location,
-                    c.locationX,
-                    c.locationY,
+                    c.concertHall.concertHallName,
                     c.startDate,
                     c.endDate,
                     c.reservationStartDate,
@@ -66,5 +65,10 @@ public interface ConcertRepository extends JpaRepository<Concert, Long> {
 
     @Query("SELECT c.rating FROM Concert c WHERE c.id = :id ")
     Integer getConcertRatingById(Long id);
+
+    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMapReadResponse(c.locationX,c.locationY,c.location,c.concertHall.concertHallName,c.admin.phone)" +
+            "FROM Concert c" +
+            " WHERE c.id = :id")
+    ConcertMapReadResponse getConcertMapById(Long id);
 
 }

@@ -1,11 +1,13 @@
 package ticketing.ticketing.presentation;
 
+import jakarta.servlet.ServletConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse;
 import ticketing.ticketing.application.dto.concertDto.ConcertMainPageAddThumbNailReadResponse;
+import ticketing.ticketing.application.dto.concertDto.ConcertMapReadResponse;
 import ticketing.ticketing.application.service.concert.ConcertService;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 public class ConcertController {
 
     private final ConcertService concertService;
+    private final ServletConfig servletConfig;
 
 
     @GetMapping("/main-list")
@@ -49,8 +52,8 @@ public class ConcertController {
     }
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ConcertDetailPageReadResponse> getConcertDetail(@PathVariable Long id) {
+    @GetMapping("/")
+    public ResponseEntity<ConcertDetailPageReadResponse> getConcertDetail(@RequestParam Long id) {
         ConcertDetailPageReadResponse detailPage = concertService.getConcertDetailPageById(id);
         if (detailPage == null) {
             return ResponseEntity.notFound().build();
@@ -58,5 +61,12 @@ public class ConcertController {
         return ResponseEntity.ok(detailPage);
     }
 
-
+    @GetMapping("/map")
+    public ResponseEntity<ConcertMapReadResponse> getConcertMap(@RequestParam Long id) {
+        ConcertMapReadResponse map = concertService.getConcertMapById(id);
+        if(map == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(map);
+    }
 }

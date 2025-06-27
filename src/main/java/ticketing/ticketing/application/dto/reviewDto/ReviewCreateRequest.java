@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReviewCreateRequest {
-    private Long userId;
     private Long concertId;
     private int rating;
     private String content;

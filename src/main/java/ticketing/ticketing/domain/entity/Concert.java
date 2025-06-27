@@ -2,21 +2,14 @@ package ticketing.ticketing.domain.entity;
 
 
 import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import ticketing.ticketing.domain.enums.ConcertTag;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,6 +26,7 @@ public class Concert {
     @Lob
     private String description;
 
+    //콘서트 주소지
     private String location;
 
     @Column(name = "location_x", precision = 10, scale = 3)
@@ -65,6 +59,10 @@ public class Concert {
 
     @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL)
     private List<Images> images;
+
+    @ManyToOne
+    @JoinColumn(name = "concert_hall_id")
+    private ConcertHall concertHall;
 
     @CreatedDate
     private LocalDateTime createdAt;

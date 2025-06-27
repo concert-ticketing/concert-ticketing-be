@@ -16,10 +16,9 @@ import java.math.BigDecimal;
 public class ConcertMapReadResponse {
     private BigDecimal locationX;
     private BigDecimal locationY;
-
     private String location;
-    //Entity -> ConcertHall Area
-    private String areaName;
+
+    private String concertHallName;
     //Entity -> admin
     private String phone;
 
