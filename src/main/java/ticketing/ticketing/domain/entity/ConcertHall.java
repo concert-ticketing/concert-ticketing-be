@@ -1,13 +1,10 @@
 package ticketing.ticketing.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,11 +23,15 @@ public class ConcertHall {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //콘서트장 이름
     private String concertHallName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private Admin admin;
+
+    @OneToMany(mappedBy = "concertHall")
+    private List<Concert> concert;
 
     @CreatedDate
     private LocalDateTime createdAt;

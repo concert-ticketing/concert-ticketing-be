@@ -22,6 +22,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PROTECTED)
 @Getter
+//콘서트장 구역 데이터
 public class ConcertHallArea {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

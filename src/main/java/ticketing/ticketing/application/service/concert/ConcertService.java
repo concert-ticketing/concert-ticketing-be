@@ -1,6 +1,5 @@
 package ticketing.ticketing.application.service.concert;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,9 +7,9 @@ import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse;
 import ticketing.ticketing.application.dto.concertDto.ConcertMainPageAddThumbNailReadResponse;
 import ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse;
+import ticketing.ticketing.application.dto.concertDto.ConcertMapReadResponse;
 import ticketing.ticketing.application.dto.imagesDto.ImagesReadResponse;
 import ticketing.ticketing.application.dto.imagesDto.ImagesThumbNailReadResponse;
-import ticketing.ticketing.application.service.cast.CastService;
 import ticketing.ticketing.application.service.images.ImagesService;
 import ticketing.ticketing.infrastructure.repository.concert.ConcertRepository;
 
@@ -24,7 +23,6 @@ public class ConcertService {
 
     public final ConcertRepository concertRepository;
     public final ImagesService imagesService;
-    public final CastService castService;
 
     public List<ConcertMainPageAddThumbNailReadResponse> getMainPageSearchConcert(int size) {
         Pageable pageable = PageRequest.of(0, size);
@@ -37,7 +35,6 @@ public class ConcertService {
         List<ConcertMainPageInformationReadResponse> concertList = concertRepository.getConcertSearchBySizeAndLastId(pageable, lastId);
         return concertMainPageAddThumbNail(concertList);
     }
-
     public List<ConcertMainPageAddThumbNailReadResponse> getHighRatingConcertList(int size) {
         Pageable pageable = PageRequest.of(0, size);
         List<ConcertMainPageInformationReadResponse> concertList = concertRepository.getHighRatingConcertSearchBySize(pageable);
@@ -88,5 +85,14 @@ public class ConcertService {
         }
         getConcertDetailPage.setImages(getImagesByConcertId);
         return getConcertDetailPage;
+    }
+
+    //콘서트 별점 조회
+    public Integer getConcertRatingById(Long id) {
+        return concertRepository.getConcertRatingById(id);
+    }
+
+    public ConcertMapReadResponse getConcertMapById(Long id) {
+        return concertRepository.getConcertMapById(id);
     }
 }
