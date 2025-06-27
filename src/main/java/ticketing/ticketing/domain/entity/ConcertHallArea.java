@@ -27,6 +27,7 @@ public class ConcertHallArea {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //콘서트지 주소
     private String areaName;
 
     @ManyToOne(fetch = FetchType.LAZY)
