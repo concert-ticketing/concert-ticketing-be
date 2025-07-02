@@ -25,7 +25,7 @@ public class InquiryFile {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inquiry_id")
-    private Inquiry inquiry;
+    private ticketing.ticketing.domain.entity.Inquiry inquiry;
 
     private LocalDateTime createdAt;
 

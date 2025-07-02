@@ -1,7 +1,6 @@
 package ticketing.ticketing.application.service.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import ticketing.ticketing.infrastructure.UserRepository;

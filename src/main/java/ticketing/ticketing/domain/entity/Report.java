@@ -29,14 +29,14 @@ public class Report {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
-    private Admin admin;
+    private ticketing.ticketing.domain.entity.Admin admin;
 
     @Enumerated(EnumType.STRING)
     private ReportReason reason;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")
-    private Review review;
+    private ticketing.ticketing.domain.entity.Review review;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.DTO.ReviewResponseDto;
-import ticketing.ticketing.Service.ReviewService;
+import ticketing.Service.ReviewService;
 
 @RestController
 @RequestMapping("/api/reviews")

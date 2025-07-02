@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ticketing.ticketing.DTO.InquiryRequestDto;
 import ticketing.ticketing.DTO.InquiryResponseDto;
-import ticketing.ticketing.Service.InquiryService;
+import ticketing.Service.InquiryService;
 
 import java.util.List;
 
