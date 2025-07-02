@@ -1,41 +1,38 @@
 package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import ticketing.ticketing.domain.enums.ImagesRole;
+
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PROTECTED)
 @Getter
-public class ConcertHall {
+public class Images {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //콘서트장 이름
-    private String concertHallName;
+    @Lob
+    private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id")
-    private Admin admin;
+    @JoinColumn(name = "concert_id", nullable = false)
+    private Concert concert;
 
-    @OneToMany(mappedBy = "concertHall")
-    private List<Concert> concert;
+    @Enumerated(EnumType.STRING)
+    private ImagesRole imagesRole;
 
     @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+
 }

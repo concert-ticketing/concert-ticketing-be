@@ -1,5 +1,7 @@
 package ticketing.ticketing.domain.entity;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.ReportReason;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -38,7 +40,9 @@ public class Report {
     @JoinColumn(name = "review_id")
     private ticketing.ticketing.domain.entity.Review review;
 
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 }

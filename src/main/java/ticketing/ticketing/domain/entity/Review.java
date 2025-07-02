@@ -14,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -38,8 +40,23 @@ public class Review {
     @Lob
     private String content;
 
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+
+
+    public static Review create(User user, Concert concert, int rating, String content) {
+        if(rating < 1 || rating > 5) throw new IllegalArgumentException("Rating must be between 1 and 5");
+        return Review.builder()
+                .user(user)
+                .concert(concert)
+                .rating(rating)
+                .content(content)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
 }
 

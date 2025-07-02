@@ -1,5 +1,7 @@
 package ticketing.ticketing.domain.entity;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.AdminRole;
 import ticketing.ticketing.domain.enums.AdminState;
 import jakarta.persistence.Entity;
@@ -40,7 +42,9 @@ public class Admin {
     @Enumerated(EnumType.STRING)
     private AdminState state;
 
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 }

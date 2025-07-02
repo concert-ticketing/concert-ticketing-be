@@ -35,6 +35,10 @@ public class JwtUtil {
         return getClaims(token).getSubject();
     }
 
+    public Long extractUserId(String token) {
+        return Long.parseLong(getClaims(token).getSubject());
+    }
+
     public boolean isTokenValid(String token) {
         try {
             return !getClaims(token).getExpiration().before(new Date());

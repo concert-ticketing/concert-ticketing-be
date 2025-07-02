@@ -1,23 +1,15 @@
 package ticketing.ticketing.domain.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,6 +26,7 @@ public class Concert {
     @Lob
     private String description;
 
+    //콘서트 주소지
     private String location;
 
     @Column(name = "location_x", precision = 10, scale = 3)
@@ -46,13 +39,34 @@ public class Concert {
 
     private LocalDate endDate;
 
+    private LocalDateTime reservationStartDate;
+    private LocalDateTime reservationEndDate;
+    private String price;
     private int rating;
+
+    private int limitAge;
+    //소요 시간
+    private int durationTime;
+
+    /*@ElementCollection(targetClass = ConcertTag.class)
+    @Enumerated(EnumType.STRING)
+    private Set<ConcertTag> concertTag;*/
+    private String concertTag;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private Admin admin;
 
+    @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL)
+    private List<Images> images;
+
+    @ManyToOne
+    @JoinColumn(name = "concert_hall_id")
+    private ConcertHall concertHall;
+
+    @CreatedDate
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 }
