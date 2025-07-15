@@ -8,20 +8,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.DTO.ReviewResponseDto;
-import ticketing.Service.ReviewService;
+import ticketing.ticketing.application.service.review.ReviewService;
 
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
-public class ReviewController {
+public class FindReviewController {
 
     private final ReviewService reviewService;
 
     @Operation(summary = "유저 후기 조회", description = "특정 유저가 작성한 리뷰 목록을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     public ResponseEntity<Page<ReviewResponseDto>> getReviewsByUser(
-            @PathVariable Long userId,
+            @RequestHeader("X-USER-ID") Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 

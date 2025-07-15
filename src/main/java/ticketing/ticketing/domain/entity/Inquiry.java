@@ -5,7 +5,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.InquiryStatus;
 import ticketing.ticketing.domain.enums.InquiryType;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PROTECTED)
 @Getter
 public class Inquiry {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,6 +28,8 @@ public class Inquiry {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    private String answer;
 
     private String title;
 
@@ -38,13 +43,15 @@ public class Inquiry {
     private InquiryStatus status;
 
     private LocalDateTime repliedAt;
+
     @CreatedDate
     private LocalDateTime createdAt;
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
     private LocalDateTime deletedAt;
 
-    // ✅ 서비스에서 사용할 수 있도록 public 생성자 추가
     public Inquiry(User user, String title, String content, InquiryType type, InquiryStatus status, LocalDateTime createdAt) {
         this.user = user;
         this.title = title;
@@ -52,5 +59,12 @@ public class Inquiry {
         this.type = type;
         this.status = status;
         this.createdAt = createdAt;
+    }
+
+    // ✅ 문의 답변 및 상태 변경 메서드
+    public void markCompleted(LocalDateTime repliedAt) {
+        this.answer = answer;
+        this.status = InquiryStatus.COMPLETED;
+        this.repliedAt = repliedAt;
     }
 }

@@ -12,6 +12,6 @@ import lombok.Setter;
 public class InquiryRequestDto {
     private String title;
     private String content;
-    private String type; // 예매, 상품, 배송 등 enum 이름 그대로
+    private String type;
 }
 

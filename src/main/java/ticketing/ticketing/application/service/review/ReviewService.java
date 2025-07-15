@@ -2,8 +2,11 @@ package ticketing.ticketing.application.service.review;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ticketing.ticketing.DTO.ReviewResponseDto;
 import ticketing.ticketing.application.dto.reviewDto.ReviewByConcertIdReadResponse;
 import ticketing.ticketing.application.dto.reviewDto.ReviewByConcertListAddRatingReadResponse;
 import ticketing.ticketing.application.dto.reviewDto.ReviewCreateRequest;
@@ -45,6 +48,16 @@ public class ReviewService {
         Review review = Review.create(user, concert, reviewCreateRequest.getRating(), reviewCreateRequest.getContent());
         reviewRepository.save(review);
         return ResponseEntity.ok().build();
+    }
+
+    public Page<ReviewResponseDto> getReviewsByUser(Long userId, Pageable pageable) {
+        return reviewRepository.findByUserId(userId, pageable)
+                .map(ReviewResponseDto::fromEntity);
+    }
+
+    public Page<ReviewResponseDto> getReviewsByConcertTitle(String title, Pageable pageable) {
+        return reviewRepository.findByConcert_TitleContaining(title, pageable)
+                .map(ReviewResponseDto::fromEntity);
     }
 
 }
