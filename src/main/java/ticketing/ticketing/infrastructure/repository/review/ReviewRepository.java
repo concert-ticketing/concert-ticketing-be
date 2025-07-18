@@ -1,5 +1,7 @@
 package ticketing.ticketing.infrastructure.repository.review;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ticketing.ticketing.application.dto.reviewDto.ReviewByConcertIdReadResponse;
@@ -15,4 +17,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "ORDER BY r.id DESC")
     List<ReviewByConcertIdReadResponse> getReviewByConcertId(Long concertId);
 
+
+    Page<Review> findByUserId(Long userId, Pageable pageable);
+    Page<Review> findByConcert_TitleContaining(String concertTitle, Pageable pageable);
 }

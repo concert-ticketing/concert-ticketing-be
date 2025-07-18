@@ -4,9 +4,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ticketing?characterEncoding=UTF-8
-    username: test
-    password: test
+    url: jdbc:mysql://localhost:3306/ticketing?serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: 1234
 
   config:
     import: optional:file:.env[.properties]
@@ -18,6 +18,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 25MB
 
   security:
     oauth2:
@@ -47,7 +52,6 @@ spring:
             provider: naver
             authorization-grant-type: authorization_code
 
-
         provider:
           google:
             authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
@@ -66,8 +70,6 @@ spring:
             user-name-attribute: response
 
 springdoc:
-  model-converters:
-    use-simple-enum-conversion: true
   swagger-ui:
     path: /docs
     groups-order: DESC
@@ -77,3 +79,7 @@ springdoc:
     disable-swagger-default-url: true
     display-request-duration: true
   show-login-endpoint: false
+
+# ✅ 파일 저장 경로
+upload:
+  path: ./uploads/inquiries

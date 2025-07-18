@@ -4,17 +4,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.InquiryStatus;
 import ticketing.ticketing.domain.enums.InquiryType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PROTECTED)
 @Getter
 public class Inquiry {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,6 +28,8 @@ public class Inquiry {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    private String answer;
 
     private String title;
 
@@ -47,9 +43,28 @@ public class Inquiry {
     private InquiryStatus status;
 
     private LocalDateTime repliedAt;
+
     @CreatedDate
     private LocalDateTime createdAt;
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
     private LocalDateTime deletedAt;
+
+    public Inquiry(User user, String title, String content, InquiryType type, InquiryStatus status, LocalDateTime createdAt) {
+        this.user = user;
+        this.title = title;
+        this.content = content;
+        this.type = type;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    // ✅ 문의 답변 및 상태 변경 메서드
+    public void markCompleted(LocalDateTime repliedAt) {
+        this.answer = answer;
+        this.status = InquiryStatus.COMPLETED;
+        this.repliedAt = repliedAt;
+    }
 }

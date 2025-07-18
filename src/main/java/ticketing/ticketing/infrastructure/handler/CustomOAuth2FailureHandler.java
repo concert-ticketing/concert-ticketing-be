@@ -1,4 +1,4 @@
-package ticketing.ticketing. infrastructure.handler;
+package ticketing.ticketing.infrastructure.handler;
 
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import jakarta.servlet.ServletException;

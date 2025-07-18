@@ -1,7 +1,5 @@
 package ticketing.ticketing.domain.entity;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.ReportReason;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,18 +28,23 @@ public class Report {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
-    private Admin admin;
+    private ticketing.ticketing.domain.entity.Admin admin;
 
     @Enumerated(EnumType.STRING)
     private ReportReason reason;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")
-    private Review review;
+    private ticketing.ticketing.domain.entity.Review review;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
+    // 정적 팩토리 메서드 추가
+    public static Report create(ticketing.ticketing.domain.entity.Admin admin,
+                                ticketing.ticketing.domain.entity.Review review,
+                                ReportReason reason) {
+        return Report.builder()
+                .admin(admin)
+                .review(review)
+                .reason(reason)
+                .build();
+    }
 }

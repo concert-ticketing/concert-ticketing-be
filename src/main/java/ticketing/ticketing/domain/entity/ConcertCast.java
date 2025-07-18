@@ -30,10 +30,12 @@ public class ConcertCast {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // ConcertSchedule 참조
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concert_schedule_id")
     private ConcertSchedule concertSchedule;
 
+    // Cast 참조
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cast_id")
     private Cast cast;
@@ -43,8 +45,17 @@ public class ConcertCast {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    private LocalDateTime deletedAt;
 
+    public static ConcertCast create(ConcertSchedule schedule, Cast cast, CastRole role) {
+        return ConcertCast.builder()
+                .concertSchedule(schedule)
+                .cast(cast)
+                .role(role)
+                .build();
+    }
 }

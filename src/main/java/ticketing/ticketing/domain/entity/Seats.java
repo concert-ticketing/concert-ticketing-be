@@ -1,23 +1,11 @@
 package ticketing.ticketing.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder(access = AccessLevel.PROTECTED)
 @Getter
 public class Seats {
     @Id
@@ -34,5 +22,14 @@ public class Seats {
 
     @Lob
     private String uiMetadata;
-}
 
+    public static Seats create(ConcertHallArea area, String seatName, Float x, Float y, String uiMetadata) {
+        Seats seat = new Seats();
+        seat.concertHallArea = area;
+        seat.seatName = seatName;
+        seat.x = x;
+        seat.y = y;
+        seat.uiMetadata = uiMetadata;
+        return seat;
+    }
+}

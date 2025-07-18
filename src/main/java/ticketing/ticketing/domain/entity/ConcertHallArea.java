@@ -1,28 +1,18 @@
 package ticketing.ticketing.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder(access = AccessLevel.PROTECTED)
 @Getter
-//콘서트장 구역 데이터
 public class ConcertHallArea {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,9 +29,25 @@ public class ConcertHallArea {
 
     @Lob
     private String uiMetadata;
+
     @CreatedDate
     private LocalDateTime createdAt;
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
     private LocalDateTime deletedAt;
+
+    @OneToMany(mappedBy = "concertHallArea", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Seats> seats = new ArrayList<>();
+
+    public static ConcertHallArea create(String areaName, ConcertHall concertHall, Float x, Float y, String uiMetadata) {
+        ConcertHallArea area = new ConcertHallArea();
+        area.areaName = areaName;
+        area.concertHall = concertHall;
+        area.x = x;
+        area.y = y;
+        area.uiMetadata = uiMetadata;
+        return area;
+    }
 }
