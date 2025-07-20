@@ -2,6 +2,7 @@ package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -25,14 +26,24 @@ public class Alarm {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
-
-    @LastModifiedDate
     private LocalDateTime updatedAt;
-
     private LocalDateTime deletedAt;
 
+    @PrePersist
+    @PreUpdate
+    protected void onUpdateTimestamp() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        } else {
+            updatedAt = LocalDateTime.now();
+        }
+    }
+    @PreRemove
+    private void deleteLogical() {
+        this.deletedAt = LocalDateTime.now();
+    }
     public static Alarm create(User user, String title, String description) {
         return Alarm.builder()
                 .user(user)

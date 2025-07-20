@@ -1,5 +1,5 @@
 package ticketing.ticketing.domain.enums;
 
 public enum ReservationState {
-    RESERVED, CANCELLED
+    RESERVED, PENDING ,CANCELLED
 }

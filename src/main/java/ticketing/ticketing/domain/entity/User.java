@@ -2,6 +2,7 @@ package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.Gender;
@@ -31,11 +32,24 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserState state;
     private LocalDate birthday;
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
-    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdateTimestamp() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        } else {
+            updatedAt = LocalDateTime.now();
+        }
+    }
+    @PreRemove
+    private void deleteLogical() {
+        this.deletedAt = LocalDateTime.now();
+    }
     public static User create(String userId, String email, String name, String phone, Gender gender, UserState state) {
         return User.builder()
                 .userId(userId)

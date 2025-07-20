@@ -1,18 +1,11 @@
 package ticketing.ticketing.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,6 +17,7 @@ public class SeatReservation {
     @GeneratedValue
     private UUID id;
 
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
@@ -36,5 +30,32 @@ public class SeatReservation {
     @JoinColumn(name = "concert_seat_metadata_id")
     private ConcertSeatMetadata concertSeatMetadata;
 
+    @CreationTimestamp
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdateTimestamp() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        } else {
+            updatedAt = LocalDateTime.now();
+        }
+    }
+
+    public static SeatReservation create(Reservation reservation, ConcertSchedule concertSchedule, ConcertSeatMetadata concertSeatMetadata) {
+        return SeatReservation.builder()
+                .reservation(reservation)
+                .schedule(concertSchedule)
+                .concertSeatMetadata(concertSeatMetadata)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+    // 예약 정보 업데이트 메서드 추가
+    public void updateReservation(Reservation reservation) {
+        this.reservation = reservation;
+        this.updatedAt = LocalDateTime.now();
+    }
 }
