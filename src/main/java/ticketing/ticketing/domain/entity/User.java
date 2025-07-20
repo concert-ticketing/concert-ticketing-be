@@ -3,6 +3,8 @@ package ticketing.ticketing.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.Gender;
 import ticketing.ticketing.domain.enums.UserState;
 
@@ -23,14 +25,11 @@ public class User {
     private String email;
     private String name;
     private String phone;
-    private String nickName;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 25)
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 25)
     private UserState state;
     private LocalDate birthday;
     @CreationTimestamp
@@ -51,21 +50,24 @@ public class User {
     private void deleteLogical() {
         this.deletedAt = LocalDateTime.now();
     }
-
-    public static User create(String userId) {
+    public static User create(String userId, String email, String name, String phone, Gender gender, UserState state) {
         return User.builder()
                 .userId(userId)
-                .state(UserState.ACTIVE)
+                .email(email)
+                .name(name)
+                .phone(phone)
+                .gender(gender)
+                .state(state)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public void update(String name, String email, String nickName, String phone, Gender gender, LocalDate birthday) {
+    public void update(String name, String phone, Gender gender, UserState state) {
         this.name = name;
-        this.email = email;
-        this.nickName = nickName;
         this.phone = phone;
         this.gender = gender;
-        this.birthday = birthday;
+        this.state = state;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void delete() {
