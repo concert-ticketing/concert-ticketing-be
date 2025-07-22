@@ -8,18 +8,18 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ticketing.ticketing.application.service.user.IUserService;
+import ticketing.ticketing.application.service.user.UserService;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final IUserService userService;
+    private final UserService userService;
 
-    @GetMapping("/oauth2/callback")
+/*    @GetMapping("/oauth2/callback")
     public ResponseEntity<String> oauth2Callback(@AuthenticationPrincipal OAuth2User user) {
         userService.saveOrUpdateUser(user);
         return null;
 
-    }
+    }*/
 }

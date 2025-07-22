@@ -1,5 +1,6 @@
 package ticketing.ticketing.infrastructure.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,12 +11,13 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import java.util.List;
+
 import ticketing.ticketing.application.service.oauth.CustomOAuth2UserService;
 import ticketing.ticketing.infrastructure.handler.CustomOAuth2FailureHandler;
 import ticketing.ticketing.infrastructure.handler.CustomOAuth2SuccessHandler;
 import ticketing.ticketing.infrastructure.security.JwtUtil;
-import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
