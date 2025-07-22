@@ -27,9 +27,11 @@ public class User {
     private String phone;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 25)
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 25)
     private UserState state;
     private LocalDate birthday;
     @CreationTimestamp
@@ -50,15 +52,10 @@ public class User {
     private void deleteLogical() {
         this.deletedAt = LocalDateTime.now();
     }
-    public static User create(String userId, String email, String name, String phone, Gender gender, UserState state) {
+    public static User create(String userId, UserState state) {
         return User.builder()
                 .userId(userId)
-                .email(email)
-                .name(name)
-                .phone(phone)
-                .gender(gender)
                 .state(state)
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 
