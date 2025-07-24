@@ -1,4 +1,5 @@
-package ticketing.ticketing.application.service.oauth;
+/*
+package ticketing.ticketing.application.service.user.oauth;
 
 
 import lombok.RequiredArgsConstructor;
@@ -44,3 +45,4 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return new CustomOAuth2User(oauth2User, createUser); // 🔥 여기서 래핑해서 넘김
     }
 }
+*/

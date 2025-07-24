@@ -52,19 +52,20 @@ public class User {
     private void deleteLogical() {
         this.deletedAt = LocalDateTime.now();
     }
-    public static User create(String userId, UserState state) {
+
+    public static User create(String userId) {
         return User.builder()
                 .userId(userId)
-                .state(state)
+                .state(UserState.ACTIVE)
                 .build();
     }
 
-    public void update(String name, String phone, Gender gender, UserState state) {
-        this.name = name;
-        this.phone = phone;
-        this.gender = gender;
-        this.state = state;
-        this.updatedAt = LocalDateTime.now();
+    public static User update(String name, String phone, Gender gender) {
+        return User.builder()
+                .name(name)
+                .phone(phone)
+                .gender(gender)
+                .build();
     }
 
     public void delete() {
