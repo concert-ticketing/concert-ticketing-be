@@ -5,16 +5,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import ticketing.ticketing.application.service.oauth.CustomOAuth2UserService;
-import ticketing.ticketing.infrastructure.handler.CustomOAuth2FailureHandler;
-import ticketing.ticketing.infrastructure.handler.CustomOAuth2SuccessHandler;
 import ticketing.ticketing.infrastructure.security.JwtUtil;
 
 import java.util.List;
@@ -24,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtUtil jwtUtil;
 
     @Bean
@@ -40,45 +34,28 @@ public class SecurityConfig {
                                 "/login/**",
                                 "/api/users/**",
                                 "/login",
-                                "/api/auth/login"  // ✅ 이 줄을 추가
+                                "/api/auth/login",
+                                "/oauth/session"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(customOAuth2SuccessHandler())
-                        .failureHandler(customOAuth2FailureHandler())
-                )
-                .csrf(csrf -> csrf.disable());
-        //.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+                .csrf(AbstractHttpConfigurer::disable)
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
     }
     @Bean
-    public AuthenticationSuccessHandler customOAuth2SuccessHandler() {
-        return new CustomOAuth2SuccessHandler(jwtUtil);
-    }
-
-    @Bean
-    public AuthenticationFailureHandler customOAuth2FailureHandler() {
-        return new CustomOAuth2FailureHandler();
-    }
-
-    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000/*", "https://your-production-domain.com"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://your-production-domain.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("Authorization"));
 
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
-
 }
