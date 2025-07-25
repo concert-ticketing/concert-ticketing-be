@@ -38,7 +38,6 @@ public class InquiryController {
             @RequestParam(defaultValue = "10") int size) {
 
         Long userId = userContext.getCurrentUserId();
-        System.out.println(userId);
         if (userId == null) {
             return ResponseEntity.status(401).build();  // 인증 실패시 401 반환
         }
@@ -47,7 +46,6 @@ public class InquiryController {
         return ResponseEntity.ok(inquiries);
     }
 
-    // ✅ 단건 상세 조회 (본인 문의만 조회 가능)
     @Operation(summary = "문의 상세 조회", description = "ID를 기반으로 문의 상세 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "문의 상세 조회 성공"),
@@ -60,6 +58,7 @@ public class InquiryController {
         if (userId == null) {
             return ResponseEntity.status(401).build();
         }
+
         InquiryResponseDto inquiry;
         try {
             inquiry = inquiryService.getInquiryByIdAndUser(id, userId);

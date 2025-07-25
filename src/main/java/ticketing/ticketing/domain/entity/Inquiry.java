@@ -65,8 +65,7 @@ public class Inquiry {
         this.createdAt = createdAt;
     }
 
-    // ✅ 문의 답변 및 상태 변경 메서드
-    public void markCompleted(LocalDateTime repliedAt) {
+    public void markCompleted(String answer, LocalDateTime repliedAt) {
         this.answer = answer;
         this.status = InquiryStatus.COMPLETED;
         this.repliedAt = repliedAt;
