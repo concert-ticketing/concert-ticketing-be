@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ticketing.ticketing.infrastructure.repository.cast.CastRepository;
 import ticketing.ticketing.Repository.ConcertCastRepository;
-import ticketing.ticketing.Repository.ConcertScheduleRepository;
 import ticketing.ticketing.domain.entity.Cast;
 import ticketing.ticketing.domain.entity.ConcertCast;
 import ticketing.ticketing.domain.entity.ConcertSchedule;
 import ticketing.ticketing.domain.enums.CastRole;
+import ticketing.ticketing.infrastructure.repository.concertSchedule.ConcertScheduleRepository;
 
 @Service
 @RequiredArgsConstructor
