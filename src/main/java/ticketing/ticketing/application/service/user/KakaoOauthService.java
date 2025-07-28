@@ -25,6 +25,6 @@ public class KakaoOauthService implements OAuthProviderService{
         UserOAuthTokenReadResponse userInfo = getUserInfoFromKakaoService.getUserInfoFromKakao(kakaoAccessToken);
         User user = userRepository.findByUserId(userInfo.getUserId())
                 .orElseGet(() -> userRepository.save(User.create(userInfo.getUserId())));
-        return jwtUtil.generateToken(user.getUserId());
+        return jwtUtil.generateToken(user.getUserId(), "USER");
     }
 }
