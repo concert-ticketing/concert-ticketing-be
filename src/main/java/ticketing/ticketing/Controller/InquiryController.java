@@ -15,6 +15,7 @@ import ticketing.ticketing.DTO.InquiryResponseDto;
 import ticketing.ticketing.Service.InquiryService;
 import ticketing.ticketing.infrastructure.security.UserContext;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -73,7 +74,7 @@ public class InquiryController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<InquiryResponseDto> createInquiry(
             @RequestPart("inquiry") InquiryRequestDto requestDto,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
 
         Long userId = userContext.getCurrentUserId();
         if (userId == null) {
