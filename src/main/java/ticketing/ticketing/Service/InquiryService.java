@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,8 +46,12 @@ public class InquiryService {
     private final UserRepository userRepository;
 
     // ✅ 사용자별 문의 목록 조회 (페이지네이션)
-    public Page<InquiryResponseDto> getInquiriesByUser(Long userId, Pageable pageable) {
-        return inquiryRepository.findByUserId(userId, pageable)
+    public Page<InquiryResponseDto> getInquiriesByUser(String userId, Pageable pageable) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+
+        Long id = user.getId();
+        return inquiryRepository.findByUserId(id, pageable)
                 .map(InquiryResponseDto::fromEntity);
     }
 
