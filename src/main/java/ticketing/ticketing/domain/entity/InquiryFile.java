@@ -22,6 +22,8 @@ public class InquiryFile {
     private Long id;
 
     private String fileName;
+    @Lob
+    @Column(name = "file_data", columnDefinition = "LONGBLOB")
     private String filePath;
 
     @ManyToOne(fetch = FetchType.LAZY)

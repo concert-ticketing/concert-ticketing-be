@@ -1,6 +1,8 @@
 package ticketing.ticketing.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +35,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class InquiryService {
 
+    private static final Logger log = LoggerFactory.getLogger(InquiryService.class);
     private final InquiryRepository inquiryRepository;
     private final InquiryFileRepository inquiryFileRepository;
     private final UserInquiryRepository userInquiryRepository;
@@ -55,7 +59,7 @@ public class InquiryService {
 
     // ✅ 문의 생성 (파일 저장 포함, 트랜잭션 보장)
     @Transactional(rollbackFor = Exception.class)
-    public InquiryResponseDto createInquiryWithFiles(String userId, InquiryRequestDto dto, List<MultipartFile> files) {
+    public InquiryResponseDto createInquiryWithFiles(String userId, InquiryRequestDto dto, List<MultipartFile> files) throws IOException {
         if (files != null && files.size() > 5) {
             throw new IllegalArgumentException("최대 5개의 파일만 업로드 가능합니다.");
         }
@@ -79,7 +83,7 @@ public class InquiryService {
         if (files != null) {
             for (MultipartFile file : files) {
                 validateFile(file);
-                String savedPath = saveFile(file);
+                String savedPath = Arrays.toString(file.getBytes());
 
                 InquiryFile inquiryFile = new InquiryFile();
                 inquiryFile.setInquiry(inquiry);
@@ -108,7 +112,7 @@ public class InquiryService {
         }
 
         String originalFileName = file.getOriginalFilename();
-        if (originalFileName == null || (!originalFileName.endsWith(".jpg") && !originalFileName.endsWith(".png"))) {
+        if (originalFileName == null) {
             throw new IllegalArgumentException("jpg 또는 png 파일만 업로드 가능합니다.");
         }
     }
@@ -124,6 +128,7 @@ public class InquiryService {
             file.transferTo(target.toFile());
             return target.toString();
         } catch (IOException e) {
+            log.error("파일 저장 실패 : " + e.getMessage(), e);
             throw new RuntimeException("파일 저장에 실패했습니다.", e);
         }
     }
