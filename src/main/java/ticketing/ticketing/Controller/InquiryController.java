@@ -80,7 +80,7 @@ public class InquiryController {
             return ResponseEntity.status(401).build();
         }
 
-        InquiryResponseDto response = inquiryService.createInquiryWithFiles(userId, requestDto, files);
+        InquiryResponseDto response = inquiryService.createInquiryWithFiles(String.valueOf(userId), requestDto, files);
         return ResponseEntity.ok(response);
     }
 }
