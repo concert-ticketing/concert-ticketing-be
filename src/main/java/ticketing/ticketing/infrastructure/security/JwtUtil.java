@@ -23,7 +23,7 @@ public class JwtUtil {
     }
 
     public String generateToken(String username, String role) {
-        String fullRole = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+        String fullRole = role;
 
         return Jwts.builder()
                 .setSubject(username)
@@ -36,7 +36,7 @@ public class JwtUtil {
 
     public String extractRole(String token) {
         try {
-            Object role = getClaims(token).get("role");  // "role" 키로 통일
+            Object role = getClaims(token).get("role");
             return role != null ? role.toString() : null;
         } catch (Exception e) {
             logger.warning("Role extraction failed: " + e.getMessage());

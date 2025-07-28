@@ -8,10 +8,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserContext {
 
-    public  Long getCurrentUserId() {
+    public Long getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof Long userId) {
+        if (auth != null && auth.getPrincipal() instanceof UserDetails userDetails) {
+            if (userDetails instanceof CustomUserDetails customUser) {
+                return customUser.getId();
+            }
+        } else if (auth != null && auth.getPrincipal() instanceof Long userId) {
             return userId;
+        } else if (auth != null && auth.getPrincipal() instanceof String strId) {
+            try {
+                return Long.parseLong(strId); // handles case where sub is used as String userId
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
         return null;
     }
