@@ -36,7 +36,8 @@ public class InquiryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Long userId = userContext.getCurrentUserId();
+        String userId = String.valueOf(userContext.getCurrentUserId());
+        System.out.println(userId);
         if (userId == null) {
             return ResponseEntity.status(401).build();  // 인증 실패시 401 반환
         }
