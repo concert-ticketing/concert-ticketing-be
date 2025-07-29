@@ -3,8 +3,6 @@ package ticketing.ticketing.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.Gender;
 import ticketing.ticketing.domain.enums.UserState;
 
@@ -25,6 +23,7 @@ public class User {
     private String email;
     private String name;
     private String phone;
+    private String nickName;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
@@ -60,12 +59,13 @@ public class User {
                 .build();
     }
 
-    public static User update(String name, String phone, Gender gender) {
-        return User.builder()
-                .name(name)
-                .phone(phone)
-                .gender(gender)
-                .build();
+    public void update(String name, String email, String nickName, String phone, Gender gender, LocalDate birthday) {
+        this.name = name;
+        this.email = email;
+        this.nickName = nickName;
+        this.phone = phone;
+        this.gender = gender;
+        this.birthday = birthday;
     }
 
     public void delete() {

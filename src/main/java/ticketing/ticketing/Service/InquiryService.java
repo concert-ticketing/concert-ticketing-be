@@ -46,8 +46,8 @@ public class InquiryService {
     private final UserRepository userRepository;
 
     // ✅ 사용자별 문의 목록 조회 (페이지네이션)
-    public Page<InquiryResponseDto> getInquiriesByUser(String userId, Pageable pageable) {
-        User user = userRepository.findByUserId(userId)
+    public Page<InquiryResponseDto> getInquiriesByUser(Long userId, Pageable pageable) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         Long id = user.getId();
@@ -64,13 +64,13 @@ public class InquiryService {
 
     // ✅ 문의 생성 (파일 저장 포함, 트랜잭션 보장)
     @Transactional(rollbackFor = Exception.class)
-    public InquiryResponseDto createInquiryWithFiles(String userId, InquiryRequestDto dto, List<MultipartFile> files) throws IOException {
+    public InquiryResponseDto createInquiryWithFiles(Long userId, InquiryRequestDto dto, List<MultipartFile> files) throws IOException {
         if (files != null && files.size() > 5) {
             throw new IllegalArgumentException("최대 5개의 파일만 업로드 가능합니다.");
         }
 
         // 유저 확인
-        User user = userRepository.findByUserId(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         // 문의 저장
