@@ -22,11 +22,11 @@ public class JwtUtil {
         this.expirationTime = Long.parseLong(dotenv.get("JWT_EXPIRATION"));
     }
 
-    public String generateToken(String username, String role) {
-        String fullRole = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+    public String generateToken(Long id, String role) {
+        String fullRole = role;
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(id.toString())
                 .claim("role", fullRole)  // 일관되게 "role" 키 사용
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
@@ -36,7 +36,7 @@ public class JwtUtil {
 
     public String extractRole(String token) {
         try {
-            Object role = getClaims(token).get("role");  // "role" 키로 통일
+            Object role = getClaims(token).get("role");
             return role != null ? role.toString() : null;
         } catch (Exception e) {
             logger.warning("Role extraction failed: " + e.getMessage());

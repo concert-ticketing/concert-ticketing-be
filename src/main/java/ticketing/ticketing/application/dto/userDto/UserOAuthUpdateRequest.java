@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ticketing.ticketing.domain.enums.Gender;
 
 import java.time.LocalDate;
 
@@ -16,8 +17,9 @@ import java.time.LocalDate;
 public class UserOAuthUpdateRequest {
 
     private String name;
-    private String gender;
+    private Gender gender;
     private String email;
+    private String nickName;
     private String phone;
     private LocalDate birthday;
 }

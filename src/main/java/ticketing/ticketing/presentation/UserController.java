@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.application.dto.userDto.UserOAuthCreateRequest;
 import ticketing.ticketing.application.dto.userDto.UserOAuthUpdateRequest;
 import ticketing.ticketing.application.service.user.UserService;
+import ticketing.ticketing.infrastructure.security.UserContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserContext userContext;
 
     @PostMapping("/oauth/session")
     public ResponseEntity<Map<String, String>> oauth2Callback(@RequestBody UserOAuthCreateRequest request) {
@@ -25,4 +27,12 @@ public class UserController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestBody UserOAuthUpdateRequest request) {
+        Long userId = userContext.getCurrentUserId();
+        userService.updateOAuthUser(request, userId);
+        return ResponseEntity.ok("User updated");
+    }
+
 }

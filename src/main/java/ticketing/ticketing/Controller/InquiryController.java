@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -27,7 +26,6 @@ public class InquiryController {
     private final InquiryService inquiryService;
     private final UserContext userContext;
 
-    // ✅ 사용자별 문의 목록 조회
     @Operation(summary = "문의 내역 조회", description = "사용자의 문의 내역을 페이지네이션하여 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "문의 내역 조회 성공")
@@ -37,7 +35,8 @@ public class InquiryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Long userId = userContext.getCurrentUserId();
+        String userId = String.valueOf(userContext.getCurrentUserId());
+        System.out.println(userId);
         if (userId == null) {
             return ResponseEntity.status(401).build();  // 인증 실패시 401 반환
         }
@@ -99,7 +98,7 @@ public class InquiryController {
             return ResponseEntity.status(401).build();
         }
 
-        InquiryResponseDto response = inquiryService.createInquiryWithFiles(userId, requestDto, files);
+        InquiryResponseDto response = inquiryService.createInquiryWithFiles(String.valueOf(userId), requestDto, files);
         return ResponseEntity.ok(response);
     }
 }
