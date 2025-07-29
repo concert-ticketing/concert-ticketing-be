@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +32,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -56,10 +58,18 @@ public class InquiryService {
     }
 
     // ✅ 단건 조회 (권한 체크: userId와 문의 소유자 일치 여부 확인)
-    public InquiryResponseDto getInquiryByIdAndUser(Long inquiryId, Long userId) {
+    public InquiryResponseDto  getInquiryByIdAndUser(Long inquiryId, Long userId) {
         Inquiry inquiry = inquiryRepository.findByIdAndUserId(inquiryId, userId)
                 .orElseThrow(() -> new InquiryNotFoundException("해당 ID의 문의가 존재하지 않거나 권한이 없습니다."));
         return InquiryResponseDto.fromEntity(inquiry);
+    }
+
+    public ResponseEntity<Page<InquiryResponseDto>> getAllInquiryByAdmin(int size, int page) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Inquiry> inquiries = inquiryRepository.findAll(pageable);
+
+        Page<InquiryResponseDto> dtoPage = inquiries.map(InquiryResponseDto::fromEntity);
+        return ResponseEntity.ok(dtoPage);
     }
 
     // ✅ 문의 생성 (파일 저장 포함, 트랜잭션 보장)

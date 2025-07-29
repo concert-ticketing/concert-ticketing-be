@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -59,7 +60,6 @@ public class InquiryController {
         if (userId == null) {
             return ResponseEntity.status(401).build();
         }
-
         InquiryResponseDto inquiry;
         try {
             inquiry = inquiryService.getInquiryByIdAndUser(id, userId);
@@ -69,6 +69,23 @@ public class InquiryController {
 
         return ResponseEntity.ok(inquiry);
     }
+
+    @GetMapping("/admin")
+    public ResponseEntity<InquiryResponseDto> getAllInquiryDetail(Long size, Long page){
+        Long userId = userContext.getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        InquiryResponseDto inquiry;
+        try {
+            inquiry = inquiryService.getInquiryByIdAndUser(size,page);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).build();
+        }
+
+        return ResponseEntity.ok(inquiry);
+    }
+
 
     // ✅ 1:1 문의 등록
     @Operation(summary = "1:1 문의 등록", description = "문의 제목, 내용, 타입과 최대 5개의 이미지(jpg, png) 파일을 업로드합니다.")

@@ -1,5 +1,6 @@
 package ticketing.ticketing.Repository;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,8 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
     Page<Inquiry> findByUserId(Long userId, Pageable pageable);
 
     Optional<Inquiry> findByIdAndUserId(Long id, Long userId);
+
+    @NotNull
+    Page<Inquiry> findAll(int size, Pageable pageable);
+
 }
