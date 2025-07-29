@@ -36,7 +36,7 @@ public class InquiryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        String userId = String.valueOf(userContext.getCurrentUserId());
+        Long userId = userContext.getCurrentUserId();
         System.out.println(userId);
         if (userId == null) {
             return ResponseEntity.status(401).build();  // 인증 실패시 401 반환
@@ -82,7 +82,7 @@ public class InquiryController {
             return ResponseEntity.status(401).build();
         }
 
-        InquiryResponseDto response = inquiryService.createInquiryWithFiles(String.valueOf(userId), requestDto, files);
+        InquiryResponseDto response = inquiryService.createInquiryWithFiles(userId, requestDto, files);
         return ResponseEntity.ok(response);
     }
 }

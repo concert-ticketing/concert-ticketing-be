@@ -20,11 +20,11 @@ public class AlarmController {
 
     @GetMapping
     public ResponseEntity<Page<AlarmResponseDto>> getMyAlarms(
-            @RequestParam String userId,
+            @RequestParam Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        User user = userRepository.findByUserId(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
         PageRequest pageable = PageRequest.of(page, size);

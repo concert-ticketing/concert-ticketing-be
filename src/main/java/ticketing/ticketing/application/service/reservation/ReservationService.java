@@ -31,8 +31,7 @@ public class ReservationService {
     @Transactional
     public ReservationReadResponse createReservation(ReservationCreateRequest request) {
         // 1. 사용자 조회
-        //Long userId = userContext.getCurrentUserId();
-        Long userId = 1L;
+        Long userId = userContext.getCurrentUserId();
         User user = userService.findUserById(userId);
 
         // 2. 콘서트 스케줄 조회
