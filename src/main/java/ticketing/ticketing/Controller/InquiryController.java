@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -26,6 +27,7 @@ public class InquiryController {
     private final InquiryService inquiryService;
     private final UserContext userContext;
 
+    // ✅ 사용자별 문의 목록 조회
     @Operation(summary = "문의 내역 조회", description = "사용자의 문의 내역을 페이지네이션하여 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "문의 내역 조회 성공")
@@ -35,7 +37,7 @@ public class InquiryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        String userId = String.valueOf(userContext.getCurrentUserId());
+        Long userId = userContext.getCurrentUserId();
         System.out.println(userId);
         if (userId == null) {
             return ResponseEntity.status(401).build();  // 인증 실패시 401 반환
@@ -45,6 +47,7 @@ public class InquiryController {
         return ResponseEntity.ok(inquiries);
     }
 
+    // ✅ 단건 상세 조회 (본인 문의만 조회 가능)
     @Operation(summary = "문의 상세 조회", description = "ID를 기반으로 문의 상세 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "문의 상세 조회 성공"),
@@ -57,7 +60,6 @@ public class InquiryController {
         if (userId == null) {
             return ResponseEntity.status(401).build();
         }
-
         InquiryResponseDto inquiry;
         try {
             inquiry = inquiryService.getInquiryByIdAndUser(id, userId);
@@ -69,20 +71,19 @@ public class InquiryController {
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<Page<InquiryResponseDto>> getAllInquiryDetail(@RequestParam(defaultValue = "0") int page,
-                                                                  @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<InquiryResponseDto> getAllInquiryDetail(Long size, Long page){
         Long userId = userContext.getCurrentUserId();
         if (userId == null) {
             return ResponseEntity.status(401).build();
         }
-        ResponseEntity<Page<InquiryResponseDto>> inquiry;
+        InquiryResponseDto inquiry;
         try {
-            inquiry = inquiryService.getAllInquiryByAdmin(size,page);
+            inquiry = inquiryService.getInquiryByIdAndUser(size,page);
         } catch (Exception e) {
             return ResponseEntity.status(404).build();
         }
 
-        return ResponseEntity.ok(inquiry.getBody());
+        return ResponseEntity.ok(inquiry);
     }
 
 
@@ -98,7 +99,7 @@ public class InquiryController {
             return ResponseEntity.status(401).build();
         }
 
-        InquiryResponseDto response = inquiryService.createInquiryWithFiles(String.valueOf(userId), requestDto, files);
+        InquiryResponseDto response = inquiryService.createInquiryWithFiles(userId, requestDto, files);
         return ResponseEntity.ok(response);
     }
 }
