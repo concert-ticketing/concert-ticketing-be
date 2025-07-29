@@ -71,19 +71,20 @@ public class InquiryController {
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<InquiryResponseDto> getAllInquiryDetail(Long size, Long page){
+    public ResponseEntity<Page<InquiryResponseDto>> getAllInquiryDetail(@RequestParam(defaultValue = "0") int page,
+                                                                  @RequestParam(defaultValue = "10") int size) {
         Long userId = userContext.getCurrentUserId();
         if (userId == null) {
             return ResponseEntity.status(401).build();
         }
-        InquiryResponseDto inquiry;
+        ResponseEntity<Page<InquiryResponseDto>> inquiry;
         try {
-            inquiry = inquiryService.getInquiryByIdAndUser(size,page);
+            inquiry = inquiryService.getAllInquiryByAdmin(size,page);
         } catch (Exception e) {
             return ResponseEntity.status(404).build();
         }
 
-        return ResponseEntity.ok(inquiry);
+        return ResponseEntity.ok(inquiry.getBody());
     }
 
 
