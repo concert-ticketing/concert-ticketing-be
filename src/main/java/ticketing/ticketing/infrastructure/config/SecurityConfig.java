@@ -11,7 +11,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
-import ticketing.ticketing.application.service.oauth.CustomOAuth2UserService;
+import ticketing.ticketing.Service_temp.oauth.CustomOAuth2UserService;
 import ticketing.ticketing.infrastructure.handler.CustomOAuth2FailureHandler;
 import ticketing.ticketing.infrastructure.handler.CustomOAuth2SuccessHandler;
 import ticketing.ticketing.infrastructure.security.JwtUtil;

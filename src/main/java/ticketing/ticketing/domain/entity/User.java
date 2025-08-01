@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder(access = AccessLevel.PROTECTED)            // 외부에서 builder 직접 사용 불가
 @Getter
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,12 +31,17 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserState state;
+
     private LocalDate birthday;
+
     @CreatedDate
     private LocalDateTime createdAt;
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
     private LocalDateTime deletedAt;
+
     public static User create(String userId, String email, String name, String phone, Gender gender, UserState state) {
         return User.builder()
                 .userId(userId)

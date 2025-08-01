@@ -1,4 +1,4 @@
-package ticketing.ticketing.application.service.user;
+package ticketing.ticketing.Service_temp.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -7,7 +7,7 @@ import ticketing.ticketing.infrastructure.repository.user.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements IUserService {
+public class UserService implements ticketing.ticketing.Service_temp.user.IUserService{
     private final UserRepository userRepository;
 
     public void saveOrUpdateUser(OAuth2User user) {

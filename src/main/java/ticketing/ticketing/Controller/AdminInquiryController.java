@@ -33,14 +33,14 @@ public class AdminInquiryController {
             @ApiResponse(responseCode = "200", description = "처리 완료됨"),
             @ApiResponse(responseCode = "404", description = "해당 문의가 존재하지 않음")
     })
-    @PostMapping("/{id}/complete")
+    @PutMapping("/{id}/complete")
     public ResponseEntity<Void> completeInquiry(@PathVariable Long id) {
         inquiryService.markInquiryAsCompleted(id);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "문의에 답변", description = "관리자가 문의에 답변을 등록하고 상태를 완료로 변경합니다.")
-    @PostMapping("/{id}/answer")
+    @PutMapping("/{id}/answer")
     public ResponseEntity<Void> answerInquiry(
             @PathVariable Long id,
             @RequestBody String answer) {

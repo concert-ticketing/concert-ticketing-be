@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import ticketing.ticketing.DTO.NoticeRequestDto;
+import ticketing.ticketing.Service.NoticeService;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Notice;
-import ticketing.ticketing.Service.NoticeService;
 
 import java.util.List;
 
@@ -19,11 +20,10 @@ public class NoticeController {
 
     @PostMapping
     public ResponseEntity<Notice> createNotice(
-            @RequestParam String title,
-            @RequestParam String content,
+            @RequestBody NoticeRequestDto requestDto,
             @AuthenticationPrincipal Admin admin
     ) {
-        Notice created = noticeService.createNotice(title, content, admin);
+        Notice created = noticeService.createNotice(requestDto.getTitle(), requestDto.getContent(), admin);
         return ResponseEntity.ok(created);
     }
 
@@ -43,10 +43,9 @@ public class NoticeController {
     @PutMapping("/{id}")
     public ResponseEntity<Notice> updateNotice(
             @PathVariable Long id,
-            @RequestParam String title,
-            @RequestParam String content
+            @RequestBody NoticeRequestDto requestDto
     ) {
-        return noticeService.updateNotice(id, title, content)
+        return noticeService.updateNotice(id, requestDto.getTitle(), requestDto.getContent())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
