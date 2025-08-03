@@ -1,5 +1,4 @@
-package ticketing.ticketing.application.service.user;
-
+package ticketing.ticketing.Service_temp.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.userDto.UserOAuthCreateRequest;
@@ -12,7 +11,7 @@ import ticketing.ticketing.infrastructure.security.JwtUtil;
 
 @Service("kakao")
 @RequiredArgsConstructor
-public class KakaoOauthService implements OAuthProviderService{
+public class KakaoOauthService implements ticketing.ticketing.application.service.user.OAuthProviderService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;

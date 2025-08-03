@@ -1,4 +1,5 @@
-package ticketing.ticketing.Service;
+/*
+package ticketing.ticketing.Service_temp;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -129,3 +130,4 @@ public class InquiryService {
         }
     }
 }
+*/

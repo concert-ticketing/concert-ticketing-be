@@ -111,13 +111,19 @@ public class InquiryService {
         return InquiryResponseDto.fromEntity(inquiry);
     }
 
-    // ✅ 문의 완료 처리 (관리자용)
     @Transactional
     public void markInquiryAsCompleted(Long inquiryId) {
         Inquiry inquiry = inquiryRepository.findById(inquiryId)
                 .orElseThrow(() -> new InquiryNotFoundException("문의가 존재하지 않습니다."));
 
-        inquiry.markCompleted(LocalDateTime.now());
+        inquiry.markCompleted(null, LocalDateTime.now());  // 답변 없이 완료 처리
+    }
+    @Transactional
+    public void answerInquiry(Long inquiryId, String answer) {
+        Inquiry inquiry = inquiryRepository.findById(inquiryId)
+                .orElseThrow(() -> new InquiryNotFoundException("문의가 존재하지 않습니다."));
+
+        inquiry.markCompleted(answer, LocalDateTime.now());  // 답변과 함께 완료 처리
     }
 
     // ✅ 파일 검증

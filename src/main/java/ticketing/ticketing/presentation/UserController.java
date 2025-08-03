@@ -4,9 +4,9 @@ package ticketing.ticketing.presentation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ticketing.ticketing.Service_temp.user.UserService;
 import ticketing.ticketing.application.dto.userDto.UserOAuthCreateRequest;
 import ticketing.ticketing.application.dto.userDto.UserOAuthUpdateRequest;
-import ticketing.ticketing.application.service.user.UserService;
 import ticketing.ticketing.infrastructure.security.UserContext;
 
 import java.util.HashMap;

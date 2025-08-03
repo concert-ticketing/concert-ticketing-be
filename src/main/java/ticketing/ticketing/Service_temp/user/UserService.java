@@ -1,4 +1,4 @@
-package ticketing.ticketing.application.service.user;
+package ticketing.ticketing.Service_temp.user;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.Optional;
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
-    private final Map<String, OAuthProviderService> oauthProviderServiceMap;
+    private final Map<String, ticketing.ticketing.application.service.user.OAuthProviderService> oauthProviderServiceMap;
     private final WebInvocationPrivilegeEvaluator privilegeEvaluator;
 
     public User findUserById(Long id) {
@@ -30,7 +30,7 @@ public class UserService {
 
     public String createOAuthUser(UserOAuthCreateRequest request) {
         String provider = request.getState().toLowerCase();
-        OAuthProviderService service = oauthProviderServiceMap.get(provider.toLowerCase());
+        ticketing.ticketing.application.service.user.OAuthProviderService service = oauthProviderServiceMap.get(provider.toLowerCase());
         if (service == null) {
             throw new IllegalArgumentException("지원하지 않는 OAuth 제공자: " + provider);
         }
