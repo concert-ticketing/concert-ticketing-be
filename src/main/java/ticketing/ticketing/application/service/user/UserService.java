@@ -4,13 +4,13 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.userDto.UserOAuthCreateRequest;
 import ticketing.ticketing.application.dto.userDto.UserOAuthUpdateRequest;
 import ticketing.ticketing.domain.entity.User;
 import ticketing.ticketing.infrastructure.repository.user.UserRepository;
+
 import java.util.Map;
 import java.util.Optional;
 
