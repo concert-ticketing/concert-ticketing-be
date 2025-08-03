@@ -18,7 +18,6 @@ public class AdminInquiryController {
 
     private final InquiryService inquiryService;
 
-    // ✅ 전체 문의 조회
     @Operation(summary = "전체 문의 조회", description = "관리자가 전체 문의를 페이지네이션으로 조회합니다.")
     @GetMapping
     public ResponseEntity<Page<InquiryResponseDto>> getAllInquiries(
@@ -29,7 +28,6 @@ public class AdminInquiryController {
         return ResponseEntity.ok(inquiries);
     }
 
-    // ✅ 문의 답변 처리 완료로 상태 변경
     @Operation(summary = "문의 완료 처리", description = "문의 상태를 완료(COMPLETED)로 변경합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "처리 완료됨"),
@@ -38,6 +36,15 @@ public class AdminInquiryController {
     @PostMapping("/{id}/complete")
     public ResponseEntity<Void> completeInquiry(@PathVariable Long id) {
         inquiryService.markInquiryAsCompleted(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "문의에 답변", description = "관리자가 문의에 답변을 등록하고 상태를 완료로 변경합니다.")
+    @PostMapping("/{id}/answer")
+    public ResponseEntity<Void> answerInquiry(
+            @PathVariable Long id,
+            @RequestBody String answer) {
+        inquiryService.answerInquiry(id, answer);
         return ResponseEntity.ok().build();
     }
 }

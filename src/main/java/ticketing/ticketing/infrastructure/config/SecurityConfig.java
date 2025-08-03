@@ -41,7 +41,6 @@ public class SecurityConfig {
                                 "/oauth/session",
                                 "/api/concert/**"
                         ).permitAll()
-                        .requestMatchers("/api/inquiries/**").hasAnyAuthority("USER")
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
