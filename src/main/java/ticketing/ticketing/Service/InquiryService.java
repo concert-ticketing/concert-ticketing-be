@@ -47,6 +47,11 @@ public class InquiryService {
     private final String uploadPath = "uploads";
     private final UserRepository userRepository;
 
+    public Page<InquiryResponseDto> getAllInquiry(Pageable pageable) {
+        String state = "PENDING";
+        return inquiryRepository.findAllByStatus(state,pageable);
+    }
+
     // ✅ 사용자별 문의 목록 조회 (페이지네이션)
     public Page<InquiryResponseDto> getInquiriesByUser(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)

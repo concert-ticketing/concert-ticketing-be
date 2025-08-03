@@ -24,7 +24,7 @@ public class AdminInquiryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<InquiryResponseDto> inquiries = inquiryService.getInquiriesByUser(null, PageRequest.of(page, size));
+        Page<InquiryResponseDto> inquiries = inquiryService.getAllInquiry(PageRequest.of(page, size));
         return ResponseEntity.ok(inquiries);
     }
 

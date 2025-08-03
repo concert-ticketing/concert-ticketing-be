@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ticketing.ticketing.domain.entity.Inquiry;
+import ticketing.ticketing.domain.enums.InquiryStatus;
+import ticketing.ticketing.domain.enums.InquiryType;
 
 import java.time.LocalDateTime;
 
@@ -17,8 +19,8 @@ public class InquiryResponseDto {
     private String userEmail;
     private String title;
     private String content;
-    private String type;
-    private String status;
+    private InquiryType type;
+    private InquiryStatus status;
     private LocalDateTime repliedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -32,8 +34,8 @@ public class InquiryResponseDto {
                 inquiry.getUser().getEmail(),
                 inquiry.getTitle(),
                 inquiry.getContent(),
-                inquiry.getType().name(),
-                inquiry.getStatus().name(),
+                inquiry.getType(),
+                inquiry.getStatus(),
                 inquiry.getRepliedAt(),
                 inquiry.getCreatedAt(),
                 inquiry.getUpdatedAt(),
