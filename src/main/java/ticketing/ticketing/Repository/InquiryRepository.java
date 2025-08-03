@@ -41,5 +41,5 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
   FROM Inquiry i
   WHERE i.status = :status
 """)
-    Page<InquiryResponseDto> findAllByStatus(@Param("status") String status, Pageable pageable);
+    Page<InquiryResponseDto> findAllByStatus(@Param("status") InquiryStatus status, Pageable pageable);
 }

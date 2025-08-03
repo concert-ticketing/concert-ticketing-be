@@ -48,7 +48,7 @@ public class InquiryService {
     private final UserRepository userRepository;
 
     public Page<InquiryResponseDto> getAllInquiry(Pageable pageable) {
-        String state = "PENDING";
+        InquiryStatus state = InquiryStatus.PENDING;
         return inquiryRepository.findAllByStatus(state,pageable);
     }
 
