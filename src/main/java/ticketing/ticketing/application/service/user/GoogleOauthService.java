@@ -1,3 +1,4 @@
+/*
 package ticketing.ticketing.application.service.user;
 
 import lombok.RequiredArgsConstructor;
@@ -7,3 +8,4 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GoogleOauthService {
 }
+*/
