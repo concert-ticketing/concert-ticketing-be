@@ -1,7 +1,8 @@
 package ticketing.ticketing.application.service.user;
 
+import ticketing.ticketing.application.dto.userDto.OAuthLoginResponse;
 import ticketing.ticketing.application.dto.userDto.UserOAuthCreateRequest;
 
 public interface OAuthProviderService {
-    String createOAuth(UserOAuthCreateRequest request);
+    OAuthLoginResponse createOAuth(UserOAuthCreateRequest request);
 }

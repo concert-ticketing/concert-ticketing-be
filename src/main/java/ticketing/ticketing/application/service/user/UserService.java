@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.stereotype.Service;
+import ticketing.ticketing.application.dto.userDto.OAuthLoginResponse;
 import ticketing.ticketing.application.dto.userDto.UserOAuthCreateRequest;
 import ticketing.ticketing.application.dto.userDto.UserOAuthUpdateRequest;
 import ticketing.ticketing.domain.entity.User;
@@ -28,7 +29,13 @@ public class UserService {
         return scheduleOpt.orElseThrow(() -> new EntityNotFoundException("유저 정보 없음"));
     }
 
-    public String createOAuthUser(UserOAuthCreateRequest request) {
+    public Optional<User> findByUserId(String userId){
+        Optional<User> User = userRepository.findByUserId(userId);
+        return User;
+
+    }
+
+    public OAuthLoginResponse createOAuthUser(UserOAuthCreateRequest request) {
         String provider = request.getState().toLowerCase();
         OAuthProviderService service = oauthProviderServiceMap.get(provider.toLowerCase());
         if (service == null) {

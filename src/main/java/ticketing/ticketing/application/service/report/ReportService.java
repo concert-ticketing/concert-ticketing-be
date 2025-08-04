@@ -8,8 +8,8 @@ import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Review;
 import ticketing.ticketing.application.dto.reportRequestDto.ReportRequestDto;
 import ticketing.ticketing.application.dto.reportResponseDto.ReportResponseDto;
-import ticketing.ticketing.infrastructure.repository.report.ReportRepository;
 import ticketing.ticketing.infrastructure.repository.admin.AdminRepository;
+import ticketing.ticketing.infrastructure.repository.report.ReportRepository;
 import ticketing.ticketing.infrastructure.repository.review.ReviewRepository;
 
 @Service
