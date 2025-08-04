@@ -1,15 +1,12 @@
 package ticketing.ticketing.domain.entity;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.AdminRole;
 import ticketing.ticketing.domain.enums.AdminState;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -42,9 +39,22 @@ public class Admin {
     @Enumerated(EnumType.STRING)
     private AdminState state;
 
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
-    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdateTimestamp() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        } else {
+            updatedAt = LocalDateTime.now();
+        }
+    }
+    @PreRemove
+    private void deleteLogical() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

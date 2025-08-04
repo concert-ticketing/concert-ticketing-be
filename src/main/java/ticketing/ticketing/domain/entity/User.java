@@ -2,8 +2,7 @@ package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.CreationTimestamp;
 import ticketing.ticketing.domain.enums.Gender;
 import ticketing.ticketing.domain.enums.UserState;
 
@@ -24,36 +23,49 @@ public class User {
     private String email;
     private String name;
     private String phone;
+    private String nickName;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 25)
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 25)
     private UserState state;
     private LocalDate birthday;
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
-    @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
-    public static User create(String userId, String email, String name, String phone, Gender gender, UserState state) {
+
+    @PrePersist
+    @PreUpdate
+    protected void onUpdateTimestamp() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        } else {
+            updatedAt = LocalDateTime.now();
+        }
+    }
+    @PreRemove
+    private void deleteLogical() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public static User create(String userId) {
         return User.builder()
                 .userId(userId)
-                .email(email)
-                .name(name)
-                .phone(phone)
-                .gender(gender)
-                .state(state)
-                .createdAt(LocalDateTime.now())
+                .state(UserState.ACTIVE)
                 .build();
     }
 
-    public void update(String name, String phone, Gender gender, UserState state) {
+    public void update(String name, String email, String nickName, String phone, Gender gender, LocalDate birthday) {
         this.name = name;
+        this.email = email;
+        this.nickName = nickName;
         this.phone = phone;
         this.gender = gender;
-        this.state = state;
-        this.updatedAt = LocalDateTime.now();
+        this.birthday = birthday;
     }
 
     public void delete() {

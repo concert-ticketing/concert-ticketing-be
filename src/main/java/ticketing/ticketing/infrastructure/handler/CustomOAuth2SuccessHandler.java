@@ -1,3 +1,4 @@
+/*
 package ticketing.ticketing.infrastructure.handler;
 
 import org.springframework.security.core.Authentication;
@@ -33,3 +34,4 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         response.getWriter().write("{\"message\": \"Authentication successful\", \"token\": \"" + token + "\"}");
     }
 }
+*/

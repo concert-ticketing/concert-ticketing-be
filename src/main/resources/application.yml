@@ -83,3 +83,8 @@ springdoc:
 # ✅ 파일 저장 경로
 upload:
   path: ./uploads/inquiries
+
+logging:
+  level:
+    ticketing.ticketing.infrastructure.security: DEBUG
+    org.springframework.web.filter.OncePerRequestFilter: DEBUG

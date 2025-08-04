@@ -3,23 +3,36 @@ package ticketing.ticketing.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ticketing.ticketing.application.service.user.IUserService;
+import org.springframework.web.bind.annotation.*;
+import ticketing.ticketing.application.dto.userDto.UserOAuthCreateRequest;
+import ticketing.ticketing.application.dto.userDto.UserOAuthUpdateRequest;
+import ticketing.ticketing.application.service.user.UserService;
+import ticketing.ticketing.infrastructure.security.UserContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("")
 @RequiredArgsConstructor
 public class UserController {
-    private final IUserService userService;
+    private final UserService userService;
+    private final UserContext userContext;
 
-    @GetMapping("/oauth2/callback")
-    public ResponseEntity<String> oauth2Callback(@AuthenticationPrincipal OAuth2User user) {
-        userService.saveOrUpdateUser(user);
-        return null;
+    @PostMapping("/oauth/session")
+    public ResponseEntity<Map<String, String>> oauth2Callback(@RequestBody UserOAuthCreateRequest request) {
+        String jwt = userService.createOAuthUser(request);
+        Map<String, String> response = new HashMap<>();
+        response.put("token", jwt);
 
+        return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestBody UserOAuthUpdateRequest request) {
+        Long userId = userContext.getCurrentUserId();
+        userService.updateOAuthUser(request, userId);
+        return ResponseEntity.ok("User updated");
+    }
+
 }

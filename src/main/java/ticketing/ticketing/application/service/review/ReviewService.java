@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ticketing.ticketing.DTO.ReviewResponseDto;
+import ticketing.ticketing.application.dto.reviewResponseDto.ReviewResponseDto;
 import ticketing.ticketing.application.dto.reviewDto.ReviewByConcertIdReadResponse;
 import ticketing.ticketing.application.dto.reviewDto.ReviewByConcertListAddRatingReadResponse;
 import ticketing.ticketing.application.dto.reviewDto.ReviewCreateRequest;

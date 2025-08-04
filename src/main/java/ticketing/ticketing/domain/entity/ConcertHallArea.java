@@ -2,6 +2,7 @@ package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -29,15 +30,24 @@ public class ConcertHallArea {
 
     @Lob
     private String uiMetadata;
-
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
-
-    @LastModifiedDate
     private LocalDateTime updatedAt;
-
     private LocalDateTime deletedAt;
 
+    @PrePersist
+    @PreUpdate
+    protected void onUpdateTimestamp() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        } else {
+            updatedAt = LocalDateTime.now();
+        }
+    }
+    @PreRemove
+    private void deleteLogical() {
+        this.deletedAt = LocalDateTime.now();
+    }
     @OneToMany(mappedBy = "concertHallArea", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Seats> seats = new ArrayList<>();
 
