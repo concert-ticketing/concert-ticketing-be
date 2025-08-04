@@ -38,7 +38,9 @@ public class SecurityConfig {
                                 "/api/users/**",
                                 "/api/auth/login",
                                 "/oauth/session",
-                                "/api/concert/**"
+                                "/api/concert/**",
+                                "/api/admin/**",
+                                "/login/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

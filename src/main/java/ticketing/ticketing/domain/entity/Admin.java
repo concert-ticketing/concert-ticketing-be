@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import ticketing.ticketing.application.dto.adminDto.AdminCreateRequest;
 import ticketing.ticketing.domain.enums.AdminRole;
 import ticketing.ticketing.domain.enums.AdminState;
 
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ticketing.ticketing.domain.enums.UserState;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -56,5 +58,18 @@ public class Admin {
     @PreRemove
     private void deleteLogical() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+
+    public static Admin concertCreate(AdminCreateRequest request) {
+        return Admin.builder()
+                .adminId(request.getAdminId())
+                .password(request.getPassword())
+                .company(request.getCompany())
+                .companyNumber(request.getCompanyNumber())
+                .companyLocation(request.getCompanyLocation())
+                .state(AdminState.INACTIVE)
+                .role(AdminRole.CONCERT_ADMIN)
+                .build();
     }
 }
