@@ -1,6 +1,9 @@
 package ticketing.ticketing.presentation;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.application.dto.adminDto.AdminCreateRequest;
@@ -23,8 +26,10 @@ public class AdminController {
     }
 
     @GetMapping("/concert")
-    public ResponseEntity<List<AdminInfoReadResponse>> getConcertAdminInfo() {
-         List<AdminInfoReadResponse> getConcertAdminInfo = adminService.getAllConcertAdmins();
+    public ResponseEntity<Page<AdminInfoReadResponse>> getConcertAdminInfo(int size, int page) {
+        Pageable pageable = PageRequest.of(page, size);
+
+         Page<AdminInfoReadResponse> getConcertAdminInfo = adminService.getAllConcertAdmins(pageable);
          return ResponseEntity.ok(getConcertAdminInfo);
     }
 
