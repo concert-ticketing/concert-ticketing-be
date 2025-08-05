@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ticketing.ticketing.domain.enums.AdminRole;
 
 @NoArgsConstructor
 @AllArgsConstructor
