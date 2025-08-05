@@ -18,19 +18,19 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepository;
     private final Map<String, OAuthProviderService> oauthProviderServiceMap;
-    private final WebInvocationPrivilegeEvaluator privilegeEvaluator;
 
     public User findUserById(Long id) {
         log.info("Find user by id: {}", id);
-        Optional<User> scheduleOpt = userRepository.findById(id);
-        return scheduleOpt.orElseThrow(() -> new EntityNotFoundException("유저 정보 없음"));
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("유저 정보 없음"));
     }
 
     public String createOAuthUser(UserOAuthCreateRequest request) {
         String provider = request.getState().toLowerCase();
-        OAuthProviderService service = oauthProviderServiceMap.get(provider.toLowerCase());
+        OAuthProviderService service = oauthProviderServiceMap.get(provider);
         if (service == null) {
             throw new IllegalArgumentException("지원하지 않는 OAuth 제공자: " + provider);
         }
@@ -39,9 +39,8 @@ public class UserService {
 
     public Long updateOAuthUser(UserOAuthUpdateRequest request, Long userId) {
         User user = findUserById(userId);
-        user.update(request.getName(),request.getEmail(),request.getNickName(),request.getPhone(),request.getGender() ,request.getBirthday());
+        user.update(request.getName(),request.getEmail(),request.getNickName(),request.getPhone(),request.getGender(),request.getBirthday());
         return userRepository.save(user).getId();
-
     }
-
 }
+

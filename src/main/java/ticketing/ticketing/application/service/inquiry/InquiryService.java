@@ -43,7 +43,8 @@ public class InquiryService {
     private final UserInquiryRepository userInquiryRepository;
     private final UserRepository userRepository;
 
-    @Value("${upload.path}")
+    // application.yml에 정의된 업로드 기본 경로
+    @Value("${upload.path.inquiries}")
     private String uploadPath;
 
     public Page<Inquiry> getAllInquiry(Pageable pageable) {
