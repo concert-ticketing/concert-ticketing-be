@@ -26,10 +26,23 @@ public class AdminService {
         return jwtUtil.generateToken(admin.getId(), "Admin");
     }
 
-/*    public List<AdminInfoReadResponse> getAllConcertAdmins() {
-        List<AdminInfoReadResponse> adminInfoReadResponseList = new ArrayList<>();
+    public List<AdminInfoReadResponse> getAllConcertAdmins() {
+        List<Admin> admins = adminRepository.findByRole(AdminRole.CONCERT_ADMIN);
 
-    }*/
-
-
+        return admins.stream()
+                .map(admin -> AdminInfoReadResponse.builder()
+                        .adminId(admin.getAdminId())
+                        .phone(admin.getPhone())
+                        .role(admin.getRole())
+                        .email(admin.getEmail())
+                        .company(admin.getCompany())
+                        .companyNumber(admin.getCompanyNumber())
+                        .companyLocation(admin.getCompanyLocation())
+                        .state(admin.getState())
+                        .build())
+                .toList();
+    }
 }
+
+
+

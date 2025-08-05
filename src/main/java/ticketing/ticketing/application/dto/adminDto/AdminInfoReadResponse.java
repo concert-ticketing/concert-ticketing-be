@@ -16,7 +16,6 @@ import ticketing.ticketing.domain.enums.AdminState;
 public class AdminInfoReadResponse {
 
     private String adminId;
-    private String password;
     private String phone;
     private AdminRole role;
     private String email;
