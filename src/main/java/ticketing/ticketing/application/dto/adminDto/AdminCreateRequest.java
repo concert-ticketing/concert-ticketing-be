@@ -19,4 +19,6 @@ public class AdminCreateRequest {
     private String company;
     private String companyNumber;
     private String companyLocation;
+    private String phone;
+    private String email;
 }
