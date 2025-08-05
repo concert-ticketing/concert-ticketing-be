@@ -1,6 +1,8 @@
 package ticketing.ticketing.application.service.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.adminDto.AdminCreateRequest;
 import ticketing.ticketing.application.dto.adminDto.AdminInfoReadResponse;
@@ -26,21 +28,19 @@ public class AdminService {
         return jwtUtil.generateToken(admin.getId(), "Admin");
     }
 
-    public List<AdminInfoReadResponse> getAllConcertAdmins() {
-        List<Admin> admins = adminRepository.findByRole(AdminRole.CONCERT_ADMIN);
+    public Page<AdminInfoReadResponse> getAllConcertAdmins(Pageable pageable) {
+        Page<Admin> admins = adminRepository.findByRole(AdminRole.CONCERT_ADMIN, pageable);
 
-        return admins.stream()
-                .map(admin -> AdminInfoReadResponse.builder()
-                        .adminId(admin.getAdminId())
-                        .phone(admin.getPhone())
-                        .role(admin.getRole())
-                        .email(admin.getEmail())
-                        .company(admin.getCompany())
-                        .companyNumber(admin.getCompanyNumber())
-                        .companyLocation(admin.getCompanyLocation())
-                        .state(admin.getState())
-                        .build())
-                .toList();
+        return admins.map(admin -> AdminInfoReadResponse.builder()
+                .adminId(admin.getAdminId())
+                .phone(admin.getPhone())
+                .role(admin.getRole())
+                .email(admin.getEmail())
+                .company(admin.getCompany())
+                .companyNumber(admin.getCompanyNumber())
+                .companyLocation(admin.getCompanyLocation())
+                .state(admin.getState())
+                .build());
     }
 }
 

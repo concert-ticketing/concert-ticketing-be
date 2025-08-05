@@ -2,17 +2,19 @@ package ticketing.ticketing.presentation;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.application.dto.userDto.OAuthLoginResponse;
+import ticketing.ticketing.application.dto.userDto.UserInfoReadResponse;
 import ticketing.ticketing.application.dto.userDto.UserOAuthCreateRequest;
 import ticketing.ticketing.application.dto.userDto.UserOAuthUpdateRequest;
 import ticketing.ticketing.application.service.user.UserService;
-import ticketing.ticketing.domain.entity.User;
 import ticketing.ticketing.infrastructure.security.UserContext;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("")
@@ -32,6 +34,13 @@ public class UserController {
         Long userId = userContext.getCurrentUserId();
         userService.updateOAuthUser(request, userId);
         return ResponseEntity.ok("User updated");
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<Page<UserInfoReadResponse>> getUserInfo(int size, int page) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserInfoReadResponse> getUserInfo = userService.getUserInfo(pageable);
+        return ResponseEntity.ok(getUserInfo);
     }
 
 }
