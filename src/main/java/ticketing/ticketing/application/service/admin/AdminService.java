@@ -56,7 +56,7 @@ public class AdminService {
             throw new IllegalArgumentException("승인되지 않은 계정입니다.");
         }
 
-        String token = jwtUtil.generateToken(admin.getId(), "ADMIN");
+        String token = jwtUtil.generateToken(admin.getId(), admin.getRole().name());
         return new AdminLoginTokenResponse(token,admin.getRole().name());
     }
 }
