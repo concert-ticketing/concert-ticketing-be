@@ -21,11 +21,11 @@ public class AdminController {
         String loginInfo = adminService.createAdminUser(request);
         return ResponseEntity.ok(loginInfo);
     }
-
+/*
     @GetMapping("/concert")
     public ResponseEntity<List<AdminInfoReadResponse>> getConcertAdminInfo() {
          List<AdminInfoReadResponse> getConcertAdminInfo = adminService.;
          return ResponseEntity.ok(getConcertAdminInfo);
-    }
+    }*/
 
 }
