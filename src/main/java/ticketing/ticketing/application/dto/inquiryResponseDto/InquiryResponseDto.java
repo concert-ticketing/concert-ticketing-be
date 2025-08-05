@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ticketing.ticketing.domain.entity.Inquiry;
+import ticketing.ticketing.domain.entity.InquiryFile;
 import ticketing.ticketing.domain.enums.InquiryStatus;
 import ticketing.ticketing.domain.enums.InquiryType;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
@@ -26,7 +29,15 @@ public class InquiryResponseDto {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
+    private List<String> imagePaths;
+
     public static InquiryResponseDto fromEntity(Inquiry inquiry) {
+        List<String> imagePaths = inquiry.getInquiryFiles() != null
+                ? inquiry.getInquiryFiles().stream()
+                .map(InquiryFile::getFilePath)
+                .collect(Collectors.toList())
+                : List.of();
+
         return new InquiryResponseDto(
                 inquiry.getId(),
                 inquiry.getUser().getId(),
@@ -39,7 +50,8 @@ public class InquiryResponseDto {
                 inquiry.getRepliedAt(),
                 inquiry.getCreatedAt(),
                 inquiry.getUpdatedAt(),
-                inquiry.getDeletedAt()
+                inquiry.getDeletedAt(),
+                imagePaths
         );
     }
 }

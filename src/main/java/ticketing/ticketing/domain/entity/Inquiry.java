@@ -1,19 +1,19 @@
 package ticketing.ticketing.domain.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import ticketing.ticketing.domain.enums.InquiryStatus;
-import ticketing.ticketing.domain.enums.InquiryType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ticketing.ticketing.domain.enums.InquiryStatus;
+import ticketing.ticketing.domain.enums.InquiryType;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -50,6 +50,10 @@ public class Inquiry {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
+    // 신규 추가: InquiryFile 연관관계 (1:N)
+    @OneToMany(mappedBy = "inquiry", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InquiryFile> inquiryFiles = new ArrayList<>();
+
     @PrePersist
     @PreUpdate
     protected void onUpdateTimestamp() {
@@ -59,10 +63,12 @@ public class Inquiry {
             updatedAt = LocalDateTime.now();
         }
     }
+
     @PreRemove
     private void deleteLogical() {
         this.deletedAt = LocalDateTime.now();
     }
+
     public Inquiry(User user, String title, String content, InquiryType type, InquiryStatus status, LocalDateTime createdAt) {
         this.user = user;
         this.title = title;
@@ -76,5 +82,15 @@ public class Inquiry {
         this.answer = answer;
         this.status = InquiryStatus.COMPLETED;
         this.repliedAt = repliedAt;
+    }
+
+    public void addInquiryFile(InquiryFile inquiryFile) {
+        inquiryFiles.add(inquiryFile);
+        inquiryFile.setInquiry(this);
+    }
+
+    public void removeInquiryFile(InquiryFile inquiryFile) {
+        inquiryFiles.remove(inquiryFile);
+        inquiryFile.setInquiry(null);
     }
 }
