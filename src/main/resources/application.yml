@@ -82,7 +82,9 @@ springdoc:
 
 # ✅ 파일 저장 경로
 upload:
-  path: ./uploads/inquiries
+  path:
+    inquiries: ./uploads/inquiries
+    notice: ./uploads/notice
 
 logging:
   level:

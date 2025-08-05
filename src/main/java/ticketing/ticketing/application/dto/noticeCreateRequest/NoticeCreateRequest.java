@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ticketing.ticketing.domain.enums.NoticeVisibility;
+
 import java.util.List;
 
 @Getter
@@ -15,7 +16,9 @@ import java.util.List;
 public class NoticeCreateRequest {
     private String title;
     private String content;
+
     @Schema(description = "노출 상태", allowableValues = {"VISIBLE", "HIDDEN"})
     private NoticeVisibility visibility;
+
     private List<String> imagePaths;
 }

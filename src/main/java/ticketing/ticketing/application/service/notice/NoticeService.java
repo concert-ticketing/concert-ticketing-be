@@ -1,6 +1,7 @@
 package ticketing.ticketing.application.service.notice;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ticketing.ticketing.domain.entity.Admin;
@@ -21,6 +22,10 @@ public class NoticeService {
     private final NoticeRepository noticeRepository;
     private final NoticeImageRepository noticeImageRepository;
 
+    // 프로퍼티에서 notice 업로드 경로 주입
+    @Value("${upload.path.notice}")
+    private String uploadPath;
+
     @Transactional
     public Notice createNotice(String title, String content, Admin admin, NoticeVisibility visibility, List<String> imagePaths) {
         Notice notice = Notice.create(title, content, admin, visibility);
@@ -28,6 +33,7 @@ public class NoticeService {
 
         if (imagePaths != null && !imagePaths.isEmpty()) {
             for (String path : imagePaths) {
+                // 이미지 경로를 저장할 때 uploadPath를 활용하는 방식으로 필요시 변환 가능
                 NoticeImage image = NoticeImage.of(savedNotice, path);
                 noticeImageRepository.save(image);
             }
@@ -53,7 +59,7 @@ public class NoticeService {
         return noticeRepository.findById(id).map(notice -> {
             notice.update(title, content, visibility);
 
-            // 기존 이미지 삭제
+            // 기존 이미지 모두 삭제
             noticeImageRepository.deleteAllByNotice(notice);
 
             // 새 이미지 저장
@@ -72,6 +78,7 @@ public class NoticeService {
     public boolean deleteNotice(Long id) {
         Optional<Notice> noticeOpt = noticeRepository.findById(id);
         if (noticeOpt.isPresent()) {
+            // 이미지 삭제 후 공지사항 삭제
             noticeImageRepository.deleteAllByNotice(noticeOpt.get());
             noticeRepository.deleteById(id);
             return true;
