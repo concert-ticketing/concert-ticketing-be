@@ -28,22 +28,11 @@ public class KakaoOauthService implements OAuthProviderService{
         UserOAuthTokenReadResponse userInfo = getUserInfoFromKakaoService.getUserInfoFromKakao(kakaoAccessToken);
 
         Optional<User> existingUser = userRepository.findByUserId(userInfo.getUserId());
-
-        boolean isFirst = existingUser.isEmpty();
+        boolean isFirst = existingUser.map(user -> user.getUpdatedAt() == null).orElse(true);
 
         User user = existingUser.orElseGet(() -> userRepository.save(User.create(userInfo.getUserId())));
-
         String token = jwtUtil.generateToken(user.getId(), "USER");
 
         return new OAuthLoginResponse(token, isFirst);
     }
-
-/*    public String createOAuth(UserOAuthCreateRequest request) {
-        String code = request.getCode();
-        String kakaoAccessToken = getAccessTokenFromKakaoService.getAccessTokenFromKakao(code);
-        UserOAuthTokenReadResponse userInfo = getUserInfoFromKakaoService.getUserInfoFromKakao(kakaoAccessToken);
-        User user = userRepository.findByUserId(userInfo.getUserId())
-                .orElseGet(() -> userRepository.save(User.create(userInfo.getUserId())));
-        return jwtUtil.generateToken(user.getId(), "USER");
-    }*/
 }
