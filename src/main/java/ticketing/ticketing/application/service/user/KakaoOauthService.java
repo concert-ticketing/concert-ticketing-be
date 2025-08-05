@@ -37,13 +37,4 @@ public class KakaoOauthService implements OAuthProviderService{
 
         return new OAuthLoginResponse(token, isFirst);
     }
-
-/*    public String createOAuth(UserOAuthCreateRequest request) {
-        String code = request.getCode();
-        String kakaoAccessToken = getAccessTokenFromKakaoService.getAccessTokenFromKakao(code);
-        UserOAuthTokenReadResponse userInfo = getUserInfoFromKakaoService.getUserInfoFromKakao(kakaoAccessToken);
-        User user = userRepository.findByUserId(userInfo.getUserId())
-                .orElseGet(() -> userRepository.save(User.create(userInfo.getUserId())));
-        return jwtUtil.generateToken(user.getId(), "USER");
-    }*/
 }

@@ -41,7 +41,8 @@ public class UserService {
     }
 
     public OAuthLoginResponse createOAuthUser(UserOAuthCreateRequest request) {
-        String provider = request.getState().toLowerCase();
+        String rawState = request.getState();
+        String provider = rawState.split("_")[0].toLowerCase();
         OAuthProviderService service = oauthProviderServiceMap.get(provider.toLowerCase());
         if (service == null) {
             throw new IllegalArgumentException("지원하지 않는 OAuth 제공자: " + provider);
