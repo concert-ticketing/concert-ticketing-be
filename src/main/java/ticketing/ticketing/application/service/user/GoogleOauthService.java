@@ -28,11 +28,9 @@ public class GoogleOauthService implements  OAuthProviderService{
         UserOAuthTokenReadResponse userInfo = getUserInfoFromGoogleService.getUserInfoFromGoogle(googleAccessToken);
 
         Optional<User> existingUser = userRepository.findByUserId(userInfo.getUserId());
-
-        boolean isFirst = existingUser.isEmpty();
+        boolean isFirst = existingUser.map(user -> user.getUpdatedAt() == null).orElse(true);
 
         User user = existingUser.orElseGet(() -> userRepository.save(User.create(userInfo.getUserId())));
-
         String token = jwtUtil.generateToken(user.getId(), "USER");
 
         return new OAuthLoginResponse(token, isFirst);
