@@ -39,7 +39,7 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/oauth/session",
                                 "/api/concert/**",
-                                "/api/admin/**",
+                                "/api/admin",
                                 "/login/**"
                         ).permitAll()
                         .anyRequest().authenticated()
