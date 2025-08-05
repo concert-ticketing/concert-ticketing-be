@@ -68,6 +68,8 @@ public class Admin {
                 .company(request.getCompany())
                 .companyNumber(request.getCompanyNumber())
                 .companyLocation(request.getCompanyLocation())
+                .phone(request.getPhone())
+                .email(request.getEmail())
                 .state(AdminState.INACTIVE)
                 .role(AdminRole.CONCERT_ADMIN)
                 .build();
