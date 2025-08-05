@@ -27,7 +27,7 @@ public class AdminService {
     public String createAdminUser(AdminCreateRequest request) {
         Admin admin = adminRepository.findByAdminId(request.getAdminId())
                 .orElseGet(() -> adminRepository.save(Admin.concertCreate(request)));
-        return jwtUtil.generateToken(admin.getId(), "Admin");
+        return jwtUtil.generateToken(admin.getId(), admin.getRole().name());
     }
 
     public Page<AdminInfoReadResponse> getAllConcertAdmins(Pageable pageable) {
@@ -59,6 +59,9 @@ public class AdminService {
         String token = jwtUtil.generateToken(admin.getId(), admin.getRole().name());
         return new AdminLoginTokenResponse(token,admin.getRole().name());
     }
+
+
+
 }
 
 
