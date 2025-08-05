@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Notice;
 import ticketing.ticketing.domain.entity.NoticeImage;
+import ticketing.ticketing.domain.enums.NoticeVisibility;
 import ticketing.ticketing.infrastructure.repository.notice.NoticeImageRepository;
 import ticketing.ticketing.infrastructure.repository.notice.NoticeRepository;
 
@@ -21,8 +22,8 @@ public class NoticeService {
     private final NoticeImageRepository noticeImageRepository;
 
     @Transactional
-    public Notice createNotice(String title, String content, Admin admin, List<String> imagePaths) {
-        Notice notice = Notice.create(title, content, admin);
+    public Notice createNotice(String title, String content, Admin admin, NoticeVisibility visibility, List<String> imagePaths) {
+        Notice notice = Notice.create(title, content, admin, visibility);
         Notice savedNotice = noticeRepository.save(notice);
 
         if (imagePaths != null && !imagePaths.isEmpty()) {
@@ -48,9 +49,9 @@ public class NoticeService {
     }
 
     @Transactional
-    public Optional<Notice> updateNotice(Long id, String title, String content, List<String> imagePaths) {
+    public Optional<Notice> updateNotice(Long id, String title, String content, NoticeVisibility visibility, List<String> imagePaths) {
         return noticeRepository.findById(id).map(notice -> {
-            notice.update(title, content);
+            notice.update(title, content, visibility);
 
             // 기존 이미지 삭제
             noticeImageRepository.deleteAllByNotice(notice);

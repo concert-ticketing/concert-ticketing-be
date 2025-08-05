@@ -6,6 +6,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Notice;
+import ticketing.ticketing.application.dto.noticeUpdateRequest.NoticeUpdateRequest;
+import ticketing.ticketing.application.dto.noticeCreateRequest.NoticeCreateRequest;
 import ticketing.ticketing.application.service.notice.NoticeService;
 
 import java.util.List;
@@ -24,10 +26,11 @@ public class NoticeController {
             @AuthenticationPrincipal Admin admin
     ) {
         Notice created = noticeService.createNotice(
-                request.title(),
-                request.content(),
+                request.getTitle(),
+                request.getContent(),
                 admin,
-                request.imagePaths()
+                request.getVisibility(),
+                request.getImagePaths()
         );
         return ResponseEntity.ok(created);
     }
@@ -52,9 +55,10 @@ public class NoticeController {
     ) {
         return noticeService.updateNotice(
                         id,
-                        request.title(),
-                        request.content(),
-                        request.imagePaths()
+                        request.getTitle(),
+                        request.getContent(),
+                        request.getVisibility(),
+                        request.getImagePaths()
                 ).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -66,8 +70,4 @@ public class NoticeController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
-
-    public record NoticeCreateRequest(String title, String content, List<String> imagePaths) {}
-
-    public record NoticeUpdateRequest(String title, String content, List<String> imagePaths) {}
 }
