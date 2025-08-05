@@ -1,20 +1,13 @@
 package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.application.dto.adminDto.AdminCreateRequest;
 import ticketing.ticketing.domain.enums.AdminRole;
 import ticketing.ticketing.domain.enums.AdminState;
 
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import ticketing.ticketing.domain.enums.UserState;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

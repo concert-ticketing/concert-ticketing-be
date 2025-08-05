@@ -14,4 +14,6 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
     Optional<Admin> findByAdminId(String adminId);
 
     Page<Admin> findByRole(AdminRole CONCERT_ADMIN, Pageable pageable);
+
+
 }

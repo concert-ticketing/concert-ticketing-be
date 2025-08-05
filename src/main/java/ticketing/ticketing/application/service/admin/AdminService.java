@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.adminDto.AdminCreateRequest;
 import ticketing.ticketing.application.dto.adminDto.AdminInfoReadResponse;
+import ticketing.ticketing.application.dto.adminDto.AdminLoginReadResponse;
+import ticketing.ticketing.application.dto.adminDto.AdminLoginTokenResponse;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.enums.AdminRole;
 import ticketing.ticketing.domain.enums.AdminState;
@@ -41,6 +43,21 @@ public class AdminService {
                 .companyLocation(admin.getCompanyLocation())
                 .state(admin.getState())
                 .build());
+    }
+
+    public AdminLoginTokenResponse AdminLogin(AdminLoginReadResponse request) {
+        Admin admin = adminRepository.findByAdminId(request.getAdminId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자 계정입니다."));
+
+        if (!admin.getPassword().equals(request.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        if(admin.getState().equals(AdminState.INACTIVE)) {
+            throw new IllegalArgumentException("승인되지 않은 계정입니다.");
+        }
+
+        String token = jwtUtil.generateToken(admin.getId(), "ADMIN");
+        return new AdminLoginTokenResponse(token,admin.getRole().name());
     }
 }
 
