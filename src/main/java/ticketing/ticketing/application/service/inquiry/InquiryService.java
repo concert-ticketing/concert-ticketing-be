@@ -3,19 +3,15 @@ package ticketing.ticketing.application.service.inquiry;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ticketing.ticketing.application.dto.inquiryRequestDto.InquiryRequestDto;
 import ticketing.ticketing.application.dto.inquiryResponseDto.InquiryResponseDto;
-import ticketing.ticketing.infrastructure.repository.inquiryFile.InquiryFileRepository;
-import ticketing.ticketing.infrastructure.repository.inquiry.InquiryRepository;
-import ticketing.ticketing.infrastructure.repository.userInquiry.UserInquiryRepository;
 import ticketing.ticketing.domain.entity.Inquiry;
 import ticketing.ticketing.domain.entity.InquiryFile;
 import ticketing.ticketing.domain.entity.User;
@@ -23,7 +19,10 @@ import ticketing.ticketing.domain.enums.InquiryStatus;
 import ticketing.ticketing.domain.enums.InquiryType;
 import ticketing.ticketing.exception.InquiryNotFoundException;
 import ticketing.ticketing.exception.UserNotFoundException;
+import ticketing.ticketing.infrastructure.repository.inquiry.InquiryRepository;
+import ticketing.ticketing.infrastructure.repository.inquiryFile.InquiryFileRepository;
 import ticketing.ticketing.infrastructure.repository.user.UserRepository;
+import ticketing.ticketing.infrastructure.repository.userInquiry.UserInquiryRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,7 +43,8 @@ public class InquiryService {
     private final UserInquiryRepository userInquiryRepository;
     private final UserRepository userRepository;
 
-    private final String uploadPath = "uploads";
+    @Value("${upload.path}")
+    private String uploadPath;
 
     public Page<Inquiry> getAllInquiry(Pageable pageable) {
         InquiryStatus state = InquiryStatus.PENDING;
@@ -65,7 +65,7 @@ public class InquiryService {
     }
 
     public ResponseEntity<Page<InquiryResponseDto>> getAllInquiryByAdmin(int size, int page) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
         Page<Inquiry> inquiries = inquiryRepository.findAll(pageable);
         Page<InquiryResponseDto> dtoPage = inquiries.map(InquiryResponseDto::fromEntity);
         return ResponseEntity.ok(dtoPage);
@@ -126,14 +126,20 @@ public class InquiryService {
         }
 
         String originalFileName = file.getOriginalFilename();
-        if (originalFileName == null || (!originalFileName.endsWith(".jpg") && !originalFileName.endsWith(".png"))) {
+        if (originalFileName == null
+                || !(originalFileName.toLowerCase().endsWith(".jpg") || originalFileName.toLowerCase().endsWith(".png"))) {
             throw new IllegalArgumentException("jpg 또는 png 파일만 업로드 가능합니다.");
         }
     }
 
     private String saveFile(MultipartFile file) {
         String uuid = UUID.randomUUID().toString();
-        String fileName = uuid + "_" + file.getOriginalFilename();
+        String ext = "";
+        String originalFileName = file.getOriginalFilename();
+        if (originalFileName != null && originalFileName.contains(".")) {
+            ext = originalFileName.substring(originalFileName.lastIndexOf("."));
+        }
+        String fileName = uuid + ext;
         Path target = Paths.get(uploadPath).resolve(fileName);
 
         try {

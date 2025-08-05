@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.application.dto.inquiryAnswerRequestDto.InquiryAnswerRequestDto;
 import ticketing.ticketing.application.dto.inquiryResponseDto.InquiryResponseDto;
-import ticketing.ticketing.application.dto.inquiryRequestDto.InquiryRequestDto;
 import ticketing.ticketing.application.service.inquiry.InquiryService;
 import ticketing.ticketing.domain.entity.Inquiry;
 
