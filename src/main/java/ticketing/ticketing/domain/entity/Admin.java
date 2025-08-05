@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import ticketing.ticketing.application.dto.adminDto.AdminCreateRequest;
+import ticketing.ticketing.application.dto.adminDto.AdminStateUpdateRequest;
 import ticketing.ticketing.domain.enums.AdminRole;
 import ticketing.ticketing.domain.enums.AdminState;
 
@@ -66,5 +67,9 @@ public class Admin {
                 .state(AdminState.INACTIVE)
                 .role(AdminRole.CONCERT_ADMIN)
                 .build();
+    }
+
+    public void updateState(AdminState newState) {
+        this.state = newState;
     }
 }
