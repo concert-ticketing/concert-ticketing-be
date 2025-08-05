@@ -6,6 +6,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,6 +36,10 @@ public class Notice {
     private LocalDateTime updatedAt;
 
     private LocalDateTime deletedAt;
+
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<NoticeImage> images = new ArrayList<>();
 
     public static Notice create(String title, String content, Admin admin) {
         Notice notice = new Notice();

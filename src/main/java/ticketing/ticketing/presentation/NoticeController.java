@@ -23,7 +23,12 @@ public class NoticeController {
             @RequestBody NoticeCreateRequest request,
             @AuthenticationPrincipal Admin admin
     ) {
-        Notice created = noticeService.createNotice(request.title(), request.content(), admin);
+        Notice created = noticeService.createNotice(
+                request.title(),
+                request.content(),
+                admin,
+                request.imagePaths()
+        );
         return ResponseEntity.ok(created);
     }
 
@@ -45,8 +50,12 @@ public class NoticeController {
             @PathVariable Long id,
             @RequestBody NoticeUpdateRequest request
     ) {
-        return noticeService.updateNotice(id, request.title(), request.content())
-                .map(ResponseEntity::ok)
+        return noticeService.updateNotice(
+                        id,
+                        request.title(),
+                        request.content(),
+                        request.imagePaths()
+                ).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -58,7 +67,7 @@ public class NoticeController {
                 : ResponseEntity.notFound().build();
     }
 
-    public record NoticeCreateRequest(String title, String content) {}
+    public record NoticeCreateRequest(String title, String content, List<String> imagePaths) {}
 
-    public record NoticeUpdateRequest(String title, String content) {}
+    public record NoticeUpdateRequest(String title, String content, List<String> imagePaths) {}
 }
