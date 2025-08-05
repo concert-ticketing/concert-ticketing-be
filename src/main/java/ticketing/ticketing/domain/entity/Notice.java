@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import ticketing.ticketing.domain.enums.NoticeVisibility;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -35,7 +38,11 @@ public class Notice {
 
     private LocalDateTime deletedAt;
 
-    public static Notice create(String title, String content, Admin admin) {
+    @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<NoticeImage> images = new ArrayList<>();
+
+    public static Notice create(String title, String content, Admin admin, NoticeVisibility visibility) {
         Notice notice = new Notice();
         notice.title = title;
         notice.content = content;
@@ -43,7 +50,7 @@ public class Notice {
         return notice;
     }
 
-    public void update(String title, String content) {
+    public void update(String title, String content, NoticeVisibility visibility) {
         this.title = title;
         this.content = content;
     }

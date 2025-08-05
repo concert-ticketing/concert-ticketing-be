@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Notice;
+import ticketing.ticketing.domain.entity.NoticeImage;
+import ticketing.ticketing.domain.enums.NoticeVisibility;
+import ticketing.ticketing.infrastructure.repository.notice.NoticeImageRepository;
 import ticketing.ticketing.infrastructure.repository.notice.NoticeRepository;
 
 import java.util.List;
@@ -16,11 +19,21 @@ import java.util.Optional;
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
+    private final NoticeImageRepository noticeImageRepository;
 
     @Transactional
-    public Notice createNotice(String title, String content, Admin admin) {
-        Notice notice = Notice.create(title, content, admin); // builder 대신 create 메서드 사용
-        return noticeRepository.save(notice);
+    public Notice createNotice(String title, String content, Admin admin, NoticeVisibility visibility, List<String> imagePaths) {
+        Notice notice = Notice.create(title, content, admin, visibility);
+        Notice savedNotice = noticeRepository.save(notice);
+
+        if (imagePaths != null && !imagePaths.isEmpty()) {
+            for (String path : imagePaths) {
+                NoticeImage image = NoticeImage.of(savedNotice, path);
+                noticeImageRepository.save(image);
+            }
+        }
+
+        return savedNotice;
     }
 
     public List<Notice> getAllNotices() {
@@ -31,17 +44,35 @@ public class NoticeService {
         return noticeRepository.findById(id);
     }
 
+    public List<NoticeImage> getImagesByNotice(Notice notice) {
+        return noticeImageRepository.findAllByNotice(notice);
+    }
+
     @Transactional
-    public Optional<Notice> updateNotice(Long id, String title, String content) {
+    public Optional<Notice> updateNotice(Long id, String title, String content, NoticeVisibility visibility, List<String> imagePaths) {
         return noticeRepository.findById(id).map(notice -> {
-            notice.update(title, content);
+            notice.update(title, content, visibility);
+
+            // 기존 이미지 삭제
+            noticeImageRepository.deleteAllByNotice(notice);
+
+            // 새 이미지 저장
+            if (imagePaths != null && !imagePaths.isEmpty()) {
+                for (String path : imagePaths) {
+                    NoticeImage image = NoticeImage.of(notice, path);
+                    noticeImageRepository.save(image);
+                }
+            }
+
             return notice;
         });
     }
 
     @Transactional
     public boolean deleteNotice(Long id) {
-        if (noticeRepository.existsById(id)) {
+        Optional<Notice> noticeOpt = noticeRepository.findById(id);
+        if (noticeOpt.isPresent()) {
+            noticeImageRepository.deleteAllByNotice(noticeOpt.get());
             noticeRepository.deleteById(id);
             return true;
         }
