@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.application.dto.adminDto.AdminCreateRequest;
+import ticketing.ticketing.application.dto.adminDto.AdminInfoReadResponse;
 import ticketing.ticketing.application.service.admin.AdminService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -20,5 +23,9 @@ public class AdminController {
     }
 
     @GetMapping("/concert")
-    public ResponseEntity<> getUser() {}
+    public ResponseEntity<List<AdminInfoReadResponse>> getConcertAdminInfo() {
+         List<AdminInfoReadResponse> getConcertAdminInfo = adminService.;
+         return ResponseEntity.ok(getConcertAdminInfo);
+    }
+
 }
