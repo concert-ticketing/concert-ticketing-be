@@ -36,10 +36,12 @@ public class SecurityConfig {
                                 "/oauth2/**",
                                 "/login/**",
                                 "/api/users/**",
-                                "/login",
                                 "/api/auth/login",
                                 "/oauth/session",
-                                "/api/concert/**"
+                                "/api/concert/**",
+                                "/api/admin",
+                                "/api/admin/login",
+                                "/login/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -52,7 +54,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);

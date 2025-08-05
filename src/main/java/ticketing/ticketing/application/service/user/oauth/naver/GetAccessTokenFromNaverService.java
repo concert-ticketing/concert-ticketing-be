@@ -1,4 +1,4 @@
-package ticketing.ticketing.application.service.user.oauth.kakao;
+package ticketing.ticketing.application.service.user.oauth.naver;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,27 +13,26 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
-
 @Service
 @RequiredArgsConstructor
-public class GetAccessTokenFromKakaoService {
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    private String kakaoCliendId;
+public class GetAccessTokenFromNaverService {
+    @Value("${spring.security.oauth2.client.registration.naver.client-id}")
+    private String naverClientId;
 
+    @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
+    private String naverClientSecret;
 
-
-    public String getAccessTokenFromKakao(String code) {
-
-
-        String tokenUrl = "https://kauth.kakao.com/oauth/token";
+    public String getAccessTokenFromNaver(String code, String state) {
+        String tokenUrl = "https://nid.naver.com/oauth2.0/token";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", kakaoCliendId);
-        body.add("redirect_uri", "http://localhost:3000/oauth/success"); // 클라이언트에서 보낸 redirect_uri
+        body.add("client_id", naverClientId);
+        body.add("client_secret", naverClientSecret);
         body.add("code", code);
+        body.add("state", state);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
@@ -44,7 +43,7 @@ public class GetAccessTokenFromKakaoService {
             Map responseBody = response.getBody();
             return (String) responseBody.get("access_token");
         } else {
-            throw new RuntimeException("카카오 access token 요청 실패");
+            throw new RuntimeException("네이버 access token 요청 실패");
         }
     }
 }

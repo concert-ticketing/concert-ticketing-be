@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ticketing.ticketing.domain.enums.AdminState;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class adminPhoneReadResponse {
-    private String phone;
+public class AdminStateUpdateRequest {
+
+    private String adminId;
+    private AdminState state;
 }
