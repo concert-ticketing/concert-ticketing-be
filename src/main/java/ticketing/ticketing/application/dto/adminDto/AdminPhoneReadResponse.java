@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class adminPhoneReadResponse {
+public class AdminPhoneReadResponse {
     private String phone;
 }

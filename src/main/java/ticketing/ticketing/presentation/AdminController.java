@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.application.dto.adminDto.AdminCreateRequest;
 import ticketing.ticketing.application.dto.adminDto.AdminInfoReadResponse;
+import ticketing.ticketing.application.dto.adminDto.AdminLoginReadResponse;
+import ticketing.ticketing.application.dto.adminDto.AdminLoginTokenResponse;
 import ticketing.ticketing.application.service.admin.AdminService;
 
 import java.util.List;
@@ -32,5 +34,11 @@ public class AdminController {
          Page<AdminInfoReadResponse> getConcertAdminInfo = adminService.getAllConcertAdmins(pageable);
          return ResponseEntity.ok(getConcertAdminInfo);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<AdminLoginTokenResponse> login(@RequestBody AdminLoginReadResponse request) {
+        return ResponseEntity.ok(adminService.AdminLogin(request));
+    }
+
 
 }
