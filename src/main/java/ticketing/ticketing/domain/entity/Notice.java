@@ -38,6 +38,9 @@ public class Notice {
 
     private LocalDateTime deletedAt;
 
+    @Enumerated(EnumType.STRING)
+    private NoticeVisibility visibility;
+
     @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<NoticeImage> images = new ArrayList<>();
@@ -47,11 +50,25 @@ public class Notice {
         notice.title = title;
         notice.content = content;
         notice.admin = admin;
+        notice.visibility = visibility;
         return notice;
     }
 
     public void update(String title, String content, NoticeVisibility visibility) {
         this.title = title;
         this.content = content;
+        this.visibility = visibility;
+    }
+
+    public void addImage(NoticeImage image) {
+        images.add(image);
+        image.setNotice(this);
+    }
+
+    public void clearImages() {
+        for (NoticeImage image : images) {
+            image.setNotice(null);
+        }
+        images.clear();
     }
 }

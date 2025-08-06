@@ -1,5 +1,6 @@
 package ticketing.ticketing.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,12 +19,15 @@ public class NoticeImage {
     @Lob
     private String image;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id", nullable = false)
+    @JsonIgnore
     private Notice notice;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
@@ -40,18 +44,22 @@ public class NoticeImage {
                 .build();
     }
 
+    public String getImagePath() {
+        return this.image;
+    }
+
     @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     @PreUpdate
-    protected void onUpdateTimestamp() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        } else {
-            updatedAt = LocalDateTime.now();
-        }
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     @PreRemove
-    private void deleteLogical() {
+    private void onDelete() {
         this.deletedAt = LocalDateTime.now();
     }
 }
