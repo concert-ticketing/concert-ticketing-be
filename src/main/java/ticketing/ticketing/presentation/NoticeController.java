@@ -7,11 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ticketing.ticketing.application.dto.noticeCreateRequest.NoticeCreateRequest;
+import ticketing.ticketing.application.dto.noticeUpdateRequest.NoticeUpdateRequest;
+import ticketing.ticketing.application.dto.noticeResponseDto.NoticeResponse;
+import ticketing.ticketing.application.service.notice.NoticeService;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Notice;
-import ticketing.ticketing.application.dto.noticeUpdateRequest.NoticeUpdateRequest;
-import ticketing.ticketing.application.dto.noticeCreateRequest.NoticeCreateRequest;
-import ticketing.ticketing.application.service.notice.NoticeService;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -29,50 +29,37 @@ public class NoticeController {
 
     private final NoticeService noticeService;
 
-    // application.yml upload.path.notice 와 연동
     @Value("${upload.path.notice}")
     private String uploadDir;
 
     @PostMapping("/create")
-    public ResponseEntity<Notice> createNotice(
+    public ResponseEntity<NoticeResponse> createNotice(
             @RequestBody NoticeCreateRequest request,
             @AuthenticationPrincipal Admin admin
     ) {
-        Notice created = noticeService.createNotice(
-                request.getTitle(),
-                request.getContent(),
-                admin,
-                request.getVisibility(),
-                request.getImagePaths()
-        );
+        NoticeResponse created = noticeService.createNotice(request, admin);
         return ResponseEntity.ok(created);
     }
 
     @GetMapping
     public ResponseEntity<List<Notice>> getAllNotices() {
-        List<Notice> notices = noticeService.getAllNotices();
-        return ResponseEntity.ok(notices);
+        return ResponseEntity.ok(noticeService.getAllNotices());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Notice> getNotice(@PathVariable Long id) {
-        Optional<Notice> notice = noticeService.getNotice(id);
-        return notice.map(ResponseEntity::ok)
+        return noticeService.getNotice(id)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Notice> updateNotice(
+    public ResponseEntity<NoticeResponse> updateNotice(
             @PathVariable Long id,
             @RequestBody NoticeUpdateRequest request
     ) {
-        return noticeService.updateNotice(
-                        id,
-                        request.getTitle(),
-                        request.getContent(),
-                        request.getVisibility(),
-                        request.getImagePaths()
-                ).map(ResponseEntity::ok)
+        return noticeService.updateNotice(id, request)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -82,7 +69,6 @@ public class NoticeController {
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
-    // 이미지 업로드 API
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
@@ -95,7 +81,6 @@ public class NoticeController {
             Path filepath = Paths.get(uploadDir, filename);
             Files.copy(file.getInputStream(), filepath);
 
-            // 실제 URL 경로와 매핑되는 부분 (WebConfig에서 설정한 경로와 일치하도록)
             String imagePath = "/upload/notice/" + filename;
             return ResponseEntity.ok(imagePath);
 
