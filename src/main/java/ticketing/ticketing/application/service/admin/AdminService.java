@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.adminDto.*;
 import ticketing.ticketing.domain.entity.Admin;
@@ -22,17 +23,18 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final JwtUtil jwtUtil;
     private final UserContext userContext;
+    private final PasswordEncoder passwordEncoder;
 
     public String createAdminUser(AdminCreateRequest request) {
-        Optional<Admin> existingAdmin = adminRepository.findByAdminId(request.getAdminId());
-
-        if (existingAdmin.isPresent()) {
-            // ✅ 이미 존재하는 adminId일 경우 예외 처리
+        if (adminRepository.findByAdminId(request.getAdminId()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 관리자 ID입니다.");
         }
 
-        // ✅ 존재하지 않으면 저장
-        Admin newAdmin = adminRepository.save(Admin.concertCreate(request));
+        // ✅ 비밀번호 해싱
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        // ✅ Admin 객체 생성 (해싱된 비밀번호 사용)
+        Admin newAdmin = adminRepository.save(Admin.concertCreateWithEncodedPassword(request, encodedPassword));
 
         return jwtUtil.generateToken(newAdmin.getId(), newAdmin.getRole().name());
     }
