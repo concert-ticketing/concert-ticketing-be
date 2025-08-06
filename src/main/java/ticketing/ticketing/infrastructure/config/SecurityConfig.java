@@ -43,6 +43,7 @@ public class SecurityConfig {
                                 "/api/admin/login",
                                 "/api/banners",
                                 "/api/notices",
+                                "/api/faqs",
                                 "/login/**"
                         ).permitAll()
                         .anyRequest().authenticated()
