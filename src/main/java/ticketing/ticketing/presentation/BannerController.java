@@ -3,6 +3,7 @@ package ticketing.ticketing.presentation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ticketing.ticketing.application.dto.bannerResponseDto.BannerResponseDto;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Banner;
 import ticketing.ticketing.domain.enums.BannerStatus;
@@ -11,6 +12,7 @@ import ticketing.ticketing.infrastructure.repository.admin.AdminRepository;
 import ticketing.ticketing.application.service.banner.BannerService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class BannerController {
     private final UserContext userContext;
 
     @PostMapping
-    public ResponseEntity<Banner> createBanner(@RequestBody BannerRequest request) {
+    public ResponseEntity<BannerResponseDto> createBanner(@RequestBody BannerRequest request) {
         Long adminId = userContext.getCurrentUserId();
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("인증된 관리자를 찾을 수 없습니다."));
@@ -30,26 +32,32 @@ public class BannerController {
         Banner banner = bannerService.createBanner(
                 request.title(), request.description(), request.imageUrl(), request.status(), admin
         );
-        return ResponseEntity.ok(banner);
+        return ResponseEntity.ok(BannerResponseDto.from(banner));
     }
 
     @GetMapping
-    public ResponseEntity<List<Banner>> getAllBanners() {
-        return ResponseEntity.ok(bannerService.getAllBanners());
+    public ResponseEntity<List<BannerResponseDto>> getAllBanners() {
+        List<BannerResponseDto> response = bannerService.getAllBanners()
+                .stream()
+                .map(BannerResponseDto::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Banner> getBanner(@PathVariable Long id) {
+    public ResponseEntity<BannerResponseDto> getBanner(@PathVariable Long id) {
         return bannerService.getBanner(id)
+                .map(BannerResponseDto::from)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Banner> updateBanner(@PathVariable Long id, @RequestBody BannerRequest request) {
+    public ResponseEntity<BannerResponseDto> updateBanner(@PathVariable Long id, @RequestBody BannerRequest request) {
         return bannerService.updateBanner(
                         id, request.title(), request.description(), request.imageUrl(), request.status()
                 )
+                .map(BannerResponseDto::from)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
