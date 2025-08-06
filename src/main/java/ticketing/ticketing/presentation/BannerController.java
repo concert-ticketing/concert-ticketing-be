@@ -23,7 +23,7 @@ public class BannerController {
     private final AdminRepository adminRepository;
     private final UserContext userContext;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<BannerResponseDto> createBanner(@RequestBody BannerRequest request) {
         Long adminId = userContext.getCurrentUserId();
         Admin admin = adminRepository.findById(adminId)
