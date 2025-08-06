@@ -44,7 +44,7 @@ public class FaqController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<FaqResponseDto> createFaq(@RequestBody FaqCreateRequestDto request) {
         Long adminId = userContext.getCurrentUserId();
         Admin admin = adminRepository.findById(adminId)
