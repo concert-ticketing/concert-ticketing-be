@@ -48,6 +48,7 @@ public class Banner {
         banner.imageUrl = imageUrl;
         banner.status = status;
         banner.admin = admin;
+        banner.createdAt = LocalDateTime.now();
         return banner;
     }
 
