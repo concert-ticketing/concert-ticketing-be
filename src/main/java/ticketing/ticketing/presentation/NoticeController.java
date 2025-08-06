@@ -33,7 +33,7 @@ public class NoticeController {
     @Value("${upload.path.notice}")
     private String uploadDir;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Notice> createNotice(
             @RequestBody NoticeCreateRequest request,
             @AuthenticationPrincipal Admin admin
