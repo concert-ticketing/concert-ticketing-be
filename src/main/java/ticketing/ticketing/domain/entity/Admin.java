@@ -72,4 +72,19 @@ public class Admin {
     public void updateState(AdminState newState) {
         this.state = newState;
     }
+
+    public static Admin concertCreateWithEncodedPassword (AdminCreateRequest request, String encodedPassword){
+        return Admin.builder()
+                .adminId(request.getAdminId())
+                .password(encodedPassword) // 평문 X
+                .company(request.getCompany())
+                .companyNumber(request.getCompanyNumber())
+                .companyLocation(request.getCompanyLocation())
+                .phone(request.getPhone())
+                .email(request.getEmail())
+                .role(AdminRole.CONCERT_ADMIN)
+                .state(AdminState.INACTIVE)
+                .build();
+
+    }
 }
