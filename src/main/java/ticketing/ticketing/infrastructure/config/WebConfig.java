@@ -12,7 +12,10 @@ public class WebConfig implements WebMvcConfigurer {
     private String noticePath;
 
     @Value("${upload.path.inquiries}")
-    private String inquiresPath;
+    private String inquiriesPath;
+
+    @Value("${upload.path.banner}")
+    private String bannerPath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -20,6 +23,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:" + noticePath + "/");
 
         registry.addResourceHandler("/upload/inquiries/**")
-                .addResourceLocations("file:" + inquiresPath + "/");
+                .addResourceLocations("file:" + inquiriesPath + "/");
+
+        registry.addResourceHandler("/upload/banner/**")
+                .addResourceLocations("file:" + bannerPath + "/");
     }
 }

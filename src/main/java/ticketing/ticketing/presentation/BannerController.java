@@ -1,8 +1,10 @@
 package ticketing.ticketing.presentation;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ticketing.ticketing.application.dto.bannerResponseDto.BannerResponseDto;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Banner;
@@ -11,6 +13,7 @@ import ticketing.ticketing.infrastructure.security.UserContext;
 import ticketing.ticketing.infrastructure.repository.admin.AdminRepository;
 import ticketing.ticketing.application.service.banner.BannerService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,14 +26,17 @@ public class BannerController {
     private final AdminRepository adminRepository;
     private final UserContext userContext;
 
-    @PostMapping("/create")
-    public ResponseEntity<BannerResponseDto> createBanner(@RequestBody BannerRequest request) {
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BannerResponseDto> createBanner(
+            @RequestPart("request") BannerRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image
+    ) throws IOException {
         Long adminId = userContext.getCurrentUserId();
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("인증된 관리자를 찾을 수 없습니다."));
 
         Banner banner = bannerService.createBanner(
-                request.title(), request.description(), request.imageUrl(), request.status(), admin
+                request.title(), request.description(), image, request.status(), admin
         );
         return ResponseEntity.ok(BannerResponseDto.from(banner));
     }
@@ -52,10 +58,14 @@ public class BannerController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<BannerResponseDto> updateBanner(@PathVariable Long id, @RequestBody BannerRequest request) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BannerResponseDto> updateBanner(
+            @PathVariable Long id,
+            @RequestPart("request") BannerRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image
+    ) throws IOException {
         return bannerService.updateBanner(
-                        id, request.title(), request.description(), request.imageUrl(), request.status()
+                        id, request.title(), request.description(), image, request.status()
                 )
                 .map(BannerResponseDto::from)
                 .map(ResponseEntity::ok)
@@ -71,7 +81,6 @@ public class BannerController {
     public record BannerRequest(
             String title,
             String description,
-            String imageUrl,
             BannerStatus status
     ) {}
 }
