@@ -1,11 +1,8 @@
 package ticketing.ticketing.domain.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,6 +15,7 @@ import java.util.List;
 @Builder(access = AccessLevel.PROTECTED)
 @Getter
 public class Concert {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,7 +25,7 @@ public class Concert {
     @Lob
     private String description;
 
-    //콘서트 주소지
+    // 콘서트 주소지
     private String location;
 
     @Column(name = "location_x", precision = 10, scale = 3)
@@ -37,21 +35,19 @@ public class Concert {
     private BigDecimal locationY;
 
     private LocalDate startDate;
-
     private LocalDate endDate;
 
     private LocalDateTime reservationStartDate;
     private LocalDateTime reservationEndDate;
+
     private String price;
     private int rating;
 
     private int limitAge;
-    //소요 시간
+
+    // 소요 시간
     private int durationTime;
 
-    /*@ElementCollection(targetClass = ConcertTag.class)
-    @Enumerated(EnumType.STRING)
-    private Set<ConcertTag> concertTag;*/
     private String concertTag;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,6 +60,10 @@ public class Concert {
     @ManyToOne
     @JoinColumn(name = "concert_hall_id")
     private ConcertHall concertHall;
+
+    // ✅ ConcertSeatMap 추가 (양방향 연관관계 설정)
+    @OneToOne(mappedBy = "concert", cascade = CascadeType.ALL)
+    private ConcertSeatMap concertSeatMap;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -79,6 +79,7 @@ public class Concert {
             updatedAt = LocalDateTime.now();
         }
     }
+
     @PreRemove
     private void deleteLogical() {
         this.deletedAt = LocalDateTime.now();
