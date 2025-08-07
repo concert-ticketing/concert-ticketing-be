@@ -58,7 +58,7 @@ public class AdminService {
         Admin admin = adminRepository.findByAdminId(request.getAdminId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자 계정입니다."));
 
-        if (!admin.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         if(admin.getState().equals(AdminState.INACTIVE)) {
