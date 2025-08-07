@@ -70,5 +70,4 @@ public class UserService {
                 .birthday(user.getBirthday())
                 .build());
     }
-
 }
