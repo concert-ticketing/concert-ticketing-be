@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,11 +33,36 @@ public class NoticeController {
     @Value("${upload.path.notice}")
     private String uploadDir;
 
-    @PostMapping("/create")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<NoticeResponse> createNotice(
-            @RequestBody NoticeCreateRequest request,
+            @RequestPart("request") NoticeCreateRequest request,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @AuthenticationPrincipal Admin admin
     ) {
+        List<String> imagePaths = new ArrayList<>();
+
+        if (images != null) {
+            for (MultipartFile file : images) {
+                try {
+                    File uploadDirFile = new File(uploadDir);
+                    if (!uploadDirFile.exists()) {
+                        uploadDirFile.mkdirs();
+                    }
+
+                    String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                    Path filepath = Paths.get(uploadDir, filename);
+                    Files.copy(file.getInputStream(), filepath);
+
+                    String imagePath = "/upload/notice/" + filename;
+                    imagePaths.add(imagePath);
+
+                } catch (IOException e) {
+                    return ResponseEntity.internalServerError().build();
+                }
+            }
+        }
+
+        request.setImagePaths(imagePaths); // 이미지 경로를 DTO에 설정
         NoticeResponse created = noticeService.createNotice(request, admin);
         return ResponseEntity.ok(created);
     }
@@ -67,25 +93,5 @@ public class NoticeController {
     public ResponseEntity<Void> deleteNotice(@PathVariable Long id) {
         boolean deleted = noticeService.deleteNotice(id);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-    }
-
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        try {
-            File uploadDirFile = new File(uploadDir);
-            if (!uploadDirFile.exists()) {
-                uploadDirFile.mkdirs();
-            }
-
-            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path filepath = Paths.get(uploadDir, filename);
-            Files.copy(file.getInputStream(), filepath);
-
-            String imagePath = "/upload/notice/" + filename;
-            return ResponseEntity.ok(imagePath);
-
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body("이미지 업로드 실패: " + e.getMessage());
-        }
     }
 }
