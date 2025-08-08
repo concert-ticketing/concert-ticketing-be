@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder(access = AccessLevel.PROTECTED)
 @Getter
 public class Cast {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,6 +26,11 @@ public class Cast {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private Admin admin;
+
+    // Concert와 다대일 관계 추가
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "concert_id")
+    private Concert concert;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -42,6 +46,7 @@ public class Cast {
             updatedAt = LocalDateTime.now();
         }
     }
+
     @PreRemove
     private void deleteLogical() {
         this.deletedAt = LocalDateTime.now();

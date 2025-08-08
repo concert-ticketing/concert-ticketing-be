@@ -86,6 +86,7 @@ upload:
     inquiries: ./uploads/inquiries
     notice: ./uploads/notice
     banner : ./uploads/banner
+    image : ./uploads/image
 
 logging:
   level:
