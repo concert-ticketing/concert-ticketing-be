@@ -24,6 +24,7 @@ public class InquiryResponseDto {
     private String content;
     private InquiryType type;
     private InquiryStatus status;
+    private String answer;
     private LocalDateTime repliedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -47,6 +48,7 @@ public class InquiryResponseDto {
                 inquiry.getContent(),
                 inquiry.getType(),
                 inquiry.getStatus(),
+                inquiry.getAnswer(),
                 inquiry.getRepliedAt(),
                 inquiry.getCreatedAt(),
                 inquiry.getUpdatedAt(),
