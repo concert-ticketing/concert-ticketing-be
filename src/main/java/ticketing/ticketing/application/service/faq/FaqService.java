@@ -10,6 +10,7 @@ import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Faq;
 import ticketing.ticketing.infrastructure.repository.faqRepository.FaqRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,7 +28,8 @@ public class FaqService {
                 request.getVisibility(),
                 request.getQuestion(),
                 request.getAnswer(),
-                admin
+                admin,
+                LocalDateTime.now()
         );
         return faqRepository.save(faq);
     }

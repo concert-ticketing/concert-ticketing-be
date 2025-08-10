@@ -43,13 +43,14 @@ public class Faq {
 
     private LocalDateTime deletedAt;
 
-    public static Faq create(FaqCategory category, FaqVisibility visibility, String question, String answer, Admin admin) {
+    public static Faq create(FaqCategory category, FaqVisibility visibility, String question, String answer, Admin admin, LocalDateTime createdAt) {
         Faq faq = new Faq();
         faq.category = category;
         faq.visibility = visibility;
         faq.question = question;
         faq.answer = answer;
         faq.admin = admin;
+        faq.createdAt = createdAt;
         return faq;
     }
 
