@@ -24,7 +24,7 @@ public class BannerService {
     private final BannerRepository bannerRepository;
 
     @Value("${upload.path.banner}")
-    private String bannerUploadPath;
+    private String bannerUploadPath; // 예: C:/upload/banner/
 
     @Transactional
     public Banner createBanner(String title, String description, MultipartFile image, BannerStatus status, Admin admin) throws IOException {
@@ -73,21 +73,44 @@ public class BannerService {
         return false;
     }
 
-    // ✅ 내부 이미지 저장 메서드
+    /**
+     * 이미지 파일 저장 + 디렉토리 및 권한 체크
+     */
     private String storeImageFile(MultipartFile file) throws IOException {
         File directory = new File(bannerUploadPath);
+
+        // 1. 저장 경로 생성
         if (!directory.exists()) {
-            directory.mkdirs();
+            if (!directory.mkdirs()) {
+                throw new IOException("업로드 디렉토리를 생성할 수 없습니다: " + bannerUploadPath);
+            }
         }
 
+        // 2. 권한 확인
+        if (!directory.canWrite()) {
+            throw new IOException("업로드 디렉토리에 쓰기 권한이 없습니다: " + bannerUploadPath);
+        }
+
+        // 3. 파일명 생성
         String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !originalFilename.contains(".")) {
+            throw new IOException("유효하지 않은 파일명입니다.");
+        }
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String newFileName = UUID.randomUUID() + extension;
 
+        // 4. 실제 파일 객체 생성
         File savedFile = new File(directory, newFileName);
+
+        // 안전장치: 상위 디렉토리 생성
+        if (!savedFile.getParentFile().exists()) {
+            savedFile.getParentFile().mkdirs();
+        }
+
+        // 5. 파일 저장
         file.transferTo(savedFile);
 
-        // 클라이언트가 접근 가능한 상대 경로 반환
+        // 6. 접근 가능한 URL 경로 반환
         return "/upload/banner/" + newFileName;
     }
 }
