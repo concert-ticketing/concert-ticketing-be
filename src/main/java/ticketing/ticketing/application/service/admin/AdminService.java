@@ -64,7 +64,7 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자 계정입니다."));
 
-        if (admin.getRole() == AdminRole.SITE_ADMIN) {
+        if (admin.getRole() != AdminRole.SITE_ADMIN) {
             throw new IllegalArgumentException("접근 권한이 없습니다. 사이트에 대한 권한을 받아야 합니다.");
         }
         Inquiry inquiry = inquiryRepository.findById(id)
