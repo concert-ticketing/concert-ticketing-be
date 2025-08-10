@@ -13,6 +13,7 @@ import ticketing.ticketing.domain.entity.NoticeImage;
 import ticketing.ticketing.infrastructure.repository.notice.NoticeImageRepository;
 import ticketing.ticketing.infrastructure.repository.notice.NoticeRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,7 @@ public class NoticeService {
         Notice notice = Notice.create(
                 request.getTitle(),
                 request.getContent(),
+                LocalDateTime.now(),
                 admin,
                 request.getVisibility()
         );

@@ -45,11 +45,12 @@ public class Notice {
     @Builder.Default
     private List<NoticeImage> images = new ArrayList<>();
 
-    public static Notice create(String title, String content, Admin admin, NoticeVisibility visibility) {
+    public static Notice create(String title, String content, LocalDateTime createdAt, Admin admin, NoticeVisibility visibility) {
         Notice notice = new Notice();
         notice.title = title;
         notice.content = content;
         notice.admin = admin;
+        notice.createdAt = createdAt;
         notice.visibility = visibility;
         return notice;
     }
