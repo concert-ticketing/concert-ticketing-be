@@ -7,10 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.adminDto.*;
+import ticketing.ticketing.application.dto.inquiryResponseDto.InquiryResponseDto;
 import ticketing.ticketing.domain.entity.Admin;
+import ticketing.ticketing.domain.entity.Inquiry;
 import ticketing.ticketing.domain.enums.AdminRole;
 import ticketing.ticketing.domain.enums.AdminState;
+import ticketing.ticketing.exception.InquiryNotFoundException;
 import ticketing.ticketing.infrastructure.repository.admin.AdminRepository;
+import ticketing.ticketing.infrastructure.repository.inquiry.InquiryRepository;
 import ticketing.ticketing.infrastructure.security.JwtUtil;
 import ticketing.ticketing.infrastructure.security.UserContext;
 
@@ -21,6 +25,7 @@ import java.util.Optional;
 public class AdminService {
 
     private final AdminRepository adminRepository;
+    private final InquiryRepository inquiryRepository;
     private final JwtUtil jwtUtil;
     private final UserContext userContext;
     private final PasswordEncoder passwordEncoder;
@@ -54,6 +59,19 @@ public class AdminService {
                 .build());
     }
 
+    public InquiryResponseDto getAdminInquiryInfo(Long adminId, Long id) {
+
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자 계정입니다."));
+
+        if (admin.getRole() == AdminRole.SITE_ADMIN) {
+            throw new IllegalArgumentException("접근 권한이 없습니다. 사이트에 대한 권한을 받아야 합니다.");
+        }
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(() -> new InquiryNotFoundException("해당 ID의 문의가 존재하지 않습니다."));
+        return InquiryResponseDto.fromEntity(inquiry);
+    }
+
     public AdminLoginTokenResponse AdminLogin(AdminLoginReadResponse request) {
         Admin admin = adminRepository.findByAdminId(request.getAdminId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자 계정입니다."));
@@ -81,10 +99,4 @@ public class AdminService {
         adminRepository.save(admin);
         return admin.getAdminId()+ "의 상태가" + admin.getState() + "로 업데이트 됐습니다.";
     }
-
-
-
 }
-
-
-

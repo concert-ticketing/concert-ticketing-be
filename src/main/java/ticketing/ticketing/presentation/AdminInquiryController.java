@@ -11,8 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.application.dto.inquiryAnswerRequestDto.InquiryAnswerRequestDto;
 import ticketing.ticketing.application.dto.inquiryResponseDto.InquiryResponseDto;
+import ticketing.ticketing.application.service.admin.AdminService;
 import ticketing.ticketing.application.service.inquiry.InquiryService;
 import ticketing.ticketing.domain.entity.Inquiry;
+import ticketing.ticketing.infrastructure.security.UserContext;
 
 import java.util.List;
 
@@ -22,6 +24,8 @@ import java.util.List;
 public class AdminInquiryController {
 
     private final InquiryService inquiryService;
+    private final UserContext userContext;
+    private final AdminService adminService;
 
     @Operation(summary = "전체 문의 조회", description = "관리자가 전체 문의를 페이지네이션으로 조회합니다.")
     @GetMapping
@@ -36,6 +40,23 @@ public class AdminInquiryController {
 
         Page<InquiryResponseDto> dtoPage = new PageImpl<>(dtoList, inquiryPage.getPageable(), inquiryPage.getTotalElements());
         return ResponseEntity.ok(dtoPage);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<InquiryResponseDto> getInquiryById(@PathVariable Long id) {
+
+        Long adminId = userContext.getCurrentUserId();
+
+        if (adminId == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        try {
+            InquiryResponseDto inquiry = adminService.getAdminInquiryInfo(adminId, id);
+            return ResponseEntity.ok(inquiry);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).build();
+        }
     }
 
     @Operation(summary = "문의 완료 처리", description = "문의 상태를 완료(COMPLETED)로 변경합니다.")
