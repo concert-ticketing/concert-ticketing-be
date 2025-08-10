@@ -43,15 +43,15 @@ public class InquiryService {
     private final UserInquiryRepository userInquiryRepository;
     private final UserRepository userRepository;
 
-    // application.yml에 정의된 업로드 기본 경로
     @Value("${upload.path.inquiries}")
     private String uploadPath;
 
+    // 전체 문의 조회 (상태 필터 제거)
     public Page<Inquiry> getAllInquiry(Pageable pageable) {
-        InquiryStatus state = InquiryStatus.PENDING;
-        return inquiryRepository.findAllByStatus(state, pageable);
+        return inquiryRepository.findAll(pageable);
     }
 
+    // 특정 사용자 문의 목록 조회
     public Page<InquiryResponseDto> getInquiriesByUser(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
@@ -59,12 +59,14 @@ public class InquiryService {
                 .map(InquiryResponseDto::fromEntity);
     }
 
+    // 사용자 + 문의 ID로 단건 조회 (권한 체크 포함)
     public InquiryResponseDto getInquiryByIdAndUser(Long inquiryId, Long userId) {
         Inquiry inquiry = inquiryRepository.findByIdAndUserId(inquiryId, userId)
                 .orElseThrow(() -> new InquiryNotFoundException("해당 ID의 문의가 존재하지 않거나 권한이 없습니다."));
         return InquiryResponseDto.fromEntity(inquiry);
     }
 
+    // 관리자용 전체 문의 페이지 조회 (ResponseEntity 래핑)
     public ResponseEntity<Page<InquiryResponseDto>> getAllInquiryByAdmin(int size, int page) {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
         Page<Inquiry> inquiries = inquiryRepository.findAll(pageable);
@@ -72,8 +74,10 @@ public class InquiryService {
         return ResponseEntity.ok(dtoPage);
     }
 
+    // 1:1 문의 등록 및 파일 저장 처리
     @Transactional(rollbackFor = Exception.class)
     public InquiryResponseDto createInquiryWithFiles(Long userId, InquiryRequestDto dto, List<MultipartFile> files) throws IOException {
+
         if (files != null && files.size() > 5) {
             throw new IllegalArgumentException("최대 5개의 파일만 업로드 가능합니다.");
         }
@@ -89,11 +93,13 @@ public class InquiryService {
                 InquiryStatus.PENDING,
                 LocalDateTime.now()
         );
+
         inquiryRepository.save(inquiry);
 
         if (files != null) {
             for (MultipartFile file : files) {
                 validateFile(file);
+
                 String savedPath = saveFile(file);
 
                 InquiryFile inquiryFile = new InquiryFile();
@@ -107,6 +113,7 @@ public class InquiryService {
         return InquiryResponseDto.fromEntity(inquiry);
     }
 
+    // 문의 상태 완료 처리
     @Transactional
     public void markInquiryAsCompleted(Long inquiryId) {
         Inquiry inquiry = inquiryRepository.findById(inquiryId)
@@ -114,6 +121,7 @@ public class InquiryService {
         inquiry.markCompleted(null, LocalDateTime.now());
     }
 
+    // 문의 답변 및 완료 처리
     @Transactional
     public void answerInquiry(Long inquiryId, String answer) {
         Inquiry inquiry = inquiryRepository.findById(inquiryId)
@@ -121,6 +129,7 @@ public class InquiryService {
         inquiry.markCompleted(answer, LocalDateTime.now());
     }
 
+    // 파일 유효성 검사 (크기, 확장자)
     private void validateFile(MultipartFile file) {
         if (file.getSize() > 5 * 1024 * 1024) {
             throw new IllegalArgumentException("파일은 5MB를 초과할 수 없습니다.");
@@ -133,13 +142,16 @@ public class InquiryService {
         }
     }
 
+    // 파일 저장 처리
     private String saveFile(MultipartFile file) {
         String uuid = UUID.randomUUID().toString();
         String ext = "";
         String originalFileName = file.getOriginalFilename();
+
         if (originalFileName != null && originalFileName.contains(".")) {
             ext = originalFileName.substring(originalFileName.lastIndexOf("."));
         }
+
         String fileName = uuid + ext;
         Path target = Paths.get(uploadPath).resolve(fileName);
 

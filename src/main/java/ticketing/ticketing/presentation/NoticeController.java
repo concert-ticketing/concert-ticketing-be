@@ -1,5 +1,6 @@
 package ticketing.ticketing.presentation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -29,13 +30,14 @@ import java.util.UUID;
 public class NoticeController {
 
     private final NoticeService noticeService;
+    private final ObjectMapper objectMapper;
 
     @Value("${upload.path.notice}")
     private String uploadDir;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<NoticeResponse> createNotice(
-            @RequestPart("request") NoticeCreateRequest request,
+            @RequestPart("request") String requestJson,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @AuthenticationPrincipal Admin admin
     ) {
@@ -60,6 +62,13 @@ public class NoticeController {
                     return ResponseEntity.internalServerError().build();
                 }
             }
+        }
+
+        NoticeCreateRequest request;
+        try {
+            request = objectMapper.readValue(requestJson, NoticeCreateRequest.class);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().build();
         }
 
         request.setImagePaths(imagePaths); // 이미지 경로를 DTO에 설정
