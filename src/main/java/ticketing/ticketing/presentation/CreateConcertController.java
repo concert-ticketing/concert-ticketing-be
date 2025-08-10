@@ -1,5 +1,6 @@
 package ticketing.ticketing.presentation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ public class CreateConcertController {
     private final CreateConcertService createConcertService;
     private final AdminRepository adminRepository;
     private final UserContext userContext;
+    private final ObjectMapper objectMapper;
 
     private final String baseImageUrl = "/upload/image";
 
@@ -49,12 +51,14 @@ public class CreateConcertController {
     // 콘서트 생성
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ConcertResponseDto> createConcert(
-            @Valid @RequestPart("concertRequest") CreateConcertRequest request,
+            @RequestPart("concertRequest") String concertRequestJson,
             @RequestPart(value = "image", required = false) MultipartFile image
     ) throws Exception {
         Long adminId = userContext.getCurrentUserId();
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("인증된 관리자를 찾을 수 없습니다."));
+
+        CreateConcertRequest request = objectMapper.readValue(concertRequestJson, CreateConcertRequest.class);
 
         Concert concert = createConcertService.createConcert(
                 request.title(),
@@ -84,12 +88,14 @@ public class CreateConcertController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ConcertResponseDto> updateConcert(
             @PathVariable Long id,
-            @Valid @RequestPart("concertRequest") CreateConcertRequest request,
+            @RequestPart("concertRequest") String concertRequestJson,
             @RequestPart(value = "image", required = false) MultipartFile image
     ) throws Exception {
         Long adminId = userContext.getCurrentUserId();
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("인증된 관리자를 찾을 수 없습니다."));
+
+        CreateConcertRequest request = objectMapper.readValue(concertRequestJson, CreateConcertRequest.class);
 
         Optional<Concert> updatedConcertOpt = createConcertService.updateConcert(
                 id,

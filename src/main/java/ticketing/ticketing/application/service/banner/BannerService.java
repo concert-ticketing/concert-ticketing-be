@@ -24,12 +24,11 @@ public class BannerService {
     private final BannerRepository bannerRepository;
 
     @Value("${upload.path.banner}")
-    private String bannerUploadPath; // 예: C:/upload/banner/
+    private String bannerUploadPath;
 
     @Transactional
     public Banner createBanner(String title, String description, MultipartFile image, BannerStatus status, Admin admin) throws IOException {
         String imageUrl = null;
-
         if (image != null && !image.isEmpty()) {
             imageUrl = storeImageFile(image);
         }
@@ -50,7 +49,6 @@ public class BannerService {
     public Optional<Banner> updateBanner(Long id, String title, String description, MultipartFile image, BannerStatus status) throws IOException {
         return bannerRepository.findById(id).map(banner -> {
             String imageUrl = banner.getImageUrl();
-
             if (image != null && !image.isEmpty()) {
                 try {
                     imageUrl = storeImageFile(image);
@@ -58,7 +56,6 @@ public class BannerService {
                     throw new RuntimeException("이미지 저장 실패", e);
                 }
             }
-
             banner.update(title, description, imageUrl, status);
             return banner;
         });
@@ -73,44 +70,34 @@ public class BannerService {
         return false;
     }
 
-    /**
-     * 이미지 파일 저장 + 디렉토리 및 권한 체크
-     */
     private String storeImageFile(MultipartFile file) throws IOException {
         File directory = new File(bannerUploadPath);
 
-        // 1. 저장 경로 생성
-        if (!directory.exists()) {
-            if (!directory.mkdirs()) {
-                throw new IOException("업로드 디렉토리를 생성할 수 없습니다: " + bannerUploadPath);
-            }
+        if (!directory.exists() && !directory.mkdirs()) {
+            throw new IOException("업로드 디렉토리 생성 실패: " + bannerUploadPath);
         }
 
-        // 2. 권한 확인
         if (!directory.canWrite()) {
             throw new IOException("업로드 디렉토리에 쓰기 권한이 없습니다: " + bannerUploadPath);
         }
 
-        // 3. 파일명 생성
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || !originalFilename.contains(".")) {
             throw new IOException("유효하지 않은 파일명입니다.");
         }
+
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String newFileName = UUID.randomUUID() + extension;
 
-        // 4. 실제 파일 객체 생성
         File savedFile = new File(directory, newFileName);
 
-        // 안전장치: 상위 디렉토리 생성
         if (!savedFile.getParentFile().exists()) {
             savedFile.getParentFile().mkdirs();
         }
 
-        // 5. 파일 저장
         file.transferTo(savedFile);
 
-        // 6. 접근 가능한 URL 경로 반환
+        // 클라이언트에서 접근 가능한 경로로 반환 (필요 시 수정)
         return "/upload/banner/" + newFileName;
     }
 }

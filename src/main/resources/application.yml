@@ -80,13 +80,12 @@ springdoc:
     display-request-duration: true
   show-login-endpoint: false
 
-# ✅ 파일 저장 경로
 upload:
   path:
-    inquiries: ./uploads/inquiries
-    notice: ./uploads/notice
-    banner : ./uploads/banner
-    image : ./uploads/image
+    inquiries: C:/project/uploads/inquiries
+    notice: C:/project/uploads/notice
+    banner: C:/project/uploads/banner
+    image: C:/project/uploads/image
 
 logging:
   level:

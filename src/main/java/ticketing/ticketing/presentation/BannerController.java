@@ -1,56 +1,94 @@
-package com.example.demo.controller;
+package ticketing.ticketing.presentation;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ticketing.ticketing.application.dto.bannerResponseDto.BannerResponseDto;
+import ticketing.ticketing.domain.entity.Admin;
+import ticketing.ticketing.domain.entity.Banner;
+import ticketing.ticketing.domain.enums.BannerStatus;
+import ticketing.ticketing.infrastructure.security.UserContext;
+import ticketing.ticketing.infrastructure.repository.admin.AdminRepository;
+import ticketing.ticketing.application.service.banner.BannerService;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/banner")
+@RequiredArgsConstructor
+@RequestMapping("/api/banners")
 public class BannerController {
 
-    // application.properties에 설정된 업로드 경로
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    private final BannerService bannerService;
+    private final AdminRepository adminRepository;
+    private final UserContext userContext;
+    private final ObjectMapper objectMapper;
 
-    @PostMapping("/upload")
-    public ResponseEntity<?> uploadBanner(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("파일이 비어 있습니다.");
-        }
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BannerResponseDto> createBanner(
+            @RequestPart("request") String requestJson,  // JSON 문자열로 받기
+            @RequestPart(value = "image", required = false) MultipartFile image
+    ) throws IOException {
 
-        try {
-            // 저장 경로 객체 생성
-            Path uploadPath = Paths.get(uploadDir);
+        BannerRequest request = objectMapper.readValue(requestJson, BannerRequest.class);
 
-            // 경로 존재 여부 확인 후 없으면 생성
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-                System.out.println("📁 업로드 폴더 생성: " + uploadPath.toAbsolutePath());
-            }
+        Long adminId = userContext.getCurrentUserId();
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("인증된 관리자를 찾을 수 없습니다."));
 
-            // 권한 확인
-            File dirFile = uploadPath.toFile();
-            if (!dirFile.canWrite()) {
-                return ResponseEntity.status(500).body("❌ 저장 경로에 쓰기 권한이 없습니다: " + uploadPath);
-            }
-
-            // 실제 파일 저장
-            Path filePath = uploadPath.resolve(file.getOriginalFilename());
-            file.transferTo(filePath.toFile());
-
-            System.out.println("✅ 파일 저장 완료: " + filePath.toAbsolutePath());
-            return ResponseEntity.ok("파일 업로드 성공");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("서버 에러: " + e.getMessage());
-        }
+        Banner banner = bannerService.createBanner(
+                request.title(), request.description(), image, request.status(), admin
+        );
+        return ResponseEntity.ok(BannerResponseDto.from(banner));
     }
+
+    @GetMapping
+    public ResponseEntity<List<BannerResponseDto>> getAllBanners() {
+        List<BannerResponseDto> response = bannerService.getAllBanners()
+                .stream()
+                .map(BannerResponseDto::from)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BannerResponseDto> getBanner(@PathVariable Long id) {
+        return bannerService.getBanner(id)
+                .map(BannerResponseDto::from)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BannerResponseDto> updateBanner(
+            @PathVariable Long id,
+            @RequestPart("request") String requestJson,
+            @RequestPart(value = "image", required = false) MultipartFile image
+    ) throws IOException {
+
+        BannerRequest request = objectMapper.readValue(requestJson, BannerRequest.class);
+
+        return bannerService.updateBanner(
+                        id, request.title(), request.description(), image, request.status()
+                )
+                .map(BannerResponseDto::from)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBanner(@PathVariable Long id) {
+        boolean deleted = bannerService.deleteBanner(id);
+        return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
+
+    public record BannerRequest(
+            String title,
+            String description,
+            BannerStatus status
+    ) {}
 }
