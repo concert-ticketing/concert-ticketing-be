@@ -44,7 +44,8 @@ public class SecurityConfig {
                                 "/api/banners",
                                 "/api/notices",
                                 "/api/faqs",
-                                "/login/**"
+                                "/login/**",
+                                "/upload/banner/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

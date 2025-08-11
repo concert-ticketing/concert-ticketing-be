@@ -3,7 +3,6 @@ package ticketing.ticketing.application.service.admin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.adminDto.*;
@@ -17,8 +16,6 @@ import ticketing.ticketing.infrastructure.repository.admin.AdminRepository;
 import ticketing.ticketing.infrastructure.repository.inquiry.InquiryRepository;
 import ticketing.ticketing.infrastructure.security.JwtUtil;
 import ticketing.ticketing.infrastructure.security.UserContext;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
