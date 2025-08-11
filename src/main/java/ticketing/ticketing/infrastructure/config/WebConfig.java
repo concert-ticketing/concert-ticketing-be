@@ -17,8 +17,14 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${upload.path.banner}")
     private String bannerPath;
 
-    @Value("${upload.path.image}")
-    private String imagePath;
+    @Value("${upload.path.thumbnail}")
+    private String thumbnailPath;
+
+    @Value("${upload.path.description}")
+    private String descriptionPath;
+
+    @Value("${upload.path.svg_image}")  // 추가
+    private String svgImagePath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -31,7 +37,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/upload/banner/**")
                 .addResourceLocations("file:" + bannerPath + "/");
 
-        registry.addResourceHandler("/upload/image/**")  // 이미지 리소스 핸들러
-                .addResourceLocations("file:" + imagePath + "/");
+        registry.addResourceHandler("/upload/thumbnail/**")
+                .addResourceLocations("file:" + thumbnailPath + "/");
+
+        registry.addResourceHandler("/upload/description/**")
+                .addResourceLocations("file:" + descriptionPath + "/");
+
+        registry.addResourceHandler("/upload/svg_image/**")
+                .addResourceLocations("file:" + svgImagePath + "/");
     }
 }

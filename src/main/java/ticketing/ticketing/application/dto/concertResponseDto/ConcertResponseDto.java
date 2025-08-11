@@ -45,10 +45,12 @@ public class ConcertResponseDto {
         private String imageUrl;  // 파일 URL (절대경로 또는 상대경로)
         private ImagesRole imagesRole;
 
-        public static ImagesResponseDto from(ticketing.ticketing.domain.entity.Images images, String baseImageUrl) {
+        // baseThumbnailUrl, baseDescriptionUrl 두 개를 받아서 적절한 URL 생성
+        public static ImagesResponseDto from(ticketing.ticketing.domain.entity.Images images, String baseThumbnailUrl, String baseDescriptionUrl) {
+            String baseUrl = images.getImagesRole() == ImagesRole.THUMBNAIL ? baseThumbnailUrl : baseDescriptionUrl;
             return ImagesResponseDto.builder()
                     .id(images.getId())
-                    .imageUrl(baseImageUrl + "/" + images.getImage())
+                    .imageUrl(baseUrl + "/" + images.getImage())
                     .imagesRole(images.getImagesRole())
                     .build();
         }
@@ -103,7 +105,7 @@ public class ConcertResponseDto {
         }
     }
 
-    // from 메서드 (entity -> dto 변환)
+    // 기존 from (baseImageUrl 1개 인자)
     public static ConcertResponseDto from(ticketing.ticketing.domain.entity.Concert concert, String baseImageUrl) {
         return ConcertResponseDto.builder()
                 .id(concert.getId())
@@ -120,11 +122,42 @@ public class ConcertResponseDto {
                 .rating(concert.getRating())
                 .limitAge(concert.getLimitAge())
                 .durationTime(concert.getDurationTime())
-                .concertTag(concert.getConcertTag())
                 .adminId(concert.getAdmin() != null ? concert.getAdmin().getId() : null)
                 .concertHallId(concert.getConcertHall() != null ? concert.getConcertHall().getId() : null)
                 .images(concert.getImages().stream()
-                        .map(img -> ImagesResponseDto.from(img, baseImageUrl))
+                        .map(img -> ImagesResponseDto.from(img, baseImageUrl, baseImageUrl))
+                        .collect(Collectors.toList()))
+                .seatMap(ConcertSeatMapResponseDto.from(concert.getConcertSeatMap()))
+                .schedules(concert.getConcertSchedules().stream()
+                        .map(ConcertScheduleResponseDto::from)
+                        .collect(Collectors.toList()))
+                .casts(concert.getCasts().stream()
+                        .map(CastResponseDto::from)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    // 새로 추가한 from (baseThumbnailUrl, baseDescriptionUrl 2개 인자)
+    public static ConcertResponseDto from(ticketing.ticketing.domain.entity.Concert concert, String baseThumbnailUrl, String baseDescriptionUrl) {
+        return ConcertResponseDto.builder()
+                .id(concert.getId())
+                .title(concert.getTitle())
+                .description(concert.getDescription())
+                .location(concert.getLocation())
+                .locationX(concert.getLocationX())
+                .locationY(concert.getLocationY())
+                .startDate(concert.getStartDate())
+                .endDate(concert.getEndDate())
+                .reservationStartDate(concert.getReservationStartDate())
+                .reservationEndDate(concert.getReservationEndDate())
+                .price(concert.getPrice())
+                .rating(concert.getRating())
+                .limitAge(concert.getLimitAge())
+                .durationTime(concert.getDurationTime())
+                .adminId(concert.getAdmin() != null ? concert.getAdmin().getId() : null)
+                .concertHallId(concert.getConcertHall() != null ? concert.getConcertHall().getId() : null)
+                .images(concert.getImages().stream()
+                        .map(img -> ImagesResponseDto.from(img, baseThumbnailUrl, baseDescriptionUrl))
                         .collect(Collectors.toList()))
                 .seatMap(ConcertSeatMapResponseDto.from(concert.getConcertSeatMap()))
                 .schedules(concert.getConcertSchedules().stream()

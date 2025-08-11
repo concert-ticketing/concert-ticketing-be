@@ -3,10 +3,12 @@ package ticketing.ticketing.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import ticketing.ticketing.domain.enums.ImagesRole;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,14 +48,13 @@ public class Concert {
 
     private int durationTime;
 
-    private String concertTag;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private Admin admin;
 
-    @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL)
-    private List<Images> images;
+    @Builder.Default
+    @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Images> images = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concert_hall_id")
@@ -62,11 +63,13 @@ public class Concert {
     @OneToOne(mappedBy = "concert", cascade = CascadeType.ALL)
     private ConcertSeatMap concertSeatMap;
 
-    @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL)
-    private List<ConcertSchedule> concertSchedules;
+    @Builder.Default
+    @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConcertSchedule> concertSchedules = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL)
-    private List<Cast> casts;
+    private List<Cast> casts = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -75,6 +78,7 @@ public class Concert {
 
     private LocalDateTime deletedAt;
 
+    // 생성 메서드
     public static Concert create(
             String title,
             String description,
@@ -89,7 +93,6 @@ public class Concert {
             int rating,
             int limitAge,
             int durationTime,
-            String concertTag,
             Admin admin,
             ConcertHall concertHall
     ) {
@@ -107,12 +110,12 @@ public class Concert {
                 .rating(rating)
                 .limitAge(limitAge)
                 .durationTime(durationTime)
-                .concertTag(concertTag)
                 .admin(admin)
                 .concertHall(concertHall)
                 .build();
     }
 
+    // 수정 메서드
     public void update(
             String title,
             String description,
@@ -127,7 +130,6 @@ public class Concert {
             int rating,
             int limitAge,
             int durationTime,
-            String concertTag,
             Admin admin,
             ConcertHall concertHall
     ) {
@@ -144,13 +146,24 @@ public class Concert {
         this.rating = rating;
         this.limitAge = limitAge;
         this.durationTime = durationTime;
-        this.concertTag = concertTag;
         this.admin = admin;
         this.concertHall = concertHall;
     }
 
     public void deleteLogical() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    // 이미지 추가 메서드
+    public void addImage(String filename, ImagesRole role) {
+        Images image = Images.create(filename, role, this);
+        this.images.add(image);
+    }
+
+    // 공연회차 추가 메서드
+    public void addSchedule(ConcertSchedule schedule) {
+        schedule.setConcert(this);
+        this.concertSchedules.add(schedule);
     }
 
     @PrePersist

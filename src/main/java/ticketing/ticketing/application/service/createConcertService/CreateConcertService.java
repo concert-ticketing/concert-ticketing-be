@@ -1,21 +1,27 @@
 package ticketing.ticketing.application.service.createConcertService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Concert;
 import ticketing.ticketing.domain.entity.ConcertHall;
+import ticketing.ticketing.domain.entity.ConcertSchedule;
+import ticketing.ticketing.domain.enums.ImagesRole;
 import ticketing.ticketing.infrastructure.repository.createConcert.CreateConcertRepository;
 import ticketing.ticketing.infrastructure.repository.consertHall.ConcertHallRepository;
-import ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto;
+import ticketing.ticketing.application.dto.concertScheduleRequest.ConcertScheduleRequest;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,23 +32,32 @@ public class CreateConcertService {
     private final CreateConcertRepository createConcertRepository;
     private final ConcertHallRepository concertHallRepository;
 
+    @Value("${upload.path.thumbnail}")
+    private String thumbnailPath;
+
+    @Value("${upload.path.description}")
+    private String descriptionPath;
+
+    @Value("${upload.path.svg_image}")
+    private String svgImagePath;
+
     // 전체 콘서트 조회
-    public List<ConcertResponseDto> getAllConcerts(String baseImageUrl) {
-        List<Concert> concerts = createConcertRepository.findAll();
-        return concerts.stream()
-                .map(c -> ConcertResponseDto.from(c, baseImageUrl))
+    public List<ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto> getAllConcerts(String baseThumbnailUrl, String baseDescriptionUrl) {
+        return createConcertRepository.findAll()
+                .stream()
+                .map(c -> ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto.from(c, baseThumbnailUrl, baseDescriptionUrl))
                 .collect(Collectors.toList());
     }
 
     // 단일 콘서트 조회
-    public Optional<ConcertResponseDto> getConcertById(Long id, String baseImageUrl) {
+    public Optional<ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto> getConcertById(Long id, String baseThumbnailUrl, String baseDescriptionUrl) {
         return createConcertRepository.findById(id)
-                .map(c -> ConcertResponseDto.from(c, baseImageUrl));
+                .map(c -> ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto.from(c, baseThumbnailUrl, baseDescriptionUrl));
     }
 
-    // 콘서트 등록
+    // 콘서트 등록 (공연회차 리스트 포함)
     @Transactional
-    public Concert createConcert(
+    public Concert createConcertWithImagesAndSchedules(
             String title,
             String description,
             String location,
@@ -56,14 +71,20 @@ public class CreateConcertService {
             int rating,
             int limitAge,
             int durationTime,
-            String concertTag,
             Admin admin,
             Long concertHallId,
-            MultipartFile image
+            List<ConcertScheduleRequest> scheduleRequests,
+            MultipartFile thumbnailImage,
+            ImagesRole thumbnailRole,
+            MultipartFile descriptionImage,
+            ImagesRole descriptionRole
     ) throws Exception {
 
         ConcertHall concertHall = concertHallRepository.findById(concertHallId)
                 .orElseThrow(() -> new IllegalArgumentException("ConcertHall not found with id: " + concertHallId));
+
+        String thumbnailFileName = saveImage(thumbnailImage, thumbnailPath);
+        String descriptionFileName = saveImage(descriptionImage, descriptionPath);
 
         Concert concert = Concert.create(
                 title,
@@ -79,17 +100,31 @@ public class CreateConcertService {
                 rating,
                 limitAge,
                 durationTime,
-                concertTag,
                 admin,
                 concertHall
         );
 
+        if (thumbnailFileName != null) {
+            concert.addImage(thumbnailFileName, thumbnailRole);
+        }
+        if (descriptionFileName != null) {
+            concert.addImage(descriptionFileName, descriptionRole);
+        }
+
+        // 공연회차 생성 및 연관관계 설정 (수정된 순서: Concert, startTime, endTime)
+        if (scheduleRequests != null) {
+            for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
+                ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getStartTime(), scheduleRequest.getEndTime());
+                concert.getConcertSchedules().add(schedule);
+            }
+        }
+
         return createConcertRepository.save(concert);
     }
 
-    // 콘서트 수정
+    // 콘서트 수정 (SVG 이미지 처리 포함) - 공연회차 수정도 포함 가능
     @Transactional
-    public Optional<Concert> updateConcert(
+    public Optional<Concert> updateConcertWithImagesAndSchedules(
             Long id,
             String title,
             String description,
@@ -104,10 +139,15 @@ public class CreateConcertService {
             int rating,
             int limitAge,
             int durationTime,
-            String concertTag,
             Admin admin,
             Long concertHallId,
-            MultipartFile image
+            List<ConcertScheduleRequest> scheduleRequests,
+            MultipartFile thumbnailImage,
+            ImagesRole thumbnailRole,
+            MultipartFile descriptionImage,
+            ImagesRole descriptionRole,
+            MultipartFile svgImage,
+            ImagesRole svgRole
     ) throws Exception {
 
         ConcertHall concertHall = concertHallRepository.findById(concertHallId)
@@ -128,16 +168,41 @@ public class CreateConcertService {
                     rating,
                     limitAge,
                     durationTime,
-                    concertTag,
                     admin,
                     concertHall
             );
+
+            try {
+                if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
+                    String thumbnailFileName = saveImage(thumbnailImage, thumbnailPath);
+                    concert.addImage(thumbnailFileName, thumbnailRole);
+                }
+                if (descriptionImage != null && !descriptionImage.isEmpty()) {
+                    String descriptionFileName = saveImage(descriptionImage, descriptionPath);
+                    concert.addImage(descriptionFileName, descriptionRole);
+                }
+                if (svgImage != null && !svgImage.isEmpty()) {
+                    String svgFileName = saveImage(svgImage, svgImagePath);
+                    concert.addImage(svgFileName, svgRole);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("이미지 업로드 실패", e);
+            }
+
+            // 공연회차 업데이트 로직 (기존 회차 모두 삭제 후 재등록 예시)
+            if (scheduleRequests != null) {
+                concert.getConcertSchedules().clear(); // 기존 일정 제거
+                for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
+                    ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getStartTime(), scheduleRequest.getEndTime());
+                    concert.getConcertSchedules().add(schedule);
+                }
+            }
 
             return concert;
         });
     }
 
-    // 콘서트 삭제
+    // 논리 삭제
     @Transactional
     public boolean deleteConcert(Long id) {
         return createConcertRepository.findById(id).map(concert -> {
@@ -147,9 +212,18 @@ public class CreateConcertService {
         }).orElse(false);
     }
 
-    // 콘서트 직접 저장 (엔티티 사용 시)
-    @Transactional
-    public Concert saveConcert(Concert concert) {
-        return createConcertRepository.save(concert);
+    // 이미지 저장 공통 메서드
+    private String saveImage(MultipartFile file, String uploadDir) throws IOException {
+        if (file != null && !file.isEmpty()) {
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            File dest = new File(uploadDir, fileName);
+            File parent = dest.getParentFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
+            file.transferTo(dest);
+            return fileName;
+        }
+        return null;
     }
 }

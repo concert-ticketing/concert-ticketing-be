@@ -85,7 +85,9 @@ upload:
     inquiries: C:/project/uploads/inquiries
     notice: C:/project/uploads/notice
     banner: C:/project/uploads/banner
-    image: C:/project/uploads/image
+    thumbnail: C:/project/uploads/thumbnail
+    description: C:/project/uploads/description
+    svg_image: C:/project/uploads/svg_image
 
 logging:
   level:

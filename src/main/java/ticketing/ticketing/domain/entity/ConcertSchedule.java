@@ -3,11 +3,8 @@ package ticketing.ticketing.domain.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -22,15 +19,18 @@ public class ConcertSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concert_id")
     private Concert concert;
 
     private LocalDateTime startTime;
+
     private LocalDateTime endTime;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
@@ -43,6 +43,8 @@ public class ConcertSchedule {
             updatedAt = LocalDateTime.now();
         }
     }
+
+
     @PreRemove
     private void deleteLogical() {
         this.deletedAt = LocalDateTime.now();

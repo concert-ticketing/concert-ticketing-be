@@ -3,8 +3,6 @@ package ticketing.ticketing.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import ticketing.ticketing.domain.enums.ImagesRole;
 
 import java.time.LocalDateTime;
@@ -21,7 +19,7 @@ public class Images {
     private Long id;
 
     @Lob
-    private String image;
+    private String image;  // 이미지 파일명 또는 경로 저장
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concert_id", nullable = false)
@@ -44,8 +42,19 @@ public class Images {
             updatedAt = LocalDateTime.now();
         }
     }
-    @PreRemove
-    private void deleteLogical() {
+
+    public void deleteLogical() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public static Images create(String image, ImagesRole role, Concert concert) {
+        Images img = Images.builder()
+                .image(image)
+                .imagesRole(role)
+                .concert(concert)
+                .build();
+
+        concert.getImages().add(img);
+        return img;
     }
 }

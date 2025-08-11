@@ -30,7 +30,7 @@ public class BannerController {
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BannerResponseDto> createBanner(
-            @RequestPart("request") String requestJson,  // JSON 문자열로 받기
+            @RequestPart("request") String requestJson,
             @RequestPart(value = "image", required = false) MultipartFile image
     ) throws IOException {
 
