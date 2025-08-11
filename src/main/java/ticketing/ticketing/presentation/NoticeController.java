@@ -41,28 +41,7 @@ public class NoticeController {
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @AuthenticationPrincipal Admin admin
     ) {
-        List<String> imagePaths = new ArrayList<>();
-
-        if (images != null) {
-            for (MultipartFile file : images) {
-                try {
-                    File uploadDirFile = new File(uploadDir);
-                    if (!uploadDirFile.exists()) {
-                        uploadDirFile.mkdirs();
-                    }
-
-                    String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                    Path filepath = Paths.get(uploadDir, filename);
-                    Files.copy(file.getInputStream(), filepath);
-
-                    String imagePath = "/upload/notice/" + filename;
-                    imagePaths.add(imagePath);
-
-                } catch (IOException e) {
-                    return ResponseEntity.internalServerError().build();
-                }
-            }
-        }
+        List<String> imagePaths = saveUploadedFiles(images);
 
         NoticeCreateRequest request;
         try {
@@ -71,7 +50,7 @@ public class NoticeController {
             return ResponseEntity.badRequest().build();
         }
 
-        request.setImagePaths(imagePaths); // 이미지 경로를 DTO에 설정
+        request.setImagePaths(imagePaths);
         NoticeResponse created = noticeService.createNotice(request, admin);
         return ResponseEntity.ok(created);
     }
@@ -88,11 +67,23 @@ public class NoticeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<NoticeResponse> updateNotice(
             @PathVariable Long id,
-            @RequestBody NoticeUpdateRequest request
+            @RequestPart("request") String requestJson,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
     ) {
+        List<String> imagePaths = saveUploadedFiles(images);
+
+        NoticeUpdateRequest request;
+        try {
+            request = objectMapper.readValue(requestJson, NoticeUpdateRequest.class);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        request.setImagePaths(imagePaths);
+
         return noticeService.updateNotice(id, request)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -102,5 +93,30 @@ public class NoticeController {
     public ResponseEntity<Void> deleteNotice(@PathVariable Long id) {
         boolean deleted = noticeService.deleteNotice(id);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+    private List<String> saveUploadedFiles(List<MultipartFile> images) {
+        List<String> imagePaths = new ArrayList<>();
+        if (images != null) {
+            for (MultipartFile file : images) {
+                try {
+                    File uploadDirFile = new File(uploadDir);
+                    if (!uploadDirFile.exists()) {
+                        uploadDirFile.mkdirs();
+                    }
+
+                    String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                    Path filepath = Paths.get(uploadDir, filename);
+                    Files.copy(file.getInputStream(), filepath);
+
+                    String imagePath = "/upload/notice/" + filename;
+                    imagePaths.add(imagePath);
+
+                } catch (IOException e) {
+                    throw new RuntimeException("파일 업로드 실패", e);
+                }
+            }
+        }
+        return imagePaths;
     }
 }

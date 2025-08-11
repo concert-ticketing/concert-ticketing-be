@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     private String bannerPath;
 
     @Value("${upload.path.image}")
-    private String imagePath;  // 이미지 업로드 경로 추가
+    private String imagePath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
