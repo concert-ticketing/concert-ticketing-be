@@ -26,7 +26,6 @@ public class ConcertCreateRequestDto {
     private int rating;
     private int limitAge;
     private int durationTime;
-    private String concertTag;
 
     private Long adminId;
 

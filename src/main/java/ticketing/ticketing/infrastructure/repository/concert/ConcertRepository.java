@@ -28,7 +28,6 @@ public interface ConcertRepository extends JpaRepository<Concert, Long> {
             "ORDER BY c.endDate DESC, c.id DESC")
     List<ConcertMainPageInformationReadResponse> getConcertSearchBySize(Pageable pageable);
 
-
     @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.concertHall.concertHallName,c.rating) " +
             "FROM Concert c " +
             "WHERE c.endDate >= CURRENT_DATE " +
@@ -43,32 +42,31 @@ public interface ConcertRepository extends JpaRepository<Concert, Long> {
             "ORDER BY c.rating DESC, c.id DESC")
     List<ConcertMainPageInformationReadResponse> getHighRatingConcertSearchBySizeAndLastId(Pageable pageable, Long lastId);
 
-    // Repository
+    // 상세 조회 (concertTag 필드 제외)
     @Query("""
-                SELECT new ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse(
-                    c.title,
-                    c.description,
-                    c.concertHall.concertHallName,
-                    c.startDate,
-                    c.endDate,
-                    c.reservationStartDate,
-                    c.reservationEndDate,
-                    c.price,
-                    c.limitAge,
-                    c.durationTime,
-                    c.concertTag
-                )
-                FROM Concert c
-                WHERE c.id = :id
+            SELECT new ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse(
+                c.title,
+                c.description,
+                c.concertHall.concertHallName,
+                c.startDate,
+                c.endDate,
+                c.reservationStartDate,
+                c.reservationEndDate,
+                c.price,
+                c.limitAge,
+                c.durationTime
+            )
+            FROM Concert c
+            WHERE c.id = :id
             """)
     ConcertDetailPageReadResponse getConcertById(Long id);
 
     @Query("SELECT c.rating FROM Concert c WHERE c.id = :id ")
     Integer getConcertRatingById(Long id);
 
-    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMapReadResponse(c.locationX,c.locationY,c.location,c.concertHall.concertHallName,c.admin.phone)" +
-            "FROM Concert c" +
-            " WHERE c.id = :id")
+    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMapReadResponse(c.locationX,c.locationY,c.location,c.concertHall.concertHallName,c.admin.phone) " +
+            "FROM Concert c " +
+            "WHERE c.id = :id")
     ConcertMapReadResponse getConcertMapById(Long id);
 
 }

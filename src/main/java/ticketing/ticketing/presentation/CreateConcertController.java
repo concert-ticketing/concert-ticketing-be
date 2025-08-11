@@ -1,5 +1,6 @@
 package ticketing.ticketing.presentation;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -7,13 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto;
+import ticketing.ticketing.application.dto.concertScheduleRequest.ConcertScheduleRequest;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Concert;
+import ticketing.ticketing.domain.enums.ImagesRole;
 import ticketing.ticketing.application.service.createConcertService.CreateConcertService;
 import ticketing.ticketing.infrastructure.repository.admin.AdminRepository;
 import ticketing.ticketing.infrastructure.security.UserContext;
 
-import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
@@ -31,28 +33,33 @@ public class CreateConcertController {
     private final UserContext userContext;
     private final ObjectMapper objectMapper;
 
-    private final String baseImageUrl = "/upload/image";
+    private final String baseThumbnailUrl = "/upload/thumbnail";
+    private final String baseDescriptionUrl = "/upload/description";
+    private final String baseSvgImageUrl = "/upload/svg_image";
 
     // 전체 콘서트 목록 조회
     @GetMapping
     public ResponseEntity<List<ConcertResponseDto>> getAllConcerts() {
-        List<ConcertResponseDto> concerts = createConcertService.getAllConcerts(baseImageUrl);
+        List<ConcertResponseDto> concerts = createConcertService.getAllConcerts(baseThumbnailUrl, baseDescriptionUrl);
         return ResponseEntity.ok(concerts);
     }
 
     // 단일 콘서트 조회
     @GetMapping("/{id}")
     public ResponseEntity<ConcertResponseDto> getConcert(@PathVariable Long id) {
-        Optional<ConcertResponseDto> concertOpt = createConcertService.getConcertById(id, baseImageUrl);
+        Optional<ConcertResponseDto> concertOpt = createConcertService.getConcertById(id, baseThumbnailUrl, baseDescriptionUrl);
         return concertOpt.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // 콘서트 생성
+    // 콘서트 생성 (공연회차 리스트 포함)
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ConcertResponseDto> createConcert(
             @RequestPart("concertRequest") String concertRequestJson,
-            @RequestPart(value = "image", required = false) MultipartFile image
+            @RequestPart(value = "scheduleRequests", required = false) String scheduleRequestsJson,
+            @RequestPart(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
+            @RequestPart(value = "descriptionImage", required = false) MultipartFile descriptionImage
+            // , @RequestPart(value = "svgImage", required = false) MultipartFile svgImage 필요시 추가
     ) throws Exception {
         Long adminId = userContext.getCurrentUserId();
         Admin admin = adminRepository.findById(adminId)
@@ -60,7 +67,12 @@ public class CreateConcertController {
 
         CreateConcertRequest request = objectMapper.readValue(concertRequestJson, CreateConcertRequest.class);
 
-        Concert concert = createConcertService.createConcert(
+        List<ConcertScheduleRequest> scheduleRequests = null;
+        if (scheduleRequestsJson != null && !scheduleRequestsJson.isEmpty()) {
+            scheduleRequests = objectMapper.readValue(scheduleRequestsJson, new TypeReference<List<ConcertScheduleRequest>>() {});
+        }
+
+        Concert concert = createConcertService.createConcertWithImagesAndSchedules(
                 request.title(),
                 request.description(),
                 request.location(),
@@ -74,22 +86,27 @@ public class CreateConcertController {
                 request.rating(),
                 request.limitAge(),
                 request.durationTime(),
-                request.concertTag(),
                 admin,
                 request.concertHallId(),
-                image
+                scheduleRequests,
+                thumbnailImage, ImagesRole.THUMBNAIL,
+                descriptionImage, ImagesRole.DESCRIPT_IMAGE
+                // , svgImage, ImagesRole.SVG_IMAGE 필요시 추가
         );
 
-        ConcertResponseDto responseDto = ConcertResponseDto.from(concert, baseImageUrl);
+        ConcertResponseDto responseDto = ConcertResponseDto.from(concert, baseThumbnailUrl, baseDescriptionUrl);
         return ResponseEntity.created(URI.create("/api/concerts/" + concert.getId())).body(responseDto);
     }
 
-    // 콘서트 수정
+    // 콘서트 수정 (썸네일 + 상세 이미지 + SVG 이미지 + 공연회차)
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ConcertResponseDto> updateConcert(
             @PathVariable Long id,
             @RequestPart("concertRequest") String concertRequestJson,
-            @RequestPart(value = "image", required = false) MultipartFile image
+            @RequestPart(value = "scheduleRequests", required = false) String scheduleRequestsJson,
+            @RequestPart(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
+            @RequestPart(value = "descriptionImage", required = false) MultipartFile descriptionImage,
+            @RequestPart(value = "svgImage", required = false) MultipartFile svgImage
     ) throws Exception {
         Long adminId = userContext.getCurrentUserId();
         Admin admin = adminRepository.findById(adminId)
@@ -97,7 +114,12 @@ public class CreateConcertController {
 
         CreateConcertRequest request = objectMapper.readValue(concertRequestJson, CreateConcertRequest.class);
 
-        Optional<Concert> updatedConcertOpt = createConcertService.updateConcert(
+        List<ConcertScheduleRequest> scheduleRequests = null;
+        if (scheduleRequestsJson != null && !scheduleRequestsJson.isEmpty()) {
+            scheduleRequests = objectMapper.readValue(scheduleRequestsJson, new TypeReference<List<ConcertScheduleRequest>>() {});
+        }
+
+        Optional<Concert> updatedConcertOpt = createConcertService.updateConcertWithImagesAndSchedules(
                 id,
                 request.title(),
                 request.description(),
@@ -112,14 +134,16 @@ public class CreateConcertController {
                 request.rating(),
                 request.limitAge(),
                 request.durationTime(),
-                request.concertTag(),
                 admin,
                 request.concertHallId(),
-                image
+                scheduleRequests,
+                thumbnailImage, ImagesRole.THUMBNAIL,
+                descriptionImage, ImagesRole.DESCRIPT_IMAGE,
+                svgImage, ImagesRole.SVG_IMAGE
         );
 
         return updatedConcertOpt
-                .map(concert -> ResponseEntity.ok(ConcertResponseDto.from(concert, baseImageUrl)))
+                .map(concert -> ResponseEntity.ok(ConcertResponseDto.from(concert, baseThumbnailUrl, baseDescriptionUrl)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -144,7 +168,6 @@ public class CreateConcertController {
             int rating,
             int limitAge,
             int durationTime,
-            String concertTag,
             Long concertHallId
     ) {}
 }
