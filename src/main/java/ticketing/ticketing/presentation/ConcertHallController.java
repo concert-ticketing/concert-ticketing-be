@@ -1,3 +1,4 @@
+/*
 package ticketing.ticketing.presentation;
 
 import lombok.RequiredArgsConstructor;
@@ -26,4 +27,4 @@ public class ConcertHallController {
     public ResponseEntity<List<ConcertHallResponseDto>> getAllConcertHalls() {
         return ResponseEntity.ok(concertHallService.getAllConcertHalls());
     }
-}
+}*/

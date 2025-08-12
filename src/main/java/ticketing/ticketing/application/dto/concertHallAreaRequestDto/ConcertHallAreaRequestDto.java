@@ -1,3 +1,4 @@
+/*
 package ticketing.ticketing.application.dto.concertHallAreaRequestDto;
 
 import lombok.Getter;
@@ -27,3 +28,4 @@ public class ConcertHallAreaRequestDto {
         return new ticketing.ticketing.application.dto.concertHallAreaRequestDto.ConcertHallAreaRequestDto(id, areaName, x, y, uiMetadata, seats);
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package ticketing.ticketing.application.dto.concertHallResponseDto;
 
 import lombok.Getter;
@@ -25,3 +26,4 @@ public class ConcertHallResponseDto {
         return new ConcertHallResponseDto(id, concertHallName, createdAt, areas);
     }
 }
+*/
