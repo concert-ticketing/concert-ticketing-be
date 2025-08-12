@@ -11,9 +11,11 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    @Query("SELECT new ticketing.ticketing.application.dto.reviewDto.ReviewByConcertIdReadResponse(r.id,r.user.id, r.user.email,r.rating,r.content,r.createdAt,r.updatedAt) " +
-            " FROM Review r" +
-            " WHERE r.concert.id  = :concertId " +
+    @Query("SELECT new ticketing.ticketing.application.dto.reviewDto.ReviewByConcertIdReadResponse(" +
+            "r.id, r.user.id, r.user.email, r.rating, r.content, r.createdAt, r.updatedAt) " +
+            "FROM Review r " +
+            "WHERE r.concert.id = :concertId " +
+            "AND r.deletedAt IS NULL " +
             "ORDER BY r.id DESC")
     List<ReviewByConcertIdReadResponse> getReviewByConcertId(Long concertId);
 

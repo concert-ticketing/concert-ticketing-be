@@ -25,4 +25,24 @@ public class UserContext {
         }
         return null;
     }
+
+    public String getCurrentUserRole() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            return null;
+        }
+        // 1. Principal이 CustomUserDetails인 경우
+        if (auth.getPrincipal() instanceof CustomUserDetails customUser) {
+            return customUser.getRole();
+        }
+        if (auth.getAuthorities() != null && !auth.getAuthorities().isEmpty()) {
+            return auth.getAuthorities().iterator().next().getAuthority();
+        }
+        if (auth.getPrincipal() instanceof String roleStr) {
+            return roleStr;
+        }
+
+        return null;
+    }
+
 }
