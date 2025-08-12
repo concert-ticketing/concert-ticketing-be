@@ -28,7 +28,6 @@ public class ConcertResponseDto {
     private int rating;
     private int limitAge;
     private int durationTime;
-    private String concertTag;
 
     private Long adminId;
     private Long concertHallId;
