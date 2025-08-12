@@ -22,7 +22,7 @@ public interface ConcertRepository extends JpaRepository<Concert, Long> {
     List<ConcertMainPageInformationReadResponse> getConcertSearchBySizeAndLastId(Pageable pageable, Long lastId);
 
     // last Id가 없는 메인페이지 콘서트 조회
-    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.concertHallName) " +
+    @Query("SELECT new ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse(c.id, c.title, c.startDate, c.endDate,c.location) " +
             "FROM Concert c " +
             "WHERE c.endDate >= CURRENT_DATE " +
             "ORDER BY c.endDate DESC, c.id DESC")

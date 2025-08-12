@@ -78,58 +78,57 @@ public class ConcertCreateRequestDto {
     @Getter
     @Builder
     public static class ConcertScheduleRequestDto {
-        private LocalDateTime startTime;
-        private LocalDateTime endTime;
+        private LocalDateTime concertTime;
 
-        public static ConcertScheduleRequestDto from(ticketing.ticketing.domain.entity.ConcertSchedule schedule) {
-            return ConcertScheduleRequestDto.builder()
-                    .startTime(schedule.getStartTime())
-                    .endTime(schedule.getEndTime())
+
+            public static ConcertScheduleRequestDto from(ticketing.ticketing.domain.entity.ConcertSchedule schedule) {
+                return ConcertScheduleRequestDto.builder()
+                        .concertTime(schedule.getConcertTime())
+                        .build();
+            }
+        }
+
+        @Getter
+        @Builder
+        public static class CastRequestDto {
+            private String name;
+            private Long adminId;
+
+            public static CastRequestDto from(ticketing.ticketing.domain.entity.Cast cast) {
+                return CastRequestDto.builder()
+                        .name(cast.getName())
+                        .adminId(cast.getAdmin() != null ? cast.getAdmin().getId() : null)
+                        .build();
+            }
+        }
+
+        // baseUrl 없이 단일 from 메서드로 통일
+        public static ConcertCreateRequestDto from(Concert concert) {
+            return ConcertCreateRequestDto.builder()
+                    .title(concert.getTitle())
+                    .description(concert.getDescription())
+                    .location(concert.getLocation())
+                    .locationX(concert.getLocationX())
+                    .locationY(concert.getLocationY())
+                    .startDate(concert.getStartDate())
+                    .endDate(concert.getEndDate())
+                    .reservationStartDate(concert.getReservationStartDate())
+                    .reservationEndDate(concert.getReservationEndDate())
+                    .price(concert.getPrice())
+                    .limitAge(concert.getLimitAge())
+                    .durationTime(concert.getDurationTime())
+                    .adminId(concert.getAdmin() != null ? concert.getAdmin().getId() : null)
+                    .concertHallName(concert.getConcertHallName())
+                    .images(concert.getImages().stream()
+                            .map(ImagesRequestDto::from) // baseUrl 없이 파일명만 매핑
+                            .collect(Collectors.toList()))
+                    .seatMap(ConcertSeatMapRequestDto.from(concert.getConcertSeatMap()))
+                    .schedules(concert.getConcertSchedules().stream()
+                            .map(ConcertScheduleRequestDto::from)
+                            .collect(Collectors.toList()))
+                    .casts(concert.getCasts().stream()
+                            .map(CastRequestDto::from)
+                            .collect(Collectors.toList()))
                     .build();
         }
     }
-
-    @Getter
-    @Builder
-    public static class CastRequestDto {
-        private String name;
-        private Long adminId;
-
-        public static CastRequestDto from(ticketing.ticketing.domain.entity.Cast cast) {
-            return CastRequestDto.builder()
-                    .name(cast.getName())
-                    .adminId(cast.getAdmin() != null ? cast.getAdmin().getId() : null)
-                    .build();
-        }
-    }
-
-    // baseUrl 없이 단일 from 메서드로 통일
-    public static ConcertCreateRequestDto from(Concert concert) {
-        return ConcertCreateRequestDto.builder()
-                .title(concert.getTitle())
-                .description(concert.getDescription())
-                .location(concert.getLocation())
-                .locationX(concert.getLocationX())
-                .locationY(concert.getLocationY())
-                .startDate(concert.getStartDate())
-                .endDate(concert.getEndDate())
-                .reservationStartDate(concert.getReservationStartDate())
-                .reservationEndDate(concert.getReservationEndDate())
-                .price(concert.getPrice())
-                .limitAge(concert.getLimitAge())
-                .durationTime(concert.getDurationTime())
-                .adminId(concert.getAdmin() != null ? concert.getAdmin().getId() : null)
-                .concertHallName(concert.getConcertHallName())
-                .images(concert.getImages().stream()
-                        .map(ImagesRequestDto::from) // baseUrl 없이 파일명만 매핑
-                        .collect(Collectors.toList()))
-                .seatMap(ConcertSeatMapRequestDto.from(concert.getConcertSeatMap()))
-                .schedules(concert.getConcertSchedules().stream()
-                        .map(ConcertScheduleRequestDto::from)
-                        .collect(Collectors.toList()))
-                .casts(concert.getCasts().stream()
-                        .map(CastRequestDto::from)
-                        .collect(Collectors.toList()))
-                .build();
-    }
-}

@@ -12,8 +12,9 @@ import java.util.Collection;
 @Builder
 public class CustomUserDetails implements UserDetails {
 
-    private final Long id;  // JWT sub (Long 변환 값)
-    private final String username;  // 보통 이메일 또는 사용자 이름
+    private final Long id;
+    private final String username;
+    private final String Role;
     private final Collection<? extends GrantedAuthority> authorities;
 
     @Override
