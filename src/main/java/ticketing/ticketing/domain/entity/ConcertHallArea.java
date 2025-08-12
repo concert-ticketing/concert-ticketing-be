@@ -1,3 +1,4 @@
+/*
 package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
@@ -61,3 +62,4 @@ public class ConcertHallArea {
         return area;
     }
 }
+*/
