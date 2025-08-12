@@ -7,10 +7,13 @@ import org.springframework.web.bind.annotation.*;
 
 import ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse;
 import ticketing.ticketing.application.dto.concertDto.ConcertMainPageAddThumbNailReadResponse;
+import ticketing.ticketing.application.dto.concertDto.ConcertMainPageInformationReadResponse;
 import ticketing.ticketing.application.dto.concertDto.ConcertMapReadResponse;
 import ticketing.ticketing.application.service.concert.ConcertService;
+import ticketing.ticketing.domain.entity.Concert;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -68,5 +71,17 @@ public class ConcertController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(map);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ConcertMainPageAddThumbNailReadResponse>> searchConcerts(@RequestParam int size
+            , @RequestParam(required = false) Long lastId, @RequestParam(required = false) String title) {
+        List<Concert> concerts = concertService.searchConcertsByTitle(title, size, lastId);
+
+        List<ConcertMainPageAddThumbNailReadResponse> response = concerts.stream()
+                .map(ConcertMainPageAddThumbNailReadResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }

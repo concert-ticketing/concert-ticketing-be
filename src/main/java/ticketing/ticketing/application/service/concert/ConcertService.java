@@ -3,6 +3,7 @@ package ticketing.ticketing.application.service.concert;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.concertDto.ConcertDetailPageReadResponse;
 import ticketing.ticketing.application.dto.concertDto.ConcertMainPageAddThumbNailReadResponse;
@@ -11,6 +12,7 @@ import ticketing.ticketing.application.dto.concertDto.ConcertMapReadResponse;
 import ticketing.ticketing.application.dto.imagesDto.ImagesReadResponse;
 import ticketing.ticketing.application.dto.imagesDto.ImagesThumbNailReadResponse;
 import ticketing.ticketing.application.service.images.ImagesService;
+import ticketing.ticketing.domain.entity.Concert;
 import ticketing.ticketing.infrastructure.repository.concert.ConcertRepository;
 
 import java.util.List;
@@ -73,8 +75,9 @@ public class ConcertService {
                         c.getEndDate(),
                         c.getLocation(),
                         c.getRating(),
-                        concertImagesMap.getOrDefault(c.getId(), null)
-                )).collect(Collectors.toList());
+                        concertImagesMap.getOrDefault(c.getId(), "")  // null 대신 빈 문자열 반환
+                ))
+                .collect(Collectors.toList());
     }
 
     public ConcertDetailPageReadResponse getConcertDetailPageById(Long id) {
@@ -95,4 +98,15 @@ public class ConcertService {
     public ConcertMapReadResponse getConcertMapById(Long id) {
         return concertRepository.getConcertMapById(id);
     }
+
+    public List<Concert> searchConcertsByTitle(String title, int size, Long lastId) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by("id").descending());
+
+        if (lastId != null) {
+            return concertRepository.findByTitleContainingIgnoreCaseAndIdLessThanOrderByIdDesc(title, lastId, pageable);
+        } else {
+            return concertRepository.findByTitleContainingIgnoreCaseOrderByIdDesc(title, pageable);
+        }
+    }
+
 }
