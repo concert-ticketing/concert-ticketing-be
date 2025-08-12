@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto;
+import ticketing.ticketing.domain.entity.Concert;
 
 import java.time.LocalDate;
 
@@ -27,5 +29,16 @@ public class ConcertMainPageInformationReadResponse {
         this.startDate = startDate;
         this.endDate = endDate;
         this.location = location;
+    }
+
+    public static ConcertMainPageInformationReadResponse from(Concert concert) {
+        ConcertMainPageInformationReadResponse dto = new ConcertMainPageInformationReadResponse();
+        dto.setId(concert.getId());
+        dto.setTitle(concert.getTitle());
+        dto.setStartDate(concert.getStartDate());
+        dto.setEndDate(concert.getEndDate());
+        dto.setLocation(concert.getLocation());
+        dto.setRating(concert.getRating());
+        return dto;
     }
 }

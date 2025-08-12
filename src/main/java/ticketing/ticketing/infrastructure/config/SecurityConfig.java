@@ -48,7 +48,6 @@ public class SecurityConfig {
                                 "/upload/banner/**",
                                 "/upload/thumbnail/**",
                                 "/upload/description/**"
-
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

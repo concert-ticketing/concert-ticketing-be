@@ -80,7 +80,6 @@ public class ConcertCreateRequestDto {
     public static class ConcertScheduleRequestDto {
         private LocalDateTime concertTime;
 
-
             public static ConcertScheduleRequestDto from(ticketing.ticketing.domain.entity.ConcertSchedule schedule) {
                 return ConcertScheduleRequestDto.builder()
                         .concertTime(schedule.getConcertTime())

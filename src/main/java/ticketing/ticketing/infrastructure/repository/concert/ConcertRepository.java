@@ -69,4 +69,7 @@ public interface ConcertRepository extends JpaRepository<Concert, Long> {
             "WHERE c.id = :id")
     ConcertMapReadResponse getConcertMapById(Long id);
 
+    List<Concert> findByTitleContainingIgnoreCaseAndIdLessThanOrderByIdDesc(String title, Long lastId, Pageable pageable);
+    List<Concert> findByTitleContainingIgnoreCaseOrderByIdDesc(String title, Pageable pageable);
+
 }
