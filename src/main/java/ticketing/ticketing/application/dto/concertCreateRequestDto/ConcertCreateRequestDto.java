@@ -2,7 +2,7 @@ package ticketing.ticketing.application.dto.concertCreateRequestDto;
 
 import lombok.Builder;
 import lombok.Getter;
-import ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto;
+import ticketing.ticketing.domain.entity.Concert;
 import ticketing.ticketing.domain.enums.ImagesRole;
 
 import java.math.BigDecimal;
@@ -32,7 +32,7 @@ public class ConcertCreateRequestDto {
 
     private String concertHallName;
 
-    // 이미지는 이미지 DTO 리스트로 처리
+    // 이미지는 이미지 DTO 리스트로 처리 (파일명만)
     private List<ImagesRequestDto> images;
 
     // 콘서트 좌석맵 (파일명이나 경로 등)
@@ -47,12 +47,12 @@ public class ConcertCreateRequestDto {
     @Getter
     @Builder
     public static class ImagesRequestDto {
-        private String image;
+        private String image;       // 파일명만 저장
         private ImagesRole imagesRole;
-        public static ConcertCreateRequestDto.ImagesRequestDto from(ticketing.ticketing.domain.entity.Images images, String baseThumbnailUrl, String baseDescriptionUrl) {
-            String baseUrl = images.getImagesRole() == ImagesRole.THUMBNAIL ? baseThumbnailUrl : baseDescriptionUrl;
-            return ConcertCreateRequestDto.ImagesRequestDto.builder()
-                    .image(baseUrl + "/" + images.getImage())
+
+        public static ImagesRequestDto from(ticketing.ticketing.domain.entity.Images images) {
+            return ImagesRequestDto.builder()
+                    .image(images.getImage())    // baseUrl 없이 파일명만 반환
                     .imagesRole(images.getImagesRole())
                     .build();
         }
@@ -64,9 +64,10 @@ public class ConcertCreateRequestDto {
         private String originalFileName;
         private String storedFileName;
         private String storedFilePath;
-        public static ConcertCreateRequestDto.ConcertSeatMapRequestDto from(ticketing.ticketing.domain.entity.ConcertSeatMap seatMap) {
+
+        public static ConcertSeatMapRequestDto from(ticketing.ticketing.domain.entity.ConcertSeatMap seatMap) {
             if (seatMap == null) return null;
-            return ConcertCreateRequestDto.ConcertSeatMapRequestDto.builder()
+            return ConcertSeatMapRequestDto.builder()
                     .originalFileName(seatMap.getOriginalFileName())
                     .storedFileName(seatMap.getStoredFileName())
                     .storedFilePath(seatMap.getStoredFilePath())
@@ -79,8 +80,9 @@ public class ConcertCreateRequestDto {
     public static class ConcertScheduleRequestDto {
         private LocalDateTime startTime;
         private LocalDateTime endTime;
-        public static ConcertCreateRequestDto.ConcertScheduleRequestDto from(ticketing.ticketing.domain.entity.ConcertSchedule schedule) {
-            return ConcertCreateRequestDto.ConcertScheduleRequestDto.builder()
+
+        public static ConcertScheduleRequestDto from(ticketing.ticketing.domain.entity.ConcertSchedule schedule) {
+            return ConcertScheduleRequestDto.builder()
                     .startTime(schedule.getStartTime())
                     .endTime(schedule.getEndTime())
                     .build();
@@ -92,15 +94,17 @@ public class ConcertCreateRequestDto {
     public static class CastRequestDto {
         private String name;
         private Long adminId;
-        public static ConcertCreateRequestDto.CastRequestDto from(ticketing.ticketing.domain.entity.Cast cast) {
-            return ConcertCreateRequestDto.CastRequestDto.builder()
+
+        public static CastRequestDto from(ticketing.ticketing.domain.entity.Cast cast) {
+            return CastRequestDto.builder()
                     .name(cast.getName())
+                    .adminId(cast.getAdmin() != null ? cast.getAdmin().getId() : null)
                     .build();
         }
     }
 
-    // 기존 from (baseImageUrl 1개 인자)
-    public static ConcertCreateRequestDto from(ticketing.ticketing.domain.entity.Concert concert, String baseImageUrl) {
+    // baseUrl 없이 단일 from 메서드로 통일
+    public static ConcertCreateRequestDto from(Concert concert) {
         return ConcertCreateRequestDto.builder()
                 .title(concert.getTitle())
                 .description(concert.getDescription())
@@ -115,46 +119,16 @@ public class ConcertCreateRequestDto {
                 .limitAge(concert.getLimitAge())
                 .durationTime(concert.getDurationTime())
                 .adminId(concert.getAdmin() != null ? concert.getAdmin().getId() : null)
-                .concertHallName(concert.getConcertHallName() != null ? concert.getConcertHallName() : null)
+                .concertHallName(concert.getConcertHallName())
                 .images(concert.getImages().stream()
-                        .map(img -> ConcertCreateRequestDto.ImagesRequestDto.from(img, baseImageUrl, baseImageUrl))
+                        .map(ImagesRequestDto::from) // baseUrl 없이 파일명만 매핑
                         .collect(Collectors.toList()))
-                .seatMap(ConcertCreateRequestDto.ConcertSeatMapRequestDto.from(concert.getConcertSeatMap()))
+                .seatMap(ConcertSeatMapRequestDto.from(concert.getConcertSeatMap()))
                 .schedules(concert.getConcertSchedules().stream()
-                        .map(ConcertCreateRequestDto.ConcertScheduleRequestDto::from)
+                        .map(ConcertScheduleRequestDto::from)
                         .collect(Collectors.toList()))
                 .casts(concert.getCasts().stream()
-                        .map(ConcertCreateRequestDto.CastRequestDto::from)
-                        .collect(Collectors.toList()))
-                .build();
-    }
-
-
-    public static ConcertCreateRequestDto from(ticketing.ticketing.domain.entity.Concert concert, String baseThumbnailUrl, String baseDescriptionUrl) {
-        return ConcertCreateRequestDto.builder()
-                .title(concert.getTitle())
-                .description(concert.getDescription())
-                .location(concert.getLocation())
-                .locationX(concert.getLocationX())
-                .locationY(concert.getLocationY())
-                .startDate(concert.getStartDate())
-                .endDate(concert.getEndDate())
-                .reservationStartDate(concert.getReservationStartDate())
-                .reservationEndDate(concert.getReservationEndDate())
-                .price(concert.getPrice())
-                .limitAge(concert.getLimitAge())
-                .durationTime(concert.getDurationTime())
-                .adminId(concert.getAdmin() != null ? concert.getAdmin().getId() : null)
-                .concertHallName(concert.getConcertHallName() != null ? concert.getConcertHallName() : null)
-                .images(concert.getImages().stream()
-                        .map(img -> ConcertCreateRequestDto.ImagesRequestDto.from(img, baseThumbnailUrl, baseDescriptionUrl))
-                        .collect(Collectors.toList()))
-                .seatMap(ConcertCreateRequestDto.ConcertSeatMapRequestDto.from(concert.getConcertSeatMap()))
-                .schedules(concert.getConcertSchedules().stream()
-                        .map(ConcertCreateRequestDto.ConcertScheduleRequestDto::from)
-                        .collect(Collectors.toList()))
-                .casts(concert.getCasts().stream()
-                        .map(ConcertCreateRequestDto.CastRequestDto::from)
+                        .map(CastRequestDto::from)
                         .collect(Collectors.toList()))
                 .build();
     }

@@ -58,12 +58,17 @@ public class Concert {
 
     private String concertHallName;
 
-    @OneToOne(mappedBy = "concert", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
     private ConcertSeatMap concertSeatMap;
 
     @Builder.Default
     @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConcertSchedule> concertSchedules = new ArrayList<>();
+
+    // 좌석 구역 리스트 (추가)
+    @Builder.Default
+    @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConcertSeatSection> concertSeatSections = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL)
@@ -150,16 +155,22 @@ public class Concert {
         this.deletedAt = LocalDateTime.now();
     }
 
-    // 이미지 추가 메서드
+    // 이미지 추가
     public void addImage(String filename, ImagesRole role) {
         Images image = Images.create(filename, role, this);
         this.images.add(image);
     }
 
-    // 공연회차 추가 메서드
+    // 공연회차 추가
     public void addSchedule(ConcertSchedule schedule) {
         schedule.setConcert(this);
         this.concertSchedules.add(schedule);
+    }
+
+    // 좌석 구역 추가
+    public void addSeatSection(ConcertSeatSection section) {
+        section.setConcert(this);
+        this.concertSeatSections.add(section);
     }
 
     @PrePersist
