@@ -8,6 +8,7 @@ import ticketing.ticketing.domain.entity.InquiryFile;
 import ticketing.ticketing.domain.enums.InquiryStatus;
 import ticketing.ticketing.domain.enums.InquiryType;
 
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class InquiryResponseDto {
         List<String> imagePaths = inquiry.getInquiryFiles() != null
                 ? inquiry.getInquiryFiles().stream()
                 .map(file -> {
-                    String fileName = file.getFilePath();
+                    String fileName = Paths.get(file.getFilePath()).getFileName().toString();
                     return "/upload/inquiries/" + fileName;
                 })
                 .collect(Collectors.toList())
