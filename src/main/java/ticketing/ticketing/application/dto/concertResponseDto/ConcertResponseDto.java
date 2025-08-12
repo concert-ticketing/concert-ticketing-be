@@ -30,7 +30,7 @@ public class ConcertResponseDto {
     private int durationTime;
 
     private Long adminId;
-    private Long concertHallId;
+    private String concertHallName;
 
     private List<ImagesResponseDto> images;
     private ConcertSeatMapResponseDto seatMap;
@@ -122,7 +122,7 @@ public class ConcertResponseDto {
                 .limitAge(concert.getLimitAge())
                 .durationTime(concert.getDurationTime())
                 .adminId(concert.getAdmin() != null ? concert.getAdmin().getId() : null)
-                .concertHallId(concert.getConcertHall() != null ? concert.getConcertHall().getId() : null)
+                .concertHallName(concert.getConcertHallName() != null ? concert.getConcertHallName() : null)
                 .images(concert.getImages().stream()
                         .map(img -> ImagesResponseDto.from(img, baseImageUrl, baseImageUrl))
                         .collect(Collectors.toList()))
@@ -154,7 +154,7 @@ public class ConcertResponseDto {
                 .limitAge(concert.getLimitAge())
                 .durationTime(concert.getDurationTime())
                 .adminId(concert.getAdmin() != null ? concert.getAdmin().getId() : null)
-                .concertHallId(concert.getConcertHall() != null ? concert.getConcertHall().getId() : null)
+                .concertHallName(concert.getConcertHallName() != null ? concert.getConcertHallName() : null)
                 .images(concert.getImages().stream()
                         .map(img -> ImagesResponseDto.from(img, baseThumbnailUrl, baseDescriptionUrl))
                         .collect(Collectors.toList()))
