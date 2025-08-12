@@ -110,7 +110,7 @@ public class CreateConcertService {
 
         if (scheduleRequests != null) {
             for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
-                ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getStartTime(), scheduleRequest.getEndTime());
+                ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getConcertTime());
                 concert.getConcertSchedules().add(schedule);
             }
         }
@@ -189,7 +189,7 @@ public class CreateConcertService {
             if (scheduleRequests != null) {
                 concert.getConcertSchedules().clear();
                 for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
-                    ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getStartTime(), scheduleRequest.getEndTime());
+                    ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getConcertTime());
                     concert.getConcertSchedules().add(schedule);
                 }
             }
