@@ -30,7 +30,7 @@ public class ConcertCreateRequestDto {
 
     private Long adminId;
 
-    private Long concertHallId;
+    private String concertHallName;
 
     // 이미지는 이미지 DTO 리스트로 처리
     private List<ImagesRequestDto> images;
@@ -115,7 +115,7 @@ public class ConcertCreateRequestDto {
                 .limitAge(concert.getLimitAge())
                 .durationTime(concert.getDurationTime())
                 .adminId(concert.getAdmin() != null ? concert.getAdmin().getId() : null)
-                .concertHallId(concert.getConcertHall() != null ? concert.getConcertHall().getId() : null)
+                .concertHallName(concert.getConcertHallName() != null ? concert.getConcertHallName() : null)
                 .images(concert.getImages().stream()
                         .map(img -> ConcertCreateRequestDto.ImagesRequestDto.from(img, baseImageUrl, baseImageUrl))
                         .collect(Collectors.toList()))
@@ -145,7 +145,7 @@ public class ConcertCreateRequestDto {
                 .limitAge(concert.getLimitAge())
                 .durationTime(concert.getDurationTime())
                 .adminId(concert.getAdmin() != null ? concert.getAdmin().getId() : null)
-                .concertHallId(concert.getConcertHall() != null ? concert.getConcertHall().getId() : null)
+                .concertHallName(concert.getConcertHallName() != null ? concert.getConcertHallName() : null)
                 .images(concert.getImages().stream()
                         .map(img -> ConcertCreateRequestDto.ImagesRequestDto.from(img, baseThumbnailUrl, baseDescriptionUrl))
                         .collect(Collectors.toList()))
