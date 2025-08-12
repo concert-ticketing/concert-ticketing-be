@@ -56,9 +56,7 @@ public class Concert {
     @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Images> images = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "concert_hall_id")
-    private ConcertHall concertHall;
+    private String concertHallName;
 
     @OneToOne(mappedBy = "concert", cascade = CascadeType.ALL)
     private ConcertSeatMap concertSeatMap;
@@ -90,11 +88,10 @@ public class Concert {
             LocalDateTime reservationStartDate,
             LocalDateTime reservationEndDate,
             String price,
-            int rating,
             int limitAge,
             int durationTime,
             Admin admin,
-            ConcertHall concertHall
+            String concertHallName
     ) {
         return Concert.builder()
                 .title(title)
@@ -107,11 +104,10 @@ public class Concert {
                 .reservationStartDate(reservationStartDate)
                 .reservationEndDate(reservationEndDate)
                 .price(price)
-                .rating(rating)
                 .limitAge(limitAge)
                 .durationTime(durationTime)
                 .admin(admin)
-                .concertHall(concertHall)
+                .concertHallName(concertHallName)
                 .build();
     }
 
@@ -131,7 +127,7 @@ public class Concert {
             int limitAge,
             int durationTime,
             Admin admin,
-            ConcertHall concertHall
+            String concertHallName
     ) {
         this.title = title;
         this.description = description;
@@ -147,7 +143,7 @@ public class Concert {
         this.limitAge = limitAge;
         this.durationTime = durationTime;
         this.admin = admin;
-        this.concertHall = concertHall;
+        this.concertHallName = concertHallName;
     }
 
     public void deleteLogical() {

@@ -1,3 +1,4 @@
+/*
 package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
@@ -56,3 +57,4 @@ public class ConcertHall {
         return concertHall;
     }
 }
+*/

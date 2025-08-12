@@ -1,3 +1,4 @@
+/*
 package ticketing.ticketing.application.dto.concertHallCreateRequestDto;
 
 import lombok.Getter;
@@ -13,3 +14,4 @@ public class ConcertHallCreateRequestDto {
     private Long adminId;
     private List<ConcertHallAreaRequestDto> areas;
 }
+*/

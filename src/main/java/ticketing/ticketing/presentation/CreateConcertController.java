@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ticketing.ticketing.application.dto.concertCreateRequestDto.ConcertCreateRequestDto;
 import ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto;
 import ticketing.ticketing.application.dto.concertScheduleRequest.ConcertScheduleRequest;
 import ticketing.ticketing.domain.entity.Admin;
@@ -53,25 +54,23 @@ public class CreateConcertController {
     }
 
     // 콘서트 생성 (공연회차 리스트 포함)
-    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ConcertResponseDto> createConcert(
-            @RequestPart("concertRequest") String concertRequestJson,
-            @RequestPart(value = "scheduleRequests", required = false) String scheduleRequestsJson,
+    @PostMapping(
+            value = "/create",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<ConcertCreateRequestDto> createConcert(
+            @RequestPart("concertRequest") CreateConcertRequest request, // 이미 DTO 변환됨
+            @RequestPart(value = "scheduleRequests", required = false) List<ConcertScheduleRequest> scheduleRequests,
             @RequestPart(value = "thumbnailImage", required = false) MultipartFile thumbnailImage,
             @RequestPart(value = "descriptionImage", required = false) MultipartFile descriptionImage
-            // , @RequestPart(value = "svgImage", required = false) MultipartFile svgImage 필요시 추가
     ) throws Exception {
+
         Long adminId = userContext.getCurrentUserId();
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("인증된 관리자를 찾을 수 없습니다."));
 
-        CreateConcertRequest request = objectMapper.readValue(concertRequestJson, CreateConcertRequest.class);
-
-        List<ConcertScheduleRequest> scheduleRequests = null;
-        if (scheduleRequestsJson != null && !scheduleRequestsJson.isEmpty()) {
-            scheduleRequests = objectMapper.readValue(scheduleRequestsJson, new TypeReference<List<ConcertScheduleRequest>>() {});
-        }
-
+        // 서비스 호출
         Concert concert = createConcertService.createConcertWithImagesAndSchedules(
                 request.title(),
                 request.description(),
@@ -83,18 +82,16 @@ public class CreateConcertController {
                 request.reservationStartDate(),
                 request.reservationEndDate(),
                 request.price(),
-                request.rating(),
                 request.limitAge(),
                 request.durationTime(),
                 admin,
-                request.concertHallId(),
+                request.concertHallName(),
                 scheduleRequests,
                 thumbnailImage, ImagesRole.THUMBNAIL,
                 descriptionImage, ImagesRole.DESCRIPT_IMAGE
-                // , svgImage, ImagesRole.SVG_IMAGE 필요시 추가
         );
 
-        ConcertResponseDto responseDto = ConcertResponseDto.from(concert, baseThumbnailUrl, baseDescriptionUrl);
+        ConcertCreateRequestDto responseDto = ConcertCreateRequestDto.from(concert, baseThumbnailUrl, baseDescriptionUrl);
         return ResponseEntity.created(URI.create("/api/concerts/" + concert.getId())).body(responseDto);
     }
 
@@ -135,7 +132,7 @@ public class CreateConcertController {
                 request.limitAge(),
                 request.durationTime(),
                 admin,
-                request.concertHallId(),
+                request.concertHallName(),
                 scheduleRequests,
                 thumbnailImage, ImagesRole.THUMBNAIL,
                 descriptionImage, ImagesRole.DESCRIPT_IMAGE,
@@ -168,6 +165,6 @@ public class CreateConcertController {
             int rating,
             int limitAge,
             int durationTime,
-            Long concertHallId
+            String concertHallName
     ) {}
 }

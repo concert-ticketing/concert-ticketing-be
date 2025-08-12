@@ -5,14 +5,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ticketing.ticketing.application.dto.concertScheduleRequest.ConcertScheduleRequest;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Concert;
-import ticketing.ticketing.domain.entity.ConcertHall;
 import ticketing.ticketing.domain.entity.ConcertSchedule;
 import ticketing.ticketing.domain.enums.ImagesRole;
 import ticketing.ticketing.infrastructure.repository.createConcert.CreateConcertRepository;
-import ticketing.ticketing.infrastructure.repository.consertHall.ConcertHallRepository;
-import ticketing.ticketing.application.dto.concertScheduleRequest.ConcertScheduleRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +28,6 @@ import java.util.stream.Collectors;
 public class CreateConcertService {
 
     private final CreateConcertRepository createConcertRepository;
-    private final ConcertHallRepository concertHallRepository;
 
     @Value("${upload.path.thumbnail}")
     private String thumbnailPath;
@@ -68,20 +65,16 @@ public class CreateConcertService {
             LocalDateTime reservationStartDate,
             LocalDateTime reservationEndDate,
             String price,
-            int rating,
             int limitAge,
             int durationTime,
             Admin admin,
-            Long concertHallId,
+            String concertHallName,
             List<ConcertScheduleRequest> scheduleRequests,
             MultipartFile thumbnailImage,
             ImagesRole thumbnailRole,
             MultipartFile descriptionImage,
             ImagesRole descriptionRole
     ) throws Exception {
-
-        ConcertHall concertHall = concertHallRepository.findById(concertHallId)
-                .orElseThrow(() -> new IllegalArgumentException("ConcertHall not found with id: " + concertHallId));
 
         String thumbnailFileName = saveImage(thumbnailImage, thumbnailPath);
         String descriptionFileName = saveImage(descriptionImage, descriptionPath);
@@ -97,11 +90,10 @@ public class CreateConcertService {
                 reservationStartDate,
                 reservationEndDate,
                 price,
-                rating,
                 limitAge,
                 durationTime,
                 admin,
-                concertHall
+                concertHallName
         );
 
         if (thumbnailFileName != null) {
@@ -140,7 +132,7 @@ public class CreateConcertService {
             int limitAge,
             int durationTime,
             Admin admin,
-            Long concertHallId,
+            String concertHallName,
             List<ConcertScheduleRequest> scheduleRequests,
             MultipartFile thumbnailImage,
             ImagesRole thumbnailRole,
@@ -149,9 +141,6 @@ public class CreateConcertService {
             MultipartFile svgImage,
             ImagesRole svgRole
     ) throws Exception {
-
-        ConcertHall concertHall = concertHallRepository.findById(concertHallId)
-                .orElseThrow(() -> new IllegalArgumentException("ConcertHall not found with id: " + concertHallId));
 
         return createConcertRepository.findById(id).map(concert -> {
             concert.update(
@@ -169,7 +158,7 @@ public class CreateConcertService {
                     limitAge,
                     durationTime,
                     admin,
-                    concertHall
+                    concertHallName
             );
 
             try {
