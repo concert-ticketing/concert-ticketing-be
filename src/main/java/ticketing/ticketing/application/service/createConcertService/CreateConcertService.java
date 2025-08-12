@@ -5,14 +5,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ticketing.ticketing.application.dto.concertScheduleRequest.ConcertScheduleRequest;
 import ticketing.ticketing.domain.entity.Admin;
 import ticketing.ticketing.domain.entity.Concert;
-import ticketing.ticketing.domain.entity.ConcertHall;
 import ticketing.ticketing.domain.entity.ConcertSchedule;
 import ticketing.ticketing.domain.enums.ImagesRole;
 import ticketing.ticketing.infrastructure.repository.createConcert.CreateConcertRepository;
-import ticketing.ticketing.infrastructure.repository.consertHall.ConcertHallRepository;
-import ticketing.ticketing.application.dto.concertScheduleRequest.ConcertScheduleRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +28,6 @@ import java.util.stream.Collectors;
 public class CreateConcertService {
 
     private final CreateConcertRepository createConcertRepository;
-    private final ConcertHallRepository concertHallRepository;
 
     @Value("${upload.path.thumbnail}")
     private String thumbnailPath;

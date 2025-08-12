@@ -12,10 +12,6 @@ public class Seats {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "concert_hall_area_id")
-    private ConcertHallArea concertHallArea;
-
     private String seatName;
     private Float x;
     private Float y;
@@ -23,9 +19,8 @@ public class Seats {
     @Lob
     private String uiMetadata;
 
-    public static Seats create(ConcertHallArea area, String seatName, Float x, Float y, String uiMetadata) {
+    public static Seats create( String seatName, Float x, Float y, String uiMetadata) {
         Seats seat = new Seats();
-        seat.concertHallArea = area;
         seat.seatName = seatName;
         seat.x = x;
         seat.y = y;

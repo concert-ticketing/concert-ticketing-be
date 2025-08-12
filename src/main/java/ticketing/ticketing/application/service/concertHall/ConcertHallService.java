@@ -1,3 +1,4 @@
+/*
 package ticketing.ticketing.application.service.concertHall;
 
 import lombok.RequiredArgsConstructor;
@@ -81,3 +82,4 @@ public class ConcertHallService {
         )).collect(Collectors.toList());
     }
 }
+*/
