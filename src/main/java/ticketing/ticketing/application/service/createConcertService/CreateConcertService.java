@@ -68,20 +68,16 @@ public class CreateConcertService {
             LocalDateTime reservationStartDate,
             LocalDateTime reservationEndDate,
             String price,
-            int rating,
             int limitAge,
             int durationTime,
             Admin admin,
-            Long concertHallId,
+            String concertHallName,
             List<ConcertScheduleRequest> scheduleRequests,
             MultipartFile thumbnailImage,
             ImagesRole thumbnailRole,
             MultipartFile descriptionImage,
             ImagesRole descriptionRole
     ) throws Exception {
-
-        ConcertHall concertHall = concertHallRepository.findById(concertHallId)
-                .orElseThrow(() -> new IllegalArgumentException("ConcertHall not found with id: " + concertHallId));
 
         String thumbnailFileName = saveImage(thumbnailImage, thumbnailPath);
         String descriptionFileName = saveImage(descriptionImage, descriptionPath);
@@ -97,11 +93,10 @@ public class CreateConcertService {
                 reservationStartDate,
                 reservationEndDate,
                 price,
-                rating,
                 limitAge,
                 durationTime,
                 admin,
-                concertHall
+                concertHallName
         );
 
         if (thumbnailFileName != null) {
@@ -140,7 +135,7 @@ public class CreateConcertService {
             int limitAge,
             int durationTime,
             Admin admin,
-            Long concertHallId,
+            String concertHallName,
             List<ConcertScheduleRequest> scheduleRequests,
             MultipartFile thumbnailImage,
             ImagesRole thumbnailRole,
@@ -149,9 +144,6 @@ public class CreateConcertService {
             MultipartFile svgImage,
             ImagesRole svgRole
     ) throws Exception {
-
-        ConcertHall concertHall = concertHallRepository.findById(concertHallId)
-                .orElseThrow(() -> new IllegalArgumentException("ConcertHall not found with id: " + concertHallId));
 
         return createConcertRepository.findById(id).map(concert -> {
             concert.update(
@@ -169,7 +161,7 @@ public class CreateConcertService {
                     limitAge,
                     durationTime,
                     admin,
-                    concertHall
+                    concertHallName
             );
 
             try {
