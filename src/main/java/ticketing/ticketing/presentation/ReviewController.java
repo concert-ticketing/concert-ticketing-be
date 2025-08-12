@@ -1,5 +1,6 @@
 package ticketing.ticketing.presentation;
 
+import com.oracle.svm.core.annotate.Delete;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,15 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getReviewByConcertId(concertId));
     }
 
-    @PostMapping("/")
+    @PostMapping("/create")
     public ResponseEntity<Void> createReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
         return reviewService.createReview(reviewCreateRequest);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteReview (@RequestParam Long reviewId) {
+        return reviewService.deleteReview(reviewId);
+    }
+
 
 }
