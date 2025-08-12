@@ -77,12 +77,10 @@ public class ConcertCreateRequestDto {
     @Getter
     @Builder
     public static class ConcertScheduleRequestDto {
-        private LocalDateTime startTime;
-        private LocalDateTime endTime;
+        private LocalDateTime concertTime;
         public static ConcertCreateRequestDto.ConcertScheduleRequestDto from(ticketing.ticketing.domain.entity.ConcertSchedule schedule) {
             return ConcertCreateRequestDto.ConcertScheduleRequestDto.builder()
-                    .startTime(schedule.getStartTime())
-                    .endTime(schedule.getEndTime())
+                    .concertTime(schedule.getConcertTime())
                     .build();
         }
     }

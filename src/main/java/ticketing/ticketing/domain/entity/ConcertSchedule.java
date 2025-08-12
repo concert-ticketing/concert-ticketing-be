@@ -24,9 +24,8 @@ public class ConcertSchedule {
     @JoinColumn(name = "concert_id")
     private Concert concert;
 
-    private LocalDateTime startTime;
+    private LocalDateTime concertTime;
 
-    private LocalDateTime endTime;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -50,11 +49,10 @@ public class ConcertSchedule {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public static ConcertSchedule create(Concert concert, LocalDateTime startTime, LocalDateTime endTime) {
+    public static ConcertSchedule create(Concert concert, LocalDateTime concertTime) {
         return ConcertSchedule.builder()
                 .concert(concert)
-                .startTime(startTime)
-                .endTime(endTime)
+                .concertTime(concertTime)
                 .build();
     }
 }

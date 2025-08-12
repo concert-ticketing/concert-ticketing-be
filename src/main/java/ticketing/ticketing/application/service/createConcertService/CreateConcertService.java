@@ -106,7 +106,7 @@ public class CreateConcertService {
         // 공연회차 생성 및 연관관계 설정 (수정된 순서: Concert, startTime, endTime)
         if (scheduleRequests != null) {
             for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
-                ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getStartTime(), scheduleRequest.getEndTime());
+                ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getConcertTime());
                 concert.getConcertSchedules().add(schedule);
             }
         }
@@ -182,7 +182,7 @@ public class CreateConcertService {
             if (scheduleRequests != null) {
                 concert.getConcertSchedules().clear(); // 기존 일정 제거
                 for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
-                    ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getStartTime(), scheduleRequest.getEndTime());
+                    ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getConcertTime());
                     concert.getConcertSchedules().add(schedule);
                 }
             }
