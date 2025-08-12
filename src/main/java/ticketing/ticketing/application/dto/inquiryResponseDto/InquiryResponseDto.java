@@ -35,7 +35,10 @@ public class InquiryResponseDto {
     public static InquiryResponseDto fromEntity(Inquiry inquiry) {
         List<String> imagePaths = inquiry.getInquiryFiles() != null
                 ? inquiry.getInquiryFiles().stream()
-                .map(InquiryFile::getFilePath)
+                .map(file -> {
+                    String fileName = file.getFilePath();
+                    return "/upload/inquiries/" + fileName;
+                })
                 .collect(Collectors.toList())
                 : List.of();
 
