@@ -37,6 +37,9 @@ public class ConcertResponseDto {
     private List<ConcertScheduleResponseDto> schedules;
     private List<CastResponseDto> casts;
 
+    // 좌석 구역 리스트 추가
+    private List<ConcertSeatSectionResponseDto> seatSections;
+
     @Getter
     @Builder
     public static class ImagesResponseDto {
@@ -98,6 +101,47 @@ public class ConcertResponseDto {
         }
     }
 
+    // 좌석 구역 DTO 추가
+    @Getter
+    @Builder
+    public static class ConcertSeatSectionResponseDto {
+        private Long id;
+        private String sectionName;
+        private String colorCode;
+        private BigDecimal price;
+        private List<ConcertSeatResponseDto> seats;
+
+        public static ConcertSeatSectionResponseDto from(ticketing.ticketing.domain.entity.ConcertSeatSection section) {
+            return ConcertSeatSectionResponseDto.builder()
+                    .id(section.getId())
+                    .sectionName(section.getSectionName())
+                    .colorCode(section.getColorCode())
+                    .price(section.getPrice())
+                    .seats(section.getSeats().stream()
+                            .map(ConcertSeatResponseDto::from)
+                            .collect(Collectors.toList()))
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class ConcertSeatResponseDto {
+        private Long id;
+        private String rowName;
+        private String seatNumber;
+        private String price;
+
+        public static ConcertSeatResponseDto from(ticketing.ticketing.domain.entity.ConcertSeat seat) {
+            return ConcertSeatResponseDto.builder()
+                    .id(seat.getId())
+                    .rowName(seat.getRowName())
+                    .seatNumber(seat.getSeatNumber() != null ? seat.getSeatNumber().toString() : null)
+                    .price(seat.getPrice() != null ? seat.getPrice().toString() : null)
+                    .build();
+        }
+    }
+
     public static ConcertResponseDto from(ticketing.ticketing.domain.entity.Concert concert) {
         return ConcertResponseDto.builder()
                 .id(concert.getId())
@@ -125,6 +169,9 @@ public class ConcertResponseDto {
                         .collect(Collectors.toList()))
                 .casts(concert.getCasts().stream()
                         .map(CastResponseDto::from)
+                        .collect(Collectors.toList()))
+                .seatSections(concert.getConcertSeatSections().stream()
+                        .map(ConcertSeatSectionResponseDto::from)
                         .collect(Collectors.toList()))
                 .build();
     }
