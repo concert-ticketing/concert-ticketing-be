@@ -46,7 +46,9 @@ public class SecurityConfig {
                                 "/api/faqs",
                                 "/login/**",
                                 "/upload/banner/**",
-                                "/api/review/delete"
+                                "/upload/thumbnail/**",
+                                "/upload/description/**"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
