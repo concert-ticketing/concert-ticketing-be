@@ -39,6 +39,7 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/oauth/session",
                                 "/api/concert/**",
+                                "/api/concerts/*",
                                 "/api/admin",
                                 "/api/admin/login",
                                 "/api/banners",
