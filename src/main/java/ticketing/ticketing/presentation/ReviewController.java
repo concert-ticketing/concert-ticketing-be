@@ -1,16 +1,11 @@
 package ticketing.ticketing.presentation;
 
-import com.oracle.svm.core.annotate.Delete;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ticketing.ticketing.application.dto.reviewDto.ReviewByConcertIdReadResponse;
 import ticketing.ticketing.application.dto.reviewDto.ReviewByConcertListAddRatingReadResponse;
 import ticketing.ticketing.application.dto.reviewDto.ReviewCreateRequest;
 import ticketing.ticketing.application.service.review.ReviewService;
-import ticketing.ticketing.domain.entity.Review;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/review")
