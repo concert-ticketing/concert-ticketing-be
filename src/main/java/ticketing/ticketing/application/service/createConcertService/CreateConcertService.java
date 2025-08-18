@@ -103,9 +103,14 @@ public class CreateConcertService {
             concert.addImage(descriptionFileName, descriptionRole);
         }
 
+        // 공연 회차 등록
         if (scheduleRequests != null) {
             for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
-                ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getStartTime(), scheduleRequest.getEndTime());
+                ConcertSchedule schedule = ConcertSchedule.create(
+                        concert,
+                        scheduleRequest.getStartTime(),
+                        scheduleRequest.getEndTime()
+                );
                 concert.getConcertSchedules().add(schedule);
             }
         }
@@ -163,7 +168,7 @@ public class CreateConcertService {
             );
 
             try {
-                // 이미지 덮어쓰기: 기존 이미지 삭제 후 새로 추가
+                // 이미지 덮어쓰기
                 if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
                     String thumbnailFileName = saveImage(thumbnailImage, thumbnailPath);
                     concert.getImages().removeIf(img -> img.getImagesRole() == ImagesRole.THUMBNAIL);
@@ -187,12 +192,16 @@ public class CreateConcertService {
             if (scheduleRequests != null) {
                 concert.getConcertSchedules().clear();
                 for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
-                    ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getStartTime(), scheduleRequest.getEndTime());
+                    ConcertSchedule schedule = ConcertSchedule.create(
+                            concert,
+                            scheduleRequest.getStartTime(),
+                            scheduleRequest.getEndTime()
+                    );
                     concert.getConcertSchedules().add(schedule);
                 }
             }
 
-            // 좌석 및 구역 업데이트 (기존 유지 + 새 구역/좌석 추가)
+            // 좌석 및 구역 업데이트 (섹션별 좌석 등록)
             if (seatSections != null) {
                 for (ConcertSeatSectionRequestDto sectionDto : seatSections) {
                     Optional<ConcertSeatSection> existingSectionOpt = concert.getConcertSeatSections().stream()
@@ -212,6 +221,7 @@ public class CreateConcertService {
                         concert.getConcertSeatSections().add(section);
                     }
 
+                    // 좌석 추가 (Row + SeatNumber, 중복 방지)
                     if (sectionDto.getSeats() != null) {
                         for (ConcertSeatRequestDto seatDto : sectionDto.getSeats()) {
                             boolean seatExists = section.getSeats().stream()
