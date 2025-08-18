@@ -35,8 +35,6 @@ public class CreateConcertController {
     private final UserContext userContext;
     private final ObjectMapper objectMapper;
 
-    // baseUrl 필드 제거 — 클라이언트에서 조합하도록
-
     // 전체 콘서트 목록 조회
     @GetMapping
     public ResponseEntity<List<ConcertResponseDto>> getAllConcerts() {

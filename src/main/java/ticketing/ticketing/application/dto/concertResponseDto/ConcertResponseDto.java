@@ -44,15 +44,27 @@ public class ConcertResponseDto {
     @Builder
     public static class ImagesResponseDto {
         private Long id;
-        private String image;  // /uploads/image/ + 파일명
+        private String image;
         private ImagesRole imagesRole;
 
         public static ImagesResponseDto from(ticketing.ticketing.domain.entity.Images images) {
             return ImagesResponseDto.builder()
                     .id(images.getId())
-                    .image("/uploads/image/" + images.getImage())  // 경로 붙여줌
+                    .image(resolveImagePath(images))
                     .imagesRole(images.getImagesRole())
                     .build();
+        }
+
+        private static String resolveImagePath(ticketing.ticketing.domain.entity.Images images) {
+            switch (images.getImagesRole()) {
+                case THUMBNAIL:
+                    return "/uploads/thumbnail/" + images.getImage();
+                case DESCRIPT_IMAGE:
+                    return "/uploads/description/" + images.getImage();
+                case SVG_IMAGE:
+                    return "/uploads/svg_image/" + images.getImage();
+            }
+            throw new IllegalArgumentException("지원하지 않는 이미지 타입: " + images.getImagesRole());
         }
     }
 

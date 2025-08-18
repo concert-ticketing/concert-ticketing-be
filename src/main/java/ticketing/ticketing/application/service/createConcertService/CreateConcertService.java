@@ -7,13 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ticketing.ticketing.application.dto.ConcertSeatRequestDto;
 import ticketing.ticketing.application.dto.concertScheduleRequest.ConcertScheduleRequest;
-import ticketing.ticketing.application.dto.concertSeatRequestDto.*;
 import ticketing.ticketing.application.dto.concertSeatRequestDto.ConcertSeatSectionRequestDto;
-import ticketing.ticketing.domain.entity.Admin;
-import ticketing.ticketing.domain.entity.Concert;
-import ticketing.ticketing.domain.entity.ConcertSchedule;
-import ticketing.ticketing.domain.entity.ConcertSeat;
-import ticketing.ticketing.domain.entity.ConcertSeatSection;
+import ticketing.ticketing.domain.entity.*;
 import ticketing.ticketing.domain.enums.ImagesRole;
 import ticketing.ticketing.infrastructure.repository.createConcert.CreateConcertRepository;
 
@@ -43,7 +38,7 @@ public class CreateConcertService {
     @Value("${upload.path.svg_image}")
     private String svgImagePath;
 
-    // 전체 콘서트 조회 (baseUrl 없이)
+    // 전체 콘서트 조회
     public List<ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto> getAllConcerts() {
         return createConcertRepository.findAll()
                 .stream()
@@ -51,13 +46,13 @@ public class CreateConcertService {
                 .collect(Collectors.toList());
     }
 
-    // 단일 콘서트 조회 (baseUrl 없이)
+    // 단일 콘서트 조회
     public Optional<ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto> getConcertById(Long id) {
         return createConcertRepository.findById(id)
                 .map(ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto::from);
     }
 
-    // 콘서트 등록 (공연회차 리스트 포함)
+    // 콘서트 등록
     @Transactional
     public Concert createConcertWithImagesAndSchedules(
             String title,
@@ -118,9 +113,7 @@ public class CreateConcertService {
         return createConcertRepository.save(concert);
     }
 
-    /**
-     * 콘서트 수정 (SVG 이미지 처리 포함) - 공연회차, 좌석 및 구역 수정 포함
-     */
+    // 콘서트 수정 (이미지 덮어쓰기, 공연회차/좌석 포함)
     @Transactional
     public Optional<Concert> updateConcertWithImagesAndSchedules(
             Long id,
@@ -140,7 +133,7 @@ public class CreateConcertService {
             Admin admin,
             String concertHallName,
             List<ConcertScheduleRequest> scheduleRequests,
-            List<ConcertSeatSectionRequestDto> seatSections,   // 좌석/구역 DTO 추가
+            List<ConcertSeatSectionRequestDto> seatSections,
             MultipartFile thumbnailImage,
             ImagesRole thumbnailRole,
             MultipartFile descriptionImage,
@@ -150,6 +143,7 @@ public class CreateConcertService {
     ) throws Exception {
 
         return createConcertRepository.findById(id).map(concert -> {
+            // 콘서트 기본 정보 업데이트
             concert.update(
                     title,
                     description,
@@ -169,16 +163,20 @@ public class CreateConcertService {
             );
 
             try {
+                // 이미지 덮어쓰기: 기존 이미지 삭제 후 새로 추가
                 if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
                     String thumbnailFileName = saveImage(thumbnailImage, thumbnailPath);
+                    concert.getImages().removeIf(img -> img.getImagesRole() == ImagesRole.THUMBNAIL);
                     concert.addImage(thumbnailFileName, thumbnailRole);
                 }
                 if (descriptionImage != null && !descriptionImage.isEmpty()) {
                     String descriptionFileName = saveImage(descriptionImage, descriptionPath);
+                    concert.getImages().removeIf(img -> img.getImagesRole() == ImagesRole.DESCRIPT_IMAGE);
                     concert.addImage(descriptionFileName, descriptionRole);
                 }
                 if (svgImage != null && !svgImage.isEmpty()) {
                     String svgFileName = saveImage(svgImage, svgImagePath);
+                    concert.getImages().removeIf(img -> img.getImagesRole() == ImagesRole.SVG_IMAGE);
                     concert.addImage(svgFileName, svgRole);
                 }
             } catch (IOException e) {
