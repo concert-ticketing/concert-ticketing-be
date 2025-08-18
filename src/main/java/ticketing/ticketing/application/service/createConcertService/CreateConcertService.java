@@ -226,12 +226,10 @@ public class CreateConcertService {
         });
     }
 
-    // 논리 삭제
     @Transactional
     public boolean deleteConcert(Long id) {
         return createConcertRepository.findById(id).map(concert -> {
-            concert.deleteLogical();
-            createConcertRepository.save(concert);
+            createConcertRepository.delete(concert);
             return true;
         }).orElse(false);
     }

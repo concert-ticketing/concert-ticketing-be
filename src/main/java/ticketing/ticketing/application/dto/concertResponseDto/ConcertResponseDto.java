@@ -44,13 +44,13 @@ public class ConcertResponseDto {
     @Builder
     public static class ImagesResponseDto {
         private Long id;
-        private String image;  // 저장된 파일명만
+        private String image;  // /uploads/image/ + 파일명
         private ImagesRole imagesRole;
 
         public static ImagesResponseDto from(ticketing.ticketing.domain.entity.Images images) {
             return ImagesResponseDto.builder()
                     .id(images.getId())
-                    .image(images.getImage())  // 파일명만
+                    .image("/uploads/image/" + images.getImage())  // 경로 붙여줌
                     .imagesRole(images.getImagesRole())
                     .build();
         }
@@ -68,7 +68,9 @@ public class ConcertResponseDto {
             return ConcertSeatMapResponseDto.builder()
                     .id(seatMap.getId())
                     .originalFileName(seatMap.getOriginalFileName())
-                    .storedFileName(seatMap.getStoredFileName())  // 파일명만
+                    .storedFileName(seatMap.getStoredFileName() != null
+                            ? "/uploads/seatmap/" + seatMap.getStoredFileName()
+                            : null)
                     .build();
         }
     }
