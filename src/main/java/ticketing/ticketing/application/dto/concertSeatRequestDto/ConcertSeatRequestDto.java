@@ -5,15 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConcertSeatRequestDto {
-
-    private String rowName;
-    private Integer seatNumber;
-    private BigDecimal price;
+    private String rowName;     // A, B, C
+    private Integer seatNumber; // 1, 2, 3
+    private BigDecimal price;   // 좌석 가격
 }
+
 
