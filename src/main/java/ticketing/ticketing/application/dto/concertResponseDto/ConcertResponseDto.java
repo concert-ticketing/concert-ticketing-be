@@ -91,14 +91,12 @@ public class ConcertResponseDto {
     @Builder
     public static class ConcertScheduleResponseDto {
         private Long id;
-        private LocalDateTime startTime;
-        private LocalDateTime endTime;
+        private LocalDateTime concertTime;
 
         public static ConcertScheduleResponseDto from(ticketing.ticketing.domain.entity.ConcertSchedule schedule) {
             return ConcertScheduleResponseDto.builder()
                     .id(schedule.getId())
-                    .startTime(schedule.getStartTime())
-                    .endTime(schedule.getEndTime())
+                    .concertTime(schedule.getConcertTime())
                     .build();
         }
     }

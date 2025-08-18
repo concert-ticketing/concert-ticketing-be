@@ -6,7 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ticketing.ticketing.application.dto.seatReservationDto.SeatReservationReadResponse;
+import ticketing.ticketing.domain.entity.ConcertSchedule;
+import ticketing.ticketing.domain.entity.Payment;
 import ticketing.ticketing.domain.entity.Reservation;
+import ticketing.ticketing.domain.entity.SeatReservation;
+import ticketing.ticketing.domain.enums.PaymentState;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,24 +24,23 @@ import java.util.stream.Collectors;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReservationReadResponse {
     private Long id;
-    private String state;
-    private LocalDateTime createdAt;
-    private String userName;
-    private Long scheduleId;
-    private List<SeatReservationReadResponse> seatReservationsId;
-    private Long deliveryAddressId;
-
+    private PaymentState payment;
+    private String concertHallName;
+    private LocalDateTime concertScheduleDate;
+    private List<SeatReservation> seatReservations;
     public static ReservationReadResponse from(Reservation reservation) {
         return ReservationReadResponse.builder()
                 .id(reservation.getId())
-                .state(reservation.getState().name())
-                .createdAt(reservation.getCreatedAt())
-                .userName(reservation.getUser().getName())
-                .scheduleId(reservation.getConcertSchedule().getId())
-                .seatReservationsId(reservation.getSeatReservation().stream()
-                        .map(SeatReservationReadResponse::from)
-                        .collect(Collectors.toList()))
-                .deliveryAddressId(reservation.getDeliveryAddress().getId())
+                .payment(reservation.getPayment().getState())
+                .concertHallName(reservation.getConcertSchedule().getConcert().getConcertHallName())
+                .concertScheduleDate(reservation.getConcertSchedule().getConcertTime())
+                .seatReservations(reservation.getSeatReservation().stream().toList())
                 .build();
+    }
+
+    public static List<ReservationReadResponse> from(List<Reservation> reservations) {
+        return reservations.stream()
+                .map(ReservationReadResponse::from)
+                .collect(Collectors.toList());
     }
 }

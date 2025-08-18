@@ -2,6 +2,7 @@ package ticketing.ticketing.application.service.reservation;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.reservationDto.ReservationCreateRequest;
 import ticketing.ticketing.application.dto.reservationDto.ReservationReadResponse;
@@ -12,6 +13,7 @@ import ticketing.ticketing.application.service.user.UserService;
 import ticketing.ticketing.domain.entity.*;
 import ticketing.ticketing.domain.enums.ReservationState;
 import ticketing.ticketing.infrastructure.repository.reservation.ReservationRepository;
+import ticketing.ticketing.infrastructure.repository.user.UserRepository;
 import ticketing.ticketing.infrastructure.security.UserContext;
 
 import java.util.List;
@@ -27,6 +29,7 @@ public class ReservationService {
     private final ConcertScheduleService concertScheduleService;
     private final SeatReservationService seatReservationService;
     private final DeliveryAddressService deliveryAddressService;
+    private final UserRepository userRepository;
 
     @Transactional
     public ReservationReadResponse createReservation(ReservationCreateRequest request) {
@@ -46,6 +49,9 @@ public class ReservationService {
 
         // 5. 예약 상태 변환
         ReservationState reservationState = parseReservationState(request.getState());
+        if(reservationState == null) {
+            reservationState = ReservationState.PENDING;
+        }
 
         // 6. 예약 생성
         Reservation reservation = Reservation.create(user, schedule, seatReservations, deliveryAddress, reservationState);
@@ -86,5 +92,17 @@ public class ReservationService {
 
         reservation.updateToPayment(payment);
         reservationRepository.save(reservation);
+    }
+
+    public ResponseEntity<List<ReservationReadResponse>> getAllReservationsInfo() {
+        Long userId = userContext.getCurrentUserId();
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        List<Reservation> reservations = reservationRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found for user id: " + userId));
+
+        List<ReservationReadResponse> responseList = ReservationReadResponse.from(reservations);
+        return ResponseEntity.ok(responseList);
     }
 }
