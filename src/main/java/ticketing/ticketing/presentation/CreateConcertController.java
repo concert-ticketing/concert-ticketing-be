@@ -23,6 +23,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -50,7 +51,7 @@ public class CreateConcertController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // 콘서트 생성 (공연회차 리스트 포함) - 좌석구역은 생성시 안받음
+    // 콘서트 생성 (공연회차 리스트 포함)
     @PostMapping(
             value = "/create",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -87,7 +88,6 @@ public class CreateConcertController {
                 descriptionImage, ImagesRole.DESCRIPT_IMAGE
         );
 
-        // baseUrl 인자 제거
         ConcertCreateRequestDto responseDto = ConcertCreateRequestDto.from(concert);
         return ResponseEntity.created(URI.create("/api/concerts/" + concert.getId())).body(responseDto);
     }
@@ -143,7 +143,6 @@ public class CreateConcertController {
                 svgImage, ImagesRole.SVG_IMAGE
         );
 
-        // baseUrl 인자 제거
         return updatedConcertOpt
                 .map(concert -> ResponseEntity.ok(ConcertResponseDto.from(concert)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -151,9 +150,19 @@ public class CreateConcertController {
 
     // 콘서트 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteConcert(@PathVariable Long id) {
+    public ResponseEntity<?> deleteConcert(@PathVariable Long id) {
         boolean deleted = createConcertService.deleteConcert(id);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        if (deleted) {
+            return ResponseEntity.ok(Map.of(
+                    "deletedId", id,
+                    "message", "콘서트가 정상적으로 삭제되었습니다."
+            ));
+        } else {
+            return ResponseEntity.status(404).body(Map.of(
+                    "message", "삭제할 콘서트를 찾을 수 없습니다.",
+                    "requestedId", id
+            ));
+        }
     }
 
     public record CreateConcertRequest(
