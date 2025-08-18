@@ -1,20 +1,14 @@
 package ticketing.ticketing.application.dto.concertScheduleRequest;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ConcertScheduleRequest {
-    private LocalDateTime concertTime;
-
-    public ConcertScheduleRequest() {}
-
-    public ConcertScheduleRequest(LocalDateTime concertTime) {
-        this.concertTime = concertTime;
-    }
-
-
+    private LocalDateTime startTime;  // Object → LocalDateTime
 }
