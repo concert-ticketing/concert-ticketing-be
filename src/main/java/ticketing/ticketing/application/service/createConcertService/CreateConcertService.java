@@ -103,9 +103,14 @@ public class CreateConcertService {
             concert.addImage(descriptionFileName, descriptionRole);
         }
 
+        // 공연 회차 등록
         if (scheduleRequests != null) {
             for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
-                ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getConcertTime());
+                ConcertSchedule schedule = ConcertSchedule.create(
+                        concert,
+                        scheduleRequest.getStartTime(),
+                        scheduleRequest.getEndTime()
+                );
                 concert.getConcertSchedules().add(schedule);
             }
         }
@@ -163,7 +168,7 @@ public class CreateConcertService {
             );
 
             try {
-                // 이미지 덮어쓰기: 기존 이미지 삭제 후 새로 추가
+                // 이미지 덮어쓰기
                 if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
                     String thumbnailFileName = saveImage(thumbnailImage, thumbnailPath);
                     concert.getImages().removeIf(img -> img.getImagesRole() == ImagesRole.THUMBNAIL);
@@ -187,36 +192,52 @@ public class CreateConcertService {
             if (scheduleRequests != null) {
                 concert.getConcertSchedules().clear();
                 for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
-                    ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getConcertTime());
+                    ConcertSchedule schedule = ConcertSchedule.create(
+                            concert,
+                            scheduleRequest.getStartTime(),
+                            scheduleRequest.getEndTime()
+                    );
                     concert.getConcertSchedules().add(schedule);
                 }
             }
 
-            // 좌석 및 구역 업데이트 (기존 삭제 후 재등록)
+            // 좌석 및 구역 업데이트 (섹션별 좌석 등록)
             if (seatSections != null) {
-                concert.getConcertSeatSections().clear();
-
                 for (ConcertSeatSectionRequestDto sectionDto : seatSections) {
-                    ConcertSeatSection section = ConcertSeatSection.create(
-                            sectionDto.getSectionName(),
-                            sectionDto.getColorCode(),
-                            sectionDto.getPrice(),
-                            concert
-                    );
+                    Optional<ConcertSeatSection> existingSectionOpt = concert.getConcertSeatSections().stream()
+                            .filter(sec -> sec.getSectionName().equals(sectionDto.getSectionName()))
+                            .findFirst();
 
-                    if (sectionDto.getSeats() != null) {
-                        for (ConcertSeatRequestDto seatDto : sectionDto.getSeats()) {
-                            ConcertSeat seat = ConcertSeat.create(
-                                    seatDto.getRowName(),
-                                    seatDto.getSeatNumber(),
-                                    seatDto.getPrice(),
-                                    section
-                            );
-                            section.getSeats().add(seat);
-                        }
+                    ConcertSeatSection section;
+                    if (existingSectionOpt.isPresent()) {
+                        section = existingSectionOpt.get();
+                    } else {
+                        section = ConcertSeatSection.create(
+                                sectionDto.getSectionName(),
+                                sectionDto.getColorCode(),
+                                sectionDto.getPrice(),
+                                concert
+                        );
+                        concert.getConcertSeatSections().add(section);
                     }
 
-                    concert.getConcertSeatSections().add(section);
+                    // 좌석 추가 (Row + SeatNumber, 중복 방지)
+                    if (sectionDto.getSeats() != null) {
+                        for (ConcertSeatRequestDto seatDto : sectionDto.getSeats()) {
+                            boolean seatExists = section.getSeats().stream()
+                                    .anyMatch(s -> s.getRowName().equals(seatDto.getRowName())
+                                            && s.getSeatNumber().equals(seatDto.getSeatNumber()));
+                            if (!seatExists) {
+                                ConcertSeat seat = ConcertSeat.create(
+                                        seatDto.getRowName(),
+                                        seatDto.getSeatNumber(),
+                                        seatDto.getPrice(),
+                                        section
+                                );
+                                section.getSeats().add(seat);
+                            }
+                        }
+                    }
                 }
             }
 
