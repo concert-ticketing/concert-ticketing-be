@@ -76,9 +76,16 @@ public class ReviewService {
 
         Long userId = userContext.getCurrentUserId();
         String role = userContext.getCurrentUserRole();
+        if(role == null){
+            userId.equals(review.getUser().getId());
+        }
 
         String siteAdmin = "SITE_ADMIN";
-        if (((role == null) && !userId.equals(review.getUser().getId())) || !Objects.equals(role, siteAdmin)) {
+
+        boolean isOwner = userId.equals(review.getUser().getId());
+        boolean isAdmin = Objects.equals(role, siteAdmin);
+
+        if (!(isOwner || isAdmin)) {
             throw new IllegalArgumentException("리뷰 삭제 권한이 없습니다.");
         }
 
