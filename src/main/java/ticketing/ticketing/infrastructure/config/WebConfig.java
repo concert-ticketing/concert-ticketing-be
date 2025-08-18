@@ -37,10 +37,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/upload/banner/**")
                 .addResourceLocations("file:" + bannerPath + "/");
 
-        registry.addResourceHandler("/upload/thumbnail/**")
+        registry.addResourceHandler("/uploads/thumbnail/**")
                 .addResourceLocations("file:" + thumbnailPath + "/");
 
-        registry.addResourceHandler("/upload/description/**")
+        registry.addResourceHandler("/uploads/description/**")
                 .addResourceLocations("file:" + descriptionPath + "/");
 
         registry.addResourceHandler("/upload/svg_image/**")
