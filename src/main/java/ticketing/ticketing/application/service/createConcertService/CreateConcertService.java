@@ -103,13 +103,12 @@ public class CreateConcertService {
             concert.addImage(descriptionFileName, descriptionRole);
         }
 
-        // 공연 회차 등록
+        // 공연 회차 등록 (concertTime만 사용)
         if (scheduleRequests != null) {
             for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
                 ConcertSchedule schedule = ConcertSchedule.create(
                         concert,
-                        scheduleRequest.getStartTime(),
-                        scheduleRequest.getEndTime()
+                        scheduleRequest.getStartTime() // endTime 제거
                 );
                 concert.getConcertSchedules().add(schedule);
             }
@@ -188,14 +187,13 @@ public class CreateConcertService {
                 throw new RuntimeException("이미지 업로드 실패", e);
             }
 
-            // 공연회차 업데이트 (기존 삭제 후 재등록)
+            // 공연회차 업데이트 (concertTime만 사용)
             if (scheduleRequests != null) {
                 concert.getConcertSchedules().clear();
                 for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
                     ConcertSchedule schedule = ConcertSchedule.create(
                             concert,
-                            scheduleRequest.getStartTime(),
-                            scheduleRequest.getEndTime()
+                            scheduleRequest.getStartTime() // endTime 제거
                     );
                     concert.getConcertSchedules().add(schedule);
                 }
