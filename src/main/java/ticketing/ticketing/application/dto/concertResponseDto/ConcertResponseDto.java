@@ -144,14 +144,12 @@ public class ConcertResponseDto {
         private Long id;
         private String rowName;
         private String seatNumber;
-        private String price;
 
         public static ConcertSeatResponseDto from(ticketing.ticketing.domain.entity.ConcertSeat seat) {
             return ConcertSeatResponseDto.builder()
                     .id(seat.getId())
                     .rowName(seat.getRowName())
                     .seatNumber(seat.getSeatNumber() != null ? seat.getSeatNumber().toString() : null)
-                    .price(seat.getPrice() != null ? seat.getPrice().toString() : null)
                     .build();
         }
     }
