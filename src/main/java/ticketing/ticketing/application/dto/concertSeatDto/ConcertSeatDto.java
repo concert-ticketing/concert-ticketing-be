@@ -15,5 +15,4 @@ public class ConcertSeatDto {
     private String rowName;
     private Integer seatNumber;
     private boolean reserved;
-    private BigDecimal price;
 }

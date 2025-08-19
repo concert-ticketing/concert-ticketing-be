@@ -108,7 +108,7 @@ public class CreateConcertService {
             for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
                 ConcertSchedule schedule = ConcertSchedule.create(
                         concert,
-                        scheduleRequest.getStartTime() // endTime 제거
+                        scheduleRequest.getStartTime()
                 );
                 concert.getConcertSchedules().add(schedule);
             }
@@ -117,7 +117,7 @@ public class CreateConcertService {
         return createConcertRepository.save(concert);
     }
 
-    // 콘서트 수정 (이미지 덮어쓰기, 공연회차/좌석 포함)
+    // 콘서트 수정 (이미지 덮어쓰기, 공연회차/좌석/구역 포함)
     @Transactional
     public Optional<Concert> updateConcertWithImagesAndSchedules(
             Long id,
@@ -193,23 +193,37 @@ public class CreateConcertService {
                 for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
                     ConcertSchedule schedule = ConcertSchedule.create(
                             concert,
-                            scheduleRequest.getStartTime() // endTime 제거
+                            scheduleRequest.getStartTime()
                     );
                     concert.getConcertSchedules().add(schedule);
                 }
             }
 
-            // 좌석 및 구역 업데이트 (섹션별 좌석 등록)
+            // 좌석 및 구역 업데이트 (colorCode로 섹션 식별, 구역 가격/이름 갱신)
             if (seatSections != null) {
                 for (ConcertSeatSectionRequestDto sectionDto : seatSections) {
+                    // 1) colorCode 기준으로 기존 섹션 조회
                     Optional<ConcertSeatSection> existingSectionOpt = concert.getConcertSeatSections().stream()
-                            .filter(sec -> sec.getSectionName().equals(sectionDto.getSectionName()))
+                            .filter(sec -> sec.getColorCode().equals(sectionDto.getColorCode()))
                             .findFirst();
 
                     ConcertSeatSection section;
                     if (existingSectionOpt.isPresent()) {
                         section = existingSectionOpt.get();
+                        // 섹션명/가격 업데이트 (요청값 반영)
+                        if (sectionDto.getSectionName() != null) {
+                            section.updateSectionName(sectionDto.getSectionName());
+                        }
+                        if (sectionDto.getPrice() != null) {
+                            section.updatePrice(sectionDto.getPrice());
+                        }
                     } else {
+                        boolean duplicated = concert.getConcertSeatSections().stream()
+                                .anyMatch(sec -> sec.getColorCode().equals(sectionDto.getColorCode()));
+                        if (duplicated) {
+                            throw new IllegalArgumentException("해당 콘서트에 이미 같은 colorCode가 존재합니다: " + sectionDto.getColorCode());
+                        }
+
                         section = ConcertSeatSection.create(
                                 sectionDto.getSectionName(),
                                 sectionDto.getColorCode(),
@@ -219,7 +233,7 @@ public class CreateConcertService {
                         concert.getConcertSeatSections().add(section);
                     }
 
-                    // 좌석 추가 (Row + SeatNumber, 중복 방지)
+                    // 좌석 추가: Row + SeatNumber 기준 중복 방지 (좌석 가격 없음)
                     if (sectionDto.getSeats() != null) {
                         for (ConcertSeatRequestDto seatDto : sectionDto.getSeats()) {
                             boolean seatExists = section.getSeats().stream()
@@ -229,7 +243,6 @@ public class CreateConcertService {
                                 ConcertSeat seat = ConcertSeat.create(
                                         seatDto.getRowName(),
                                         seatDto.getSeatNumber(),
-                                        seatDto.getPrice(),
                                         section
                                 );
                                 section.getSeats().add(seat);
