@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,18 +16,16 @@ public class ConcertSeat {
 
     private String rowName;       // 행 이름 (예: A, B, C)
     private Integer seatNumber;   // 좌석 번호 (예: 1, 2, 3)
-    private BigDecimal price;     // 개별 좌석 가격 (필요시 구역 가격과 다르게 설정 가능)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", nullable = false)
     private ConcertSeatSection section;
 
-    // 정적 팩토리 메서드
-    public static ConcertSeat create(String rowName, Integer seatNumber, BigDecimal price, ConcertSeatSection section) {
+    // 정적 팩토리 메서드 (가격 제거)
+    public static ConcertSeat create(String rowName, Integer seatNumber, ConcertSeatSection section) {
         ConcertSeat seat = new ConcertSeat();
         seat.rowName = rowName;
         seat.seatNumber = seatNumber;
-        seat.price = price;
         seat.setSection(section);
         return seat;
     }

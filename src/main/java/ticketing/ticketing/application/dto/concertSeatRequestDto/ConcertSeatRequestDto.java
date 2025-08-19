@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 public class ConcertSeatRequestDto {
     private String rowName;     // A, B, C
     private Integer seatNumber; // 1, 2, 3
-    private BigDecimal price;   // 좌석 가격
 }
 
 
