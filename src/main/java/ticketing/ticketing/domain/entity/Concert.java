@@ -65,7 +65,7 @@ public class Concert {
     @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConcertSchedule> concertSchedules = new ArrayList<>();
 
-    // 좌석 구역 리스트 (추가)
+    // 좌석 구역 리스트
     @Builder.Default
     @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConcertSeatSection> concertSeatSections = new ArrayList<>();
@@ -73,6 +73,11 @@ public class Concert {
     @Builder.Default
     @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL)
     private List<Cast> casts = new ArrayList<>();
+
+    // ✅ 리뷰 리스트 (Concert 삭제 시 리뷰도 같이 삭제됨)
+    @Builder.Default
+    @OneToMany(mappedBy = "concert", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -171,6 +176,12 @@ public class Concert {
     public void addSeatSection(ConcertSeatSection section) {
         section.setConcert(this);
         this.concertSeatSections.add(section);
+    }
+
+    // ✅ 리뷰 추가
+    public void addReview(Review review) {
+        review.setConcert(this);
+        this.reviews.add(review);
     }
 
     @PrePersist
