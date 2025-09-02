@@ -107,17 +107,17 @@ public class CreateConcertController {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("인증된 관리자를 찾을 수 없습니다."));
 
+        // 필수 요청 본문
         CreateConcertRequest request = objectMapper.readValue(concertRequestJson, CreateConcertRequest.class);
 
-        List<ConcertScheduleRequest> scheduleRequests = null;
-        if (scheduleRequestsJson != null && !scheduleRequestsJson.isEmpty()) {
-            scheduleRequests = objectMapper.readValue(scheduleRequestsJson, new TypeReference<List<ConcertScheduleRequest>>() {});
-        }
+        // 선택적 요청 본문 → 없으면 그냥 null 유지
+        List<ConcertScheduleRequest> scheduleRequests = scheduleRequestsJson != null && !scheduleRequestsJson.isEmpty()
+                ? objectMapper.readValue(scheduleRequestsJson, new TypeReference<List<ConcertScheduleRequest>>() {})
+                : null;
 
-        List<ConcertSeatSectionRequestDto> seatSections = null;
-        if (seatSectionsJson != null && !seatSectionsJson.isEmpty()) {
-            seatSections = objectMapper.readValue(seatSectionsJson, new TypeReference<List<ConcertSeatSectionRequestDto>>() {});
-        }
+        List<ConcertSeatSectionRequestDto> seatSections = seatSectionsJson != null && !seatSectionsJson.isEmpty()
+                ? objectMapper.readValue(seatSectionsJson, new TypeReference<List<ConcertSeatSectionRequestDto>>() {})
+                : null;
 
         Optional<Concert> updatedConcertOpt = createConcertService.updateConcertWithImagesAndSchedules(
                 id,
@@ -136,8 +136,8 @@ public class CreateConcertController {
                 request.durationTime(),
                 admin,
                 request.concertHallName(),
-                scheduleRequests,
-                seatSections,
+                scheduleRequests,   // null → 원본 유지
+                seatSections,       // null → 원본 유지
                 thumbnailImage, ImagesRole.THUMBNAIL,
                 descriptionImage, ImagesRole.DESCRIPT_IMAGE,
                 svgImage, ImagesRole.SVG_IMAGE
