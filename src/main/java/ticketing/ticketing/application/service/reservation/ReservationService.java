@@ -79,7 +79,7 @@ public class ReservationService {
                 throw new IllegalStateException("이미 예약된 좌석이 있습니다: " + reservedSeatIds);
             }
         }
-    }
+
 
     private ReservationState parseReservationState(String state) {
         try {
