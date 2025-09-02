@@ -67,15 +67,17 @@ public class ReservationService {
         return ReservationReadResponse.from(savedReservation);
     }
     private void validateSeatAvailability(List<ConcertSeat> concertSeats) {
-        List<ConcertSeat> alreadyReserved = concertSeats.stream()
-                .filter(seat -> seat.getSeatReservationState() != SeatReservationState.UNAVAILABLE)
-                .toList();
-
-        if (!alreadyReserved.isEmpty()) {
-            List<Long> reservedSeatIds = alreadyReserved.stream()
-                    .map(ConcertSeat::getId)
+            // 이미 예약된 좌석만 필터링 (UNAVAILABLE)
+            List<ConcertSeat> alreadyReserved = concertSeats.stream()
+                    .filter(seat -> seat.getSeatReservationState() == SeatReservationState.UNAVAILABLE)
                     .toList();
-            throw new IllegalStateException("이미 예약된 좌석이 있습니다: " + reservedSeatIds);
+
+            if (!alreadyReserved.isEmpty()) {
+                List<Long> reservedSeatIds = alreadyReserved.stream()
+                        .map(ConcertSeat::getId)
+                        .toList();
+                throw new IllegalStateException("이미 예약된 좌석이 있습니다: " + reservedSeatIds);
+            }
         }
     }
 
