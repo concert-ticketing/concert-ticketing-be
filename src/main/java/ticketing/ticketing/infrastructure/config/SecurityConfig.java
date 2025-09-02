@@ -50,7 +50,8 @@ public class SecurityConfig {
                                 "/login/**",
                                 "/uploads/banner/**",
                                 "/uploads/thumbnail/**",
-                                "/uploads/description/**"
+                                "/uploads/description/**",
+                                "/uploads/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
