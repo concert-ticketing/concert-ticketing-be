@@ -23,6 +23,10 @@ public class ConcertSeat {
     @JoinColumn(name = "section_id", nullable = false)
     private ConcertSeatSection section;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
+
     private SeatReservationState seatReservationState;
 
     // 정적 팩토리 메서드 (가격 제거)
@@ -43,7 +47,7 @@ public class ConcertSeat {
         }
     }
 
-    public void setSeatReservationState(SeatReservationState seatReservationState) {
-
+    public void markAsReserved() {
+        this.seatReservationState = SeatReservationState.UNAVAILABLE;
     }
 }

@@ -4,8 +4,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ticketing.ticketing.domain.entity.ConcertSeat;
 import ticketing.ticketing.domain.entity.Reservation;
 import ticketing.ticketing.domain.entity.SeatReservation;
+import ticketing.ticketing.infrastructure.repository.concertSeat.ConcertSeatRepository;
 import ticketing.ticketing.infrastructure.seatReservation.SeatReservationRepository;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.UUID;
 public class SeatReservationService {
 
     private final SeatReservationRepository seatReservationRepository;
+    private final ConcertSeatRepository concertSeatRepository;
 
     public List<SeatReservation> findSeatReservationsByConcertSeatIds(List<Long> concertSeatIds) {
         List<SeatReservation> seats = seatReservationRepository.findByConcertSeatIds(concertSeatIds);
@@ -27,19 +30,16 @@ public class SeatReservationService {
     }
 
     @Transactional
-    public List<Long> updateSeatReservationStatus(List<SeatReservation> seatReservations, Reservation reservation) {
+    public List<Long> updateSeatReservationStatus(List<ConcertSeat> seats, Reservation reservation) {
 
         List<Long> updatedSeatIds = new ArrayList<>();
 
-        for (SeatReservation seatReservation : seatReservations) {
-            seatReservation.updateReservation(reservation);
-            updatedSeatIds.add(seatReservation.getId());
+        for (ConcertSeat seat : seats) {
+            seat.markAsReserved();
+            updatedSeatIds.add(seat.getId());
         }
+        concertSeatRepository.saveAll(seats);
 
-        // 3. 배치로 저장 (성능 최적화)
-        seatReservationRepository.saveAll(seatReservations);
-
-        // 4. 업데이트된 좌석 ID들 반환
         return updatedSeatIds;
     }
 }

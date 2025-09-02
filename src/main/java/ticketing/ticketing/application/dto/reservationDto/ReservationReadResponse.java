@@ -6,10 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ticketing.ticketing.application.dto.seatReservationDto.SeatReservationReadResponse;
-import ticketing.ticketing.domain.entity.ConcertSchedule;
-import ticketing.ticketing.domain.entity.Payment;
-import ticketing.ticketing.domain.entity.Reservation;
-import ticketing.ticketing.domain.entity.SeatReservation;
+import ticketing.ticketing.domain.entity.*;
 import ticketing.ticketing.domain.enums.PaymentState;
 
 import java.time.LocalDateTime;
@@ -27,14 +24,14 @@ public class ReservationReadResponse {
     private PaymentState payment;
     private String concertHallName;
     private LocalDateTime concertScheduleDate;
-    private List<SeatReservation> seatReservations;
+    private List<ConcertSeat> seatReservations;
     public static ReservationReadResponse from(Reservation reservation) {
         return ReservationReadResponse.builder()
                 .id(reservation.getId())
                 .payment(reservation.getPayment().getState())
                 .concertHallName(reservation.getConcertSchedule().getConcert().getConcertHallName())
                 .concertScheduleDate(reservation.getConcertSchedule().getConcertTime())
-                .seatReservations(reservation.getSeatReservation().stream().toList())
+                .seatReservations(reservation.getConcertSeats().stream().toList())
                 .build();
     }
 

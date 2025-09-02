@@ -35,7 +35,7 @@ public class Reservation {
     private ConcertSchedule concertSchedule;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
-    private List<SeatReservation> seatReservation;
+    private List<ConcertSeat> concertSeats;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_address_id")
@@ -69,13 +69,13 @@ public class Reservation {
     }
     public static Reservation create(User user,
                                      ConcertSchedule concertSchedule,
-                                     List<SeatReservation> seatReservation,
+                                     List<ConcertSeat> concertSeats,
                                      DeliveryAddress deliveryAddress,
                                      ReservationState state) {
         return Reservation.builder()
                 .user(user)
                 .concertSchedule(concertSchedule)
-                .seatReservation(seatReservation)
+                .concertSeats(concertSeats)
                 .deliveryAddress(deliveryAddress)
                 .state(state)
                 .build();

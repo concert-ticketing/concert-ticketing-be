@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ticketing.ticketing.application.dto.reservationDto.ReservationCreateRequest;
 import ticketing.ticketing.application.dto.reservationDto.ReservationReadResponse;
 import ticketing.ticketing.application.service.concertSchedule.ConcertScheduleService;
+import ticketing.ticketing.application.service.concertSeat.ConcertSeatService;
 import ticketing.ticketing.application.service.deliveryAddress.DeliveryAddressService;
 import ticketing.ticketing.application.service.seatReservation.SeatReservationService;
 import ticketing.ticketing.application.service.user.UserService;
@@ -29,6 +30,7 @@ public class ReservationService {
     private final UserService userService;
     private final ConcertScheduleService concertScheduleService;
     private final SeatReservationService seatReservationService;
+    private final ConcertSeatService concertSeatService;
     private final DeliveryAddressService deliveryAddressService;
     private final UserRepository userRepository;
 
@@ -42,7 +44,7 @@ public class ReservationService {
         ConcertSchedule schedule = concertScheduleService.getFindScheduleById(request.getConcertScheduleId());
 
         // 3. 좌석 예약 상태 검증
-        List<SeatReservation> seatReservations = seatReservationService.findSeatReservationsByConcertSeatIds(request.getSeatReservationIds());
+        List<ConcertSeat> seatReservations = concertSeatService.findSeatReservationsByConcertSeatIds(request.getSeatReservationIds());
         validateSeatAvailability(seatReservations);
 
         // 4. 배송 주소 생성
@@ -61,21 +63,17 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
         seatReservationService.updateSeatReservationStatus(seatReservations, savedReservation);
 
-        seatReservations.forEach(seatReservation -> {
-                    ConcertSeat concertSeat = seatReservation.getConcertSeat();
-                    concertSeat.setSeatReservationState(SeatReservationState.UNAVAILABLE);
-                });
         // 8. DTO로 변환해서 반환
         return ReservationReadResponse.from(savedReservation);
     }
-    private void validateSeatAvailability(List<SeatReservation> seatReservations) {
-        List<SeatReservation> alreadyReserved = seatReservations.stream()
-                .filter(seat -> seat.getReservation() != null)
+    private void validateSeatAvailability(List<ConcertSeat> concertSeats) {
+        List<ConcertSeat> alreadyReserved = concertSeats.stream()
+                .filter(seat -> seat.getSeatReservationState() != SeatReservationState.UNAVAILABLE)
                 .toList();
 
         if (!alreadyReserved.isEmpty()) {
             List<Long> reservedSeatIds = alreadyReserved.stream()
-                    .map(SeatReservation::getId)
+                    .map(ConcertSeat::getId)
                     .toList();
             throw new IllegalStateException("이미 예약된 좌석이 있습니다: " + reservedSeatIds);
         }
