@@ -27,7 +27,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((authorize) -> authorize
+                .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
@@ -53,7 +53,8 @@ public class SecurityConfig {
                                 "/uploads/description/**",
                                 "/upload/svg_image/**"
                         ).permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN") // JWT role 그대로 사용
+                        .anyRequest().hasAuthority("USER") // JWT role 그대로 사용
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

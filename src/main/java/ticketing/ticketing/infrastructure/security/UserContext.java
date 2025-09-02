@@ -44,5 +44,4 @@ public class UserContext {
 
         return null;
     }
-
 }

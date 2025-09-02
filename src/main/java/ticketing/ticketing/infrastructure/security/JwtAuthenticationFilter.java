@@ -42,12 +42,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 if (jwtUtil.isTokenValid(token)) {
                     String username = jwtUtil.extractUsername(token);
-                    String role = jwtUtil.extractRole(token);
+                    String role = jwtUtil.extractRole(token); // "USER" 그대로 가져옴
 
+                    // prefix 없이 그대로 권한 설정
                     List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
                     Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(auth);
-                    log.info("Authentication set successfully");
+                    log.info("Authentication set successfully for role: " + role);
                 }
             } catch (Exception e) {
                 log.warn("JWT 토큰 검증 실패: " + e.getMessage());
