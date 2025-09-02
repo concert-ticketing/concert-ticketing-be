@@ -42,7 +42,7 @@ public class ReservationService {
         ConcertSchedule schedule = concertScheduleService.getFindScheduleById(request.getConcertScheduleId());
 
         // 3. 좌석 예약 상태 검증
-        List<SeatReservation> seatReservations = seatReservationService.findSeatReservationById(request.getSeatReservationIds());
+        List<SeatReservation> seatReservations = seatReservationService.findSeatReservationsByConcertSeatIds(request.getSeatReservationIds());
         validateSeatAvailability(seatReservations);
 
         // 4. 배송 주소 생성
