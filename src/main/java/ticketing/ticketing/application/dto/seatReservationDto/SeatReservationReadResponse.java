@@ -16,7 +16,7 @@ import java.util.UUID;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SeatReservationReadResponse {
-    private UUID id;
+    private Long id;
     private Long reservationId;
     private Long scheduleId;
     private Long concertSeatMetadataId;
@@ -28,7 +28,6 @@ public class SeatReservationReadResponse {
                 .id(seatReservation.getId())
                 .reservationId(seatReservation.getReservation().getId())
                 .scheduleId(seatReservation.getSchedule().getId())
-                .concertSeatMetadataId(seatReservation.getConcertSeatMetadata().getId())
                 .createdAt(seatReservation.getCreatedAt())
                 .updatedAt(seatReservation.getUpdatedAt())
                 .build();
