@@ -143,27 +143,27 @@ public class CreateConcertService {
     ) throws Exception {
 
         return createConcertRepository.findById(id).map(concert -> {
-            // 콘서트 기본 정보 업데이트
+            // 콘서트 기본 정보 업데이트 (null 아닐 때만 덮어쓰기)
             concert.update(
-                    title,
-                    description,
-                    location,
-                    locationX,
-                    locationY,
-                    startDate,
-                    endDate,
-                    reservationStartDate,
-                    reservationEndDate,
-                    price,
-                    rating,
-                    limitAge,
-                    durationTime,
-                    admin,
-                    concertHallName
+                    title != null ? title : concert.getTitle(),
+                    description != null ? description : concert.getDescription(),
+                    location != null ? location : concert.getLocation(),
+                    locationX != null ? locationX : concert.getLocationX(),
+                    locationY != null ? locationY : concert.getLocationY(),
+                    startDate != null ? startDate : concert.getStartDate(),
+                    endDate != null ? endDate : concert.getEndDate(),
+                    reservationStartDate != null ? reservationStartDate : concert.getReservationStartDate(),
+                    reservationEndDate != null ? reservationEndDate : concert.getReservationEndDate(),
+                    price != null ? price : concert.getPrice(),
+                    rating != 0 ? rating : concert.getRating(), // int는 null 체크 대신 기본값으로 구분
+                    limitAge != 0 ? limitAge : concert.getLimitAge(),
+                    durationTime != 0 ? durationTime : concert.getDurationTime(),
+                    admin != null ? admin : concert.getAdmin(),
+                    concertHallName != null ? concertHallName : concert.getConcertHallName()
             );
 
             try {
-                // 이미지 덮어쓰기: 기존 이미지 삭제 후 새로 추가
+                // 이미지 업데이트: null → 유지, 값 있으면 교체
                 if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
                     String thumbnailFileName = saveImage(thumbnailImage, thumbnailPath);
                     concert.getImages().removeIf(img -> img.getImagesRole() == ImagesRole.THUMBNAIL);
@@ -183,7 +183,7 @@ public class CreateConcertService {
                 throw new RuntimeException("이미지 업로드 실패", e);
             }
 
-            // 공연회차 업데이트 (기존 삭제 후 재등록)
+            // 공연회차 업데이트 (null → 유지, 빈 리스트 → 전체 삭제 후 없음으로 유지)
             if (scheduleRequests != null) {
                 concert.getConcertSchedules().clear();
                 for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
@@ -192,7 +192,7 @@ public class CreateConcertService {
                 }
             }
 
-            // 좌석 및 구역 업데이트 (기존 삭제 후 재등록)
+            // 좌석 및 구역 업데이트 (null → 유지, 빈 리스트 → 전체 삭제 후 없음으로 유지)
             if (seatSections != null) {
                 concert.getConcertSeatSections().clear();
 

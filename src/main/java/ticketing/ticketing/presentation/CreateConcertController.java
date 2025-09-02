@@ -136,8 +136,8 @@ public class CreateConcertController {
                 request.durationTime(),
                 admin,
                 request.concertHallName(),
-                scheduleRequests,   // null → 원본 유지
-                seatSections,       // null → 원본 유지
+                scheduleRequests,
+                seatSections,
                 thumbnailImage, ImagesRole.THUMBNAIL,
                 descriptionImage, ImagesRole.DESCRIPT_IMAGE,
                 svgImage, ImagesRole.SVG_IMAGE
