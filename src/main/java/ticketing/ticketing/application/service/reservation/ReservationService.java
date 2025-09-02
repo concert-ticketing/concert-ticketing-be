@@ -19,7 +19,6 @@ import ticketing.ticketing.infrastructure.repository.user.UserRepository;
 import ticketing.ticketing.infrastructure.security.UserContext;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

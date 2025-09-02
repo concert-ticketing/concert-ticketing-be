@@ -47,6 +47,7 @@ public class Reservation {
     private Payment payment;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 100)
     private ReservationState state;
 
     @CreationTimestamp

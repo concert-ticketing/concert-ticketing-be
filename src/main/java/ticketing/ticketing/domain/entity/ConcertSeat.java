@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ticketing.ticketing.domain.enums.ReservationState;
 import ticketing.ticketing.domain.enums.SeatReservationState;
 
 @Entity
