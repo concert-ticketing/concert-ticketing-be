@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ticketing.ticketing.domain.enums.ReservationState;
+import ticketing.ticketing.domain.enums.SeatReservationState;
 
 @Entity
 @Getter
@@ -21,12 +23,15 @@ public class ConcertSeat {
     @JoinColumn(name = "section_id", nullable = false)
     private ConcertSeatSection section;
 
+    private SeatReservationState seatReservationState;
+
     // 정적 팩토리 메서드 (가격 제거)
     public static ConcertSeat create(String rowName, Integer seatNumber, ConcertSeatSection section) {
         ConcertSeat seat = new ConcertSeat();
         seat.rowName = rowName;
         seat.seatNumber = seatNumber;
         seat.setSection(section);
+        seat.seatReservationState = SeatReservationState.AVAILABLE;
         return seat;
     }
 
@@ -36,5 +41,9 @@ public class ConcertSeat {
         if (!section.getSeats().contains(this)) {
             section.getSeats().add(this);
         }
+    }
+
+    public void setSeatReservationState(SeatReservationState seatReservationState) {
+
     }
 }

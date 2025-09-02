@@ -18,7 +18,7 @@ public class SeatReservationService {
 
     private final SeatReservationRepository seatReservationRepository;
 
-    public List<SeatReservation> findSeatReservationById(List<UUID> id) {
+    public List<SeatReservation> findSeatReservationById(List<Long> id) {
         List<SeatReservation> seats = seatReservationRepository.findByListSeatId(id);
         if (seats == null || seats.isEmpty()) {
             throw new EntityNotFoundException("좌석 예약 정보를 찾을 수 없습니다.");
@@ -33,7 +33,7 @@ public class SeatReservationService {
 
         for (SeatReservation seatReservation : seatReservations) {
             seatReservation.updateReservation(reservation);
-            updatedSeatIds.add(seatReservation.getId().getMostSignificantBits());
+            updatedSeatIds.add(seatReservation.getId());
         }
 
         // 3. 배치로 저장 (성능 최적화)

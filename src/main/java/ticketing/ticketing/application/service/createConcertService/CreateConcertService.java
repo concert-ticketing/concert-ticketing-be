@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import ticketing.ticketing.application.dto.ConcertSeatRequestDto;
 import ticketing.ticketing.application.dto.concertScheduleRequest.ConcertScheduleRequest;
+import ticketing.ticketing.application.dto.concertSeatRequestDto.ConcertSeatRequestDto;
 import ticketing.ticketing.application.dto.concertSeatRequestDto.ConcertSeatSectionRequestDto;
 import ticketing.ticketing.domain.entity.*;
 import ticketing.ticketing.domain.enums.ImagesRole;
@@ -218,6 +218,7 @@ public class CreateConcertService {
                                 sectionDto.getSectionName(),
                                 sectionDto.getColorCode(),
                                 sectionDto.getPrice(),
+
                                 concert
                         );
                         concert.getConcertSeatSections().add(section);

@@ -12,5 +12,5 @@ public interface SeatReservationRepository extends JpaRepository<SeatReservation
 
 
     @Query("SELECT s FROM SeatReservation s WHERE s.id IN :seatIdList")
-    List<SeatReservation> findByListSeatId(@Param("seatIdList") List<UUID> seatIdList);
+    List<SeatReservation> findByListSeatId(@Param("seatIdList") List<Long> seatIdList);
 }

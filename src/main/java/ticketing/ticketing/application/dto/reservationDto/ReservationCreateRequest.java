@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class ReservationCreateRequest {
 
     private Long concertScheduleId;
-    private List<UUID> seatReservationIds;
+    private List<Long> seatReservationIds;
     private DeliveryAddressCreateRequest deliveryAddress;
     private String state;
 
