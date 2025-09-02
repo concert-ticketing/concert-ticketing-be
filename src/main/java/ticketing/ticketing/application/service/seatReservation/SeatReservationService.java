@@ -18,10 +18,10 @@ public class SeatReservationService {
 
     private final SeatReservationRepository seatReservationRepository;
 
-    public List<SeatReservation> findSeatReservationById(List<Long> id) {
-        List<SeatReservation> seats = seatReservationRepository.findByListSeatId(id);
+    public List<SeatReservation> findSeatReservationsByConcertSeatIds(List<Long> concertSeatIds) {
+        List<SeatReservation> seats = seatReservationRepository.findByConcertSeatIds(concertSeatIds);
         if (seats == null || seats.isEmpty()) {
-            throw new EntityNotFoundException("좌석 예약 정보를 찾을 수 없습니다.");
+            throw new EntityNotFoundException("해당 콘서트 좌석 예약 정보를 찾을 수 없습니다.");
         }
         return seats;
     }

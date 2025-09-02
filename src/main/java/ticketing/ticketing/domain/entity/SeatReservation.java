@@ -27,7 +27,7 @@ public class SeatReservation {
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "concert_seat_metadata_id")
+    @JoinColumn(name = "concert_seat")
     private ConcertSeat concertSeat;
 
     @CreationTimestamp

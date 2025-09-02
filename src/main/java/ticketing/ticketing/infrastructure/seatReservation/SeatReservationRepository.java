@@ -11,6 +11,6 @@ import java.util.UUID;
 public interface SeatReservationRepository extends JpaRepository<SeatReservation, Long> {
 
 
-    @Query("SELECT s FROM SeatReservation s WHERE s.id IN :seatIdList")
-    List<SeatReservation> findByListSeatId(@Param("seatIdList") List<Long> seatIdList);
+    @Query("SELECT s FROM SeatReservation s WHERE s.concertSeat.id IN :concertSeatIdList")
+    List<SeatReservation> findByConcertSeatIds(@Param("concertSeatIdList") List<Long> concertSeatIdList);
 }
