@@ -12,6 +12,7 @@ import ticketing.ticketing.application.service.seatReservation.SeatReservationSe
 import ticketing.ticketing.application.service.user.UserService;
 import ticketing.ticketing.domain.entity.*;
 import ticketing.ticketing.domain.enums.ReservationState;
+import ticketing.ticketing.domain.enums.SeatReservationState;
 import ticketing.ticketing.infrastructure.repository.reservation.ReservationRepository;
 import ticketing.ticketing.infrastructure.repository.user.UserRepository;
 import ticketing.ticketing.infrastructure.security.UserContext;
@@ -60,17 +61,20 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
         seatReservationService.updateSeatReservationStatus(seatReservations, savedReservation);
 
+        seatReservations.forEach(seatReservation -> {
+                    ConcertSeat concertSeat = seatReservation.getConcertSeat();
+                    concertSeat.setSeatReservationState(SeatReservationState.UNAVAILABLE);
+                });
         // 8. DTO로 변환해서 반환
         return ReservationReadResponse.from(savedReservation);
     }
-
     private void validateSeatAvailability(List<SeatReservation> seatReservations) {
         List<SeatReservation> alreadyReserved = seatReservations.stream()
                 .filter(seat -> seat.getReservation() != null)
                 .toList();
 
         if (!alreadyReserved.isEmpty()) {
-            List<UUID> reservedSeatIds = alreadyReserved.stream()
+            List<Long> reservedSeatIds = alreadyReserved.stream()
                     .map(SeatReservation::getId)
                     .toList();
             throw new IllegalStateException("이미 예약된 좌석이 있습니다: " + reservedSeatIds);

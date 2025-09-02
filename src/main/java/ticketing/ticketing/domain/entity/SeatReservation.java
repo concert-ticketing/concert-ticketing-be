@@ -15,8 +15,7 @@ import java.util.UUID;
 public class SeatReservation {
     @Id
     @GeneratedValue
-    private UUID id;
-
+    private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
@@ -26,9 +25,10 @@ public class SeatReservation {
     @JoinColumn(name = "schedule_id")
     private ConcertSchedule schedule;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concert_seat_metadata_id")
-    private ConcertSeatMetadata concertSeatMetadata;
+    private ConcertSeat concertSeat;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -45,11 +45,11 @@ public class SeatReservation {
         }
     }
 
-    public static SeatReservation create(Reservation reservation, ConcertSchedule concertSchedule, ConcertSeatMetadata concertSeatMetadata) {
+    public static SeatReservation create(Reservation reservation, ConcertSchedule concertSchedule, ConcertSeat concertSeat) {
         return SeatReservation.builder()
                 .reservation(reservation)
                 .schedule(concertSchedule)
-                .concertSeatMetadata(concertSeatMetadata)
+                .concertSeat(concertSeat)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -58,4 +58,5 @@ public class SeatReservation {
         this.reservation = reservation;
         this.updatedAt = LocalDateTime.now();
     }
+
 }
