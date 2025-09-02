@@ -42,7 +42,7 @@ public class Reservation {
     private DeliveryAddress deliveryAddress;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id")
+    @JoinColumn(name = "payment_id", nullable = true)
     @JsonIgnore
     private Payment payment;
 
