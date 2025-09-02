@@ -48,10 +48,10 @@ public class SecurityConfig {
                                 "/api/notices",
                                 "/api/faqs",
                                 "/login/**",
-                                "/uploads/banner/**",
+                                "/upload/banner/**",
                                 "/uploads/thumbnail/**",
                                 "/uploads/description/**",
-                                "/uploads/**"
+                                "/upload/svg_image/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
