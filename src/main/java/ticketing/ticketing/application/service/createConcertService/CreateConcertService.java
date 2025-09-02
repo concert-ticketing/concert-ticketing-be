@@ -131,9 +131,9 @@ public class CreateConcertService {
             LocalDateTime reservationStartDate,
             LocalDateTime reservationEndDate,
             String price,
-            int rating,
-            int limitAge,
-            int durationTime,
+            Integer rating,          // int → Integer로 바꿔서 null 처리 가능
+            Integer limitAge,
+            Integer durationTime,
             Admin admin,
             String concertHallName,
             List<ConcertScheduleRequest> scheduleRequests,
@@ -147,27 +147,27 @@ public class CreateConcertService {
     ) throws Exception {
 
         return createConcertRepository.findById(id).map(concert -> {
-            // 콘서트 기본 정보 업데이트
+            // 콘서트 기본 정보 업데이트 (null 체크 후만 적용)
             concert.update(
-                    title,
-                    description,
-                    location,
-                    locationX,
-                    locationY,
-                    startDate,
-                    endDate,
-                    reservationStartDate,
-                    reservationEndDate,
-                    price,
-                    rating,
-                    limitAge,
-                    durationTime,
-                    admin,
-                    concertHallName
+                    title != null ? title : concert.getTitle(),
+                    description != null ? description : concert.getDescription(),
+                    location != null ? location : concert.getLocation(),
+                    locationX != null ? locationX : concert.getLocationX(),
+                    locationY != null ? locationY : concert.getLocationY(),
+                    startDate != null ? startDate : concert.getStartDate(),
+                    endDate != null ? endDate : concert.getEndDate(),
+                    reservationStartDate != null ? reservationStartDate : concert.getReservationStartDate(),
+                    reservationEndDate != null ? reservationEndDate : concert.getReservationEndDate(),
+                    price != null ? price : concert.getPrice(),
+                    rating != null ? rating : concert.getRating(),
+                    limitAge != null ? limitAge : concert.getLimitAge(),
+                    durationTime != null ? durationTime : concert.getDurationTime(),
+                    admin != null ? admin : concert.getAdmin(),
+                    concertHallName != null ? concertHallName : concert.getConcertHallName()
             );
 
             try {
-                // 이미지 덮어쓰기
+                // 이미지 업데이트 (null → 유지)
                 if (thumbnailImage != null && !thumbnailImage.isEmpty()) {
                     String thumbnailFileName = saveImage(thumbnailImage, thumbnailPath);
                     concert.getImages().removeIf(img -> img.getImagesRole() == ImagesRole.THUMBNAIL);
@@ -187,22 +187,19 @@ public class CreateConcertService {
                 throw new RuntimeException("이미지 업로드 실패", e);
             }
 
-            // 공연회차 업데이트 (concertTime만 사용)
+            // 공연회차 업데이트
             if (scheduleRequests != null) {
+                // null → 유지, 빈 리스트 → 삭제
                 concert.getConcertSchedules().clear();
                 for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
-                    ConcertSchedule schedule = ConcertSchedule.create(
-                            concert,
-                            scheduleRequest.getStartTime()
-                    );
+                    ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getStartTime());
                     concert.getConcertSchedules().add(schedule);
                 }
             }
 
-            // 좌석 및 구역 업데이트 (colorCode로 섹션 식별, 구역 가격/이름 갱신)
+            // 좌석 및 구역 업데이트
             if (seatSections != null) {
                 for (ConcertSeatSectionRequestDto sectionDto : seatSections) {
-                    // 1) colorCode 기준으로 기존 섹션 조회
                     Optional<ConcertSeatSection> existingSectionOpt = concert.getConcertSeatSections().stream()
                             .filter(sec -> sec.getColorCode().equals(sectionDto.getColorCode()))
                             .findFirst();
@@ -210,7 +207,6 @@ public class CreateConcertService {
                     ConcertSeatSection section;
                     if (existingSectionOpt.isPresent()) {
                         section = existingSectionOpt.get();
-                        // 섹션명/가격 업데이트 (요청값 반영)
                         if (sectionDto.getSectionName() != null) {
                             section.updateSectionName(sectionDto.getSectionName());
                         }
@@ -218,12 +214,6 @@ public class CreateConcertService {
                             section.updatePrice(sectionDto.getPrice());
                         }
                     } else {
-                        boolean duplicated = concert.getConcertSeatSections().stream()
-                                .anyMatch(sec -> sec.getColorCode().equals(sectionDto.getColorCode()));
-                        if (duplicated) {
-                            throw new IllegalArgumentException("해당 콘서트에 이미 같은 colorCode가 존재합니다: " + sectionDto.getColorCode());
-                        }
-
                         section = ConcertSeatSection.create(
                                 sectionDto.getSectionName(),
                                 sectionDto.getColorCode(),
@@ -233,7 +223,7 @@ public class CreateConcertService {
                         concert.getConcertSeatSections().add(section);
                     }
 
-                    // 좌석 추가: Row + SeatNumber 기준 중복 방지 (좌석 가격 없음)
+                    // 좌석 추가
                     if (sectionDto.getSeats() != null) {
                         for (ConcertSeatRequestDto seatDto : sectionDto.getSeats()) {
                             boolean seatExists = section.getSeats().stream()
