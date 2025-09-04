@@ -37,7 +37,9 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Page<UserInfoReadResponse>> getUserInfo(int size, int page) {
+    public ResponseEntity<Page<UserInfoReadResponse>> getUserInfo(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserInfoReadResponse> getUserInfo = userService.getUserInfo(pageable);
         return ResponseEntity.ok(getUserInfo);
