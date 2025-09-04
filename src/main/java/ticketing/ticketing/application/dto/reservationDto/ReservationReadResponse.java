@@ -28,10 +28,26 @@ public class ReservationReadResponse {
     public static ReservationReadResponse from(Reservation reservation) {
         return ReservationReadResponse.builder()
                 .id(reservation.getId())
-                .payment(reservation.getPayment().getState())
-                .concertHallName(reservation.getConcertSchedule().getConcert().getConcertHallName())
-                .concertScheduleDate(reservation.getConcertSchedule().getConcertTime())
-                .seatReservations(reservation.getConcertSeats().stream().toList())
+                .payment(
+                        reservation.getPayment() != null
+                                ? reservation.getPayment().getState()
+                                : null
+                )
+                .concertHallName(
+                        reservation.getConcertSchedule() != null && reservation.getConcertSchedule().getConcert() != null
+                                ? reservation.getConcertSchedule().getConcert().getConcertHallName()
+                                : null
+                )
+                .concertScheduleDate(
+                        reservation.getConcertSchedule() != null
+                                ? reservation.getConcertSchedule().getConcertTime()
+                                : null
+                )
+                .seatReservations(
+                        reservation.getConcertSeats() != null
+                                ? reservation.getConcertSeats().stream().toList()
+                                : List.of()
+                )
                 .build();
     }
 
