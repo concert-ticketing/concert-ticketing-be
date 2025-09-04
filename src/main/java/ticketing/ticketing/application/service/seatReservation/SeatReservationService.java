@@ -36,6 +36,7 @@ public class SeatReservationService {
 
         for (ConcertSeat seat : seats) {
             seat.markAsReserved();
+            seat.assignToReservation(reservation);
             updatedSeatIds.add(seat.getId());
         }
         concertSeatRepository.saveAll(seats);

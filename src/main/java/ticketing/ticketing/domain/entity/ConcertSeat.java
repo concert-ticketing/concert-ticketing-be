@@ -26,6 +26,7 @@ public class ConcertSeat {
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
+    @Enumerated(EnumType.STRING)
     private SeatReservationState seatReservationState;
 
     // 정적 팩토리 메서드 (가격 제거)
@@ -48,5 +49,14 @@ public class ConcertSeat {
 
     public void markAsReserved() {
         this.seatReservationState = SeatReservationState.UNAVAILABLE;
+    }
+
+    public void assignToReservation(Reservation reservation) {
+        this.reservation = reservation;
+
+        // 양방향 관계일 경우, reservation에도 추가해줌
+        if (!reservation.getConcertSeats().contains(this)) {
+            reservation.getConcertSeats().add(this);
+        }
     }
 }
