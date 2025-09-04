@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto;
 import ticketing.ticketing.application.dto.concertSeatDto.ConcertSeatDto;
 import ticketing.ticketing.domain.entity.Reservation;
 import ticketing.ticketing.domain.enums.PaymentState;
@@ -23,6 +24,7 @@ public class ReservationReadResponse {
     private Long id;
     private PaymentState payment;
     private String concertHallName;
+    private ConcertResponseDto concert;
     private LocalDateTime concertScheduleDate;
     private List<ConcertSeatDto> seatReservations; // ConcertSeatDto로 변경
 
@@ -38,6 +40,10 @@ public class ReservationReadResponse {
                         reservation.getConcertSchedule() != null && reservation.getConcertSchedule().getConcert() != null
                                 ? reservation.getConcertSchedule().getConcert().getConcertHallName()
                                 : null
+                )
+                .concert(
+                        reservation.getConcertSchedule().getConcert() != null
+                            ? ConcertResponseDto.from(reservation.getConcertSchedule().getConcert()) :null
                 )
                 .concertScheduleDate(
                         reservation.getConcertSchedule() != null
