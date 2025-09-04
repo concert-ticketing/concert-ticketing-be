@@ -5,13 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ticketing.ticketing.application.dto.seatReservationDto.SeatReservationReadResponse;
-import ticketing.ticketing.domain.entity.*;
+import ticketing.ticketing.application.dto.concertSeatDto.ConcertSeatDto;
+import ticketing.ticketing.domain.entity.Reservation;
 import ticketing.ticketing.domain.enums.PaymentState;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
@@ -20,11 +19,13 @@ import java.util.stream.Collectors;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReservationReadResponse {
+
     private Long id;
     private PaymentState payment;
     private String concertHallName;
     private LocalDateTime concertScheduleDate;
-    private List<ConcertSeat> seatReservations;
+    private List<ConcertSeatDto> seatReservations; // ConcertSeatDto로 변경
+
     public static ReservationReadResponse from(Reservation reservation) {
         return ReservationReadResponse.builder()
                 .id(reservation.getId())
@@ -45,7 +46,9 @@ public class ReservationReadResponse {
                 )
                 .seatReservations(
                         reservation.getConcertSeats() != null
-                                ? reservation.getConcertSeats().stream().toList()
+                                ? reservation.getConcertSeats().stream()
+                                .map(ConcertSeatDto::from) // ConcertSeat → ConcertSeatDto
+                                .collect(Collectors.toList())
                                 : List.of()
                 )
                 .build();
