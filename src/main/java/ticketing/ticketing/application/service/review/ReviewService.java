@@ -36,11 +36,15 @@ public class ReviewService {
     private final ConcertRepository concertRepository;
     private final UserContext userContext;
 
+
+
     public ReviewByConcertListAddRatingReadResponse getReviewByConcertId(Long concertId) {
         Integer concertRating = concertService.getConcertRatingById(concertId);
         List<ReviewByConcertIdReadResponse> reviews = reviewRepository.getReviewByConcertId(concertId);
         return new ReviewByConcertListAddRatingReadResponse(reviews, concertRating);
     }
+
+
 
     @Transactional
     public ResponseEntity<Void> createReview(ReviewCreateRequest reviewCreateRequest) {

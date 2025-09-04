@@ -1,21 +1,33 @@
 package ticketing.ticketing.presentation;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketing.ticketing.application.dto.reviewDto.ReviewByConcertListAddRatingReadResponse;
 import ticketing.ticketing.application.dto.reviewDto.ReviewCreateRequest;
+import ticketing.ticketing.application.dto.reviewResponseDto.ReviewResponseDto;
 import ticketing.ticketing.application.service.review.ReviewService;
+import ticketing.ticketing.infrastructure.security.UserContext;
 
 @RestController
 @RequestMapping("/api/review")
 @RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
+    private final UserContext userContext;
+
 
     @GetMapping("/")
     public ResponseEntity<ReviewByConcertListAddRatingReadResponse> getReviewByConcertId(@RequestParam Long concertId) {
         return ResponseEntity.ok(reviewService.getReviewByConcertId(concertId));
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<Page<ReviewResponseDto>> getReviewByUserId(Pageable pageable) {
+        Long userId = userContext.getCurrentUserId();
+        return ResponseEntity.ok(reviewService.getReviewsByUser(userId, pageable));
     }
 
     @PostMapping("/create")
