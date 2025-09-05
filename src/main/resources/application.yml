@@ -99,3 +99,4 @@ logging:
 kakaopay:
   secretKey: ${KAKAO_PAY_SECRET_KEY_DEV}
   cid: TC0ONETIME
+  api-host : https://open-api.kakaopay.com
