@@ -17,18 +17,18 @@ public class ReservationController {
     private final ReservationService reservationService;
 
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<Long> createReservation(@RequestBody ReservationCreateRequest reservationCreateRequest) {
         Long id = reservationService.createReservation(reservationCreateRequest).getId();
         return ResponseEntity.ok(id);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<ReservationReadResponse>> getAllReservations() {
         return reservationService.getAllReservationsInfo();
     }
 
-    @PutMapping("/")
+    @PutMapping("")
     public ResponseEntity<String> cancelReservation(@RequestParam Long reservationId) {
         return reservationService.canceledReservation(reservationId);
     }

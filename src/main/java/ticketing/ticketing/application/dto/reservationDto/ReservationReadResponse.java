@@ -9,6 +9,7 @@ import ticketing.ticketing.application.dto.concertResponseDto.ConcertResponseDto
 import ticketing.ticketing.application.dto.concertSeatDto.ConcertSeatDto;
 import ticketing.ticketing.domain.entity.Reservation;
 import ticketing.ticketing.domain.enums.PaymentState;
+import ticketing.ticketing.domain.enums.ReservationState;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +27,8 @@ public class ReservationReadResponse {
     private String concertHallName;
     private ConcertResponseDto concert;
     private LocalDateTime concertScheduleDate;
-    private List<ConcertSeatDto> seatReservations; // ConcertSeatDto로 변경
+    private List<ConcertSeatDto> seatReservations;
+    private ReservationState state;
 
     public static ReservationReadResponse from(Reservation reservation) {
         return ReservationReadResponse.builder()
@@ -56,6 +58,9 @@ public class ReservationReadResponse {
                                 .map(ConcertSeatDto::from) // ConcertSeat → ConcertSeatDto
                                 .collect(Collectors.toList())
                                 : List.of()
+                )
+                .state(
+                        reservation.getState()
                 )
                 .build();
     }
