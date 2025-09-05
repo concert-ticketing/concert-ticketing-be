@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ticketing.ticketing.domain.enums.SeatReservationState;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -29,15 +27,16 @@ public class ConcertSeat {
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
-    @OneToMany(mappedBy = "concertSeat", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ConcertSchedule> concertSchedules = new ArrayList<>();
-
-
+    // 필드 연결만, 리스트 추가는 ConcertSchedule에서 처리
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="concert_schedule_id")
+    private ConcertSchedule concertSchedule;
 
     @Enumerated(EnumType.STRING)
     private SeatReservationState seatReservationState;
 
-    // 정적 팩토리 메서드 (가격 제거)
+    // 정적 팩토리 메서드
     public static ConcertSeat create(String rowName, Integer seatNumber, ConcertSeatSection section) {
         ConcertSeat seat = new ConcertSeat();
         seat.rowName = rowName;
@@ -61,8 +60,6 @@ public class ConcertSeat {
 
     public void assignToReservation(Reservation reservation) {
         this.reservation = reservation;
-
-        // 양방향 관계일 경우, reservation에도 추가해줌
         if (!reservation.getConcertSeats().contains(this)) {
             reservation.getConcertSeats().add(this);
         }
@@ -73,8 +70,4 @@ public class ConcertSeat {
         this.seatReservationState = SeatReservationState.AVAILABLE;
     }
 
-    public void addConcertSchedule(ConcertSchedule schedule) {
-        this.concertSchedules.add(schedule);
-        schedule.setConcertSeat(this);
-    }
 }

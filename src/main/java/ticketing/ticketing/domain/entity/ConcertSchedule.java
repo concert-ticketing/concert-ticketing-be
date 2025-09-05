@@ -5,6 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder(access = AccessLevel.PROTECTED)
 @Getter
 public class ConcertSchedule {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,9 +24,8 @@ public class ConcertSchedule {
     @JoinColumn(name = "concert_id")
     private Concert concert;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="concert_schedule_id")
-    private ConcertSeat concertSeat;
+    @OneToMany(mappedBy = "concertSchedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConcertSeat> concertSeats = new ArrayList<>(); // 이름 변경: 복수형
 
     private LocalDateTime concertTime;
 
@@ -54,11 +56,16 @@ public class ConcertSchedule {
                 .build();
     }
 
-
-    public void setConcertSeat(ConcertSeat seat) {
-        this.concertSeat = seat;
-        if (!seat.getConcertSchedules().contains(this)) {
-            seat.getConcertSchedules().add(this);
+    // 양방향 편의 메서드
+    public void addConcertSeat(ConcertSeat seat) {
+        if (!concertSeats.contains(seat)) {
+            concertSeats.add(seat);
+            seat.setConcertSchedule(this); // 필드 연결만
         }
+    }
+
+    public void removeConcertSeat(ConcertSeat seat) {
+        concertSeats.remove(seat);
+        seat.setConcertSchedule(null);
     }
 }
