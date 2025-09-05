@@ -29,7 +29,7 @@ public class ReservationController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<String> cancelReservation(@PathVariable Long reservationId) {
+    public ResponseEntity<String> cancelReservation(@RequestParam Long reservationId) {
         return reservationService.canceledReservation(reservationId);
     }
 
