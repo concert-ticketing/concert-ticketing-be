@@ -7,12 +7,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ticketing.ticketing.application.dto.payDto.KakaoPayRequest.OrderRequest;
 import ticketing.ticketing.application.dto.payDto.KakaoPayResponse;
 import ticketing.ticketing.application.dto.payDto.KakaoPayResponse.ReadyResponse;
+import ticketing.ticketing.domain.entity.Payment;
+import ticketing.ticketing.domain.enums.PaymentState;
+import ticketing.ticketing.infrastructure.repository.payment.PaymentRepository;
 import ticketing.ticketing.infrastructure.security.UserContext;
 
 import java.util.HashMap;
@@ -37,6 +41,7 @@ public class KakaoPayProvider {
 
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final PaymentRepository paymentRepository;
     private final UserContext userContext;
 
     Dotenv dotenv = Dotenv.load();
@@ -57,7 +62,6 @@ public class KakaoPayProvider {
         parameters.put("total_amount", request.getTotalPrice());
         parameters.put("tax_free_amount", "0");
 
-        // 프론트에서 URL 전달
         parameters.put("approval_url", dotenv.get("APPROVAL_URL"));
         parameters.put("cancel_url", dotenv.get("CANCEL_URL"));
         parameters.put("fail_url", dotenv.get("FAIL_URL"));
@@ -96,10 +100,28 @@ public class KakaoPayProvider {
         return approveResponse;
     }
 
+    private void savePayment(KakaoPayResponse.ApproveResponse approveResponse) {
+        try {
+            Payment payment = Payment.create(
+                    Long.valueOf(approveResponse.getAmount().getTotal()), // 총 결제금액
+                    PaymentState.PAID,
+                    "KAKAO_PAY" // 결제 타입
+            );
+
+            paymentRepository.save(payment);
+            log.info("Payment saved successfully: {}", payment.getId());
+
+        } catch (Exception e) {
+            log.error("Failed to save payment: {}", e.getMessage());
+            // 결제는 성공했지만 DB 저장 실패 시 어떻게 처리할지 정해야 함
+            throw new RuntimeException("Payment save failed", e);
+        }
+    }
+
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "SECRET_KEY " + secretKey);
-        headers.add("Content-type", "application/json");
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED); // 이게 더 정확함
         return headers;
     }
 }
