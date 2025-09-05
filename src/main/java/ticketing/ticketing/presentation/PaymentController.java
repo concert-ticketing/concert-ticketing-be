@@ -27,13 +27,13 @@ public class PaymentController {
         return kakaoPayProvider.ready(request);
     }
 
-    @Transactional
+/*    @Transactional
     @PostMapping("/create")
     public ResponseEntity<Payment> createPayment(@RequestBody PaymentCreateRequest request) {
         Payment payment = paymentService.creatPayment(request);
         reservationService.updateReservationByPaymentInfo(payment, request.getReservationId());
         return ResponseEntity.ok(payment);
-    }
+    }*/
 
     // 카카오페이 결제 승인
     @GetMapping("/approve")
