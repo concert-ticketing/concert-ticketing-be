@@ -1,4 +1,4 @@
-package ticketing.ticketing.infrastructure.seatReservation;
+package ticketing.ticketing.infrastructure.repository.seatReservation;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -8,11 +8,10 @@ import ticketing.ticketing.domain.entity.ConcertSeat;
 import ticketing.ticketing.domain.entity.Reservation;
 import ticketing.ticketing.domain.entity.SeatReservation;
 import ticketing.ticketing.infrastructure.repository.concertSeat.ConcertSeatRepository;
-import ticketing.ticketing.infrastructure.seatReservation.SeatReservationRepository;
+import ticketing.ticketing.infrastructure.repository.seatReservation.SeatReservationRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

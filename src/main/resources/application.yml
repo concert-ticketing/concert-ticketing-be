@@ -95,3 +95,7 @@ logging:
   level:
     ticketing.ticketing.infrastructure.security: DEBUG
     org.springframework.web.filter.OncePerRequestFilter: DEBUG
+
+kakaopay:
+  secretKey: ${KAKAO_PAY_SECRET_KEY_DEV}
+  cid: TC0ONETIME
