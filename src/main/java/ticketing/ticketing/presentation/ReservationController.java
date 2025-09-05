@@ -28,4 +28,9 @@ public class ReservationController {
         return reservationService.getAllReservationsInfo();
     }
 
+    @PutMapping("/")
+    public ResponseEntity<String> cancelReservation(@PathVariable Long reservationId) {
+        return reservationService.canceledReservation(reservationId);
+    }
+
 }

@@ -108,4 +108,18 @@ public class ReservationService {
         List<ReservationReadResponse> responseList = ReservationReadResponse.from(reservations);
         return ResponseEntity.ok(responseList);
     }
+
+    @Transactional
+    public ResponseEntity<String> canceledReservation(Long reservationId){
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+        List<ConcertSeat> seats = reservation.getConcertSeats();
+
+        for (ConcertSeat seat : seats) {
+            seat.unassignFromReservation(); // reservation_id = null, 상태 AVAILABLE
+        }
+
+        reservation.cancel(ReservationState.CANCELLED);
+
+        return ResponseEntity.ok(reservation.getState().toString());
+    }
 }

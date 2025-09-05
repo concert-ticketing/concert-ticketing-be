@@ -85,4 +85,8 @@ public class Reservation {
     public void updateToPayment(Payment payment) {
         this.payment = payment;
     }
+
+    public void cancel(ReservationState state) {
+        this.state = state;
+    }
 }

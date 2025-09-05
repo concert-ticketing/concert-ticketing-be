@@ -59,4 +59,9 @@ public class ConcertSeat {
             reservation.getConcertSeats().add(this);
         }
     }
+
+    public void unassignFromReservation() {
+        this.reservation = null;
+        this.seatReservationState = SeatReservationState.AVAILABLE;
+    }
 }
