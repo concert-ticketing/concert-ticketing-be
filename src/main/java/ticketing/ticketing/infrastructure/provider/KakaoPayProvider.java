@@ -1,5 +1,6 @@
 package ticketing.ticketing.infrastructure.provider;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +35,11 @@ public class KakaoPayProvider {
     @Value("${kakaopay.api-host}")
     private String kakaoPayHost; // ex: https://open-api.kakaopay.com
 
+
     private final RestTemplate restTemplate = new RestTemplate();
     private final UserContext userContext;
+
+    Dotenv dotenv = Dotenv.load();
 
 
     public String generateOrderId() {
@@ -54,9 +58,9 @@ public class KakaoPayProvider {
         parameters.put("tax_free_amount", "0");
 
         // 프론트에서 URL 전달
-        parameters.put("approval_url", request.getApprovalUrl());
-        parameters.put("cancel_url", request.getCancelUrl());
-        parameters.put("fail_url", request.getFailUrl());
+        parameters.put("approval_url", dotenv.get("APPROVAL_URL"));
+        parameters.put("cancel_url", dotenv.get("CANCEL_URL"));
+        parameters.put("fail_url", dotenv.get("FAIL_URL"));
 
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(parameters, getHeaders());
 
