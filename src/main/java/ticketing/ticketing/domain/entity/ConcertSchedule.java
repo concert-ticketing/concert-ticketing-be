@@ -1,13 +1,10 @@
 package ticketing.ticketing.domain.entity;
 
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
-
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,12 +21,14 @@ public class ConcertSchedule {
     @JoinColumn(name = "concert_id")
     private Concert concert;
 
-    private LocalDateTime concertTime;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="concert_schedule_id")
+    private ConcertSeat concertSeat;
 
+    private LocalDateTime concertTime;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
@@ -43,7 +42,6 @@ public class ConcertSchedule {
         }
     }
 
-
     @PreRemove
     private void deleteLogical() {
         this.deletedAt = LocalDateTime.now();
@@ -54,5 +52,13 @@ public class ConcertSchedule {
                 .concert(concert)
                 .concertTime(concertTime)
                 .build();
+    }
+
+
+    public void setConcertSeat(ConcertSeat seat) {
+        this.concertSeat = seat;
+        if (!seat.getConcertSchedules().contains(this)) {
+            seat.getConcertSchedules().add(this);
+        }
     }
 }

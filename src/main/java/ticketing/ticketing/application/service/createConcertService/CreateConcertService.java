@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -96,6 +97,12 @@ public class CreateConcertService {
                 concertHallName
         );
 
+        if (thumbnailFileName != null) {
+            concert.addImage(thumbnailFileName, thumbnailRole);
+        }
+        if (descriptionFileName != null) {
+            concert.addImage(descriptionFileName, descriptionRole);
+        }
         if (thumbnailFileName != null) {
             concert.addImage(thumbnailFileName, thumbnailRole);
         }
@@ -187,13 +194,12 @@ public class CreateConcertService {
                 throw new RuntimeException("이미지 업로드 실패", e);
             }
 
-            // 공연회차 업데이트
+            // 공연회차 업데이트 (ConcertSchedule 먼저 생성)
+            List<ConcertSchedule> existingSchedules = new ArrayList<>();
             if (scheduleRequests != null) {
-                // null → 유지, 빈 리스트 → 삭제
-                concert.getConcertSchedules().clear();
                 for (ConcertScheduleRequest scheduleRequest : scheduleRequests) {
                     ConcertSchedule schedule = ConcertSchedule.create(concert, scheduleRequest.getStartTime());
-                    concert.getConcertSchedules().add(schedule);
+                    existingSchedules.add(schedule);
                 }
             }
 
@@ -218,7 +224,6 @@ public class CreateConcertService {
                                 sectionDto.getSectionName(),
                                 sectionDto.getColorCode(),
                                 sectionDto.getPrice(),
-
                                 concert
                         );
                         concert.getConcertSeatSections().add(section);
@@ -236,13 +241,20 @@ public class CreateConcertService {
                                         seatDto.getSeatNumber(),
                                         section
                                 );
+
+                                // 기존 schedule과 연결
+                                for (ConcertSchedule schedule : existingSchedules) {
+                                    seat.addConcertSchedule(schedule);
+                                }
+
                                 section.getSeats().add(seat);
                             }
                         }
                     }
                 }
-            }
 
+            return createConcertRepository.save(concert);
+        }
             return concert;
         });
     }

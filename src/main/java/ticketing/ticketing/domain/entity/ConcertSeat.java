@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ticketing.ticketing.domain.enums.SeatReservationState;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,6 +28,11 @@ public class ConcertSeat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
+
+    @OneToMany(mappedBy = "concertSeat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConcertSchedule> concertSchedules = new ArrayList<>();
+
+
 
     @Enumerated(EnumType.STRING)
     private SeatReservationState seatReservationState;
@@ -63,5 +71,10 @@ public class ConcertSeat {
     public void unassignFromReservation() {
         this.reservation = null;
         this.seatReservationState = SeatReservationState.AVAILABLE;
+    }
+
+    public void addConcertSchedule(ConcertSchedule schedule) {
+        this.concertSchedules.add(schedule);
+        schedule.setConcertSeat(this);
     }
 }
