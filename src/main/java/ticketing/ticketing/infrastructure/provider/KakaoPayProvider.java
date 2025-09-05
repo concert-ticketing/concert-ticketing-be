@@ -12,47 +12,84 @@ import org.springframework.web.client.RestTemplate;
 import ticketing.ticketing.application.dto.payDto.KakaoPayRequest.OrderRequest;
 import ticketing.ticketing.application.dto.payDto.KakaoPayResponse;
 import ticketing.ticketing.application.dto.payDto.KakaoPayResponse.ReadyResponse;
+import ticketing.ticketing.infrastructure.security.UserContext;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @Component
 @Transactional
 @RequiredArgsConstructor
 public class KakaoPayProvider {
+
     @Value("${kakaopay.secretKey}")
     private String secretKey;
 
     @Value("${kakaopay.cid}")
     private String cid;
 
+    @Value("${kakaopay.api-host}")
+    private String kakaoPayHost; // ex: https://open-api.kakaopay.com
+
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final UserContext userContext;
+
+
+    public String generateOrderId() {
+        return "ORD-" + UUID.randomUUID().toString().replace("-", "");
+    }
+
     public ReadyResponse ready(OrderRequest request) {
-
+        String userId = String.valueOf(userContext.getCurrentUserId());
         Map<String, String> parameters = new HashMap<>();
+        parameters.put("cid", cid);
+        parameters.put("partner_order_id", generateOrderId());
+        parameters.put("partner_user_id", userId);
+        parameters.put("item_name", request.getItemName());
+        parameters.put("quantity", request.getQuantity());
+        parameters.put("total_amount", request.getTotalPrice());
+        parameters.put("tax_free_amount", "0");
 
-        parameters.put("cid", cid); // 가맹점 코드, 테스트용은 TC0ONETIME
-        parameters.put("partner_order_id", "1234567890"); // 주문번호, 임시 : 1234567890
-        parameters.put("partner_user_id", "1234567890"); // 회원아이디, 임시 : 1234567890
-        parameters.put("item_name", request.getItemName()); // 상품명
-        parameters.put("quantity", request.getQuantity()); // 상품 수량
-        parameters.put("total_amount", request.getTotalPrice()); // 상품 총액
-        parameters.put("tax_free_amount", "0"); // 상품 비과세 금액
-        parameters.put("approval_url", "http://localhost:8080/api/v1/kakao-pay/approve"); // 결제 성공 시 redirct URL
-        parameters.put("cancel_url", "http://localhost:8080/api/v1/kakao-pay/cancel"); // 결제 취소 시
-        parameters.put("fail_url", "http://localhost:8080/kakao-pay/fail"); // 결제 실패 시
+        // 프론트에서 URL 전달
+        parameters.put("approval_url", request.getApprovalUrl());
+        parameters.put("cancel_url", request.getCancelUrl());
+        parameters.put("fail_url", request.getFailUrl());
 
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(parameters, getHeaders());
 
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://open-api.kakaopay.com/online/v1/payment/ready";
-        ResponseEntity<ReadyResponse> response = restTemplate.postForEntity(url, entity, ReadyResponse.class);
+        String url = kakaoPayHost + "/online/v1/payment/ready";
 
-        SessionProvider.addAttribute("tid",
-                Objects.requireNonNull(response.getBody()).getTid());
+        ResponseEntity<ReadyResponse> response =
+                restTemplate.postForEntity(url, entity, ReadyResponse.class);
 
-        return response.getBody();
+        ReadyResponse readyResponse = Objects.requireNonNull(response.getBody());
+        log.info("KakaoPay Ready Response: {}", readyResponse);
+
+        return readyResponse; // tid 반환, 컨트롤러/서비스에서 session 저장 처리
+    }
+
+    public KakaoPayResponse.ApproveResponse approve(String tid, String partnerOrderId, String partnerUserId, String pgToken) {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("cid", cid);
+        parameters.put("tid", tid);
+        parameters.put("partner_order_id", partnerOrderId);
+        parameters.put("partner_user_id", partnerUserId);
+        parameters.put("pg_token", pgToken);
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(parameters, getHeaders());
+
+        String url = kakaoPayHost + "/online/v1/payment/approve";
+
+        ResponseEntity<KakaoPayResponse.ApproveResponse> response =
+                restTemplate.postForEntity(url, entity, KakaoPayResponse.ApproveResponse.class);
+
+        KakaoPayResponse.ApproveResponse approveResponse = response.getBody();
+        log.info("KakaoPay Approve Response: {}", approveResponse);
+
+        return approveResponse;
     }
 
     private HttpHeaders getHeaders() {
@@ -60,22 +97,5 @@ public class KakaoPayProvider {
         headers.add("Authorization", "SECRET_KEY " + secretKey);
         headers.add("Content-type", "application/json");
         return headers;
-    }
-
-    public KakaoPayResponse.ApproveResponse approve(String pgToken) {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("cid", cid);
-        parameters.put("tid", SessionProvider.getStringAttribute("tid"));
-        parameters.put("partner_order_id", "1234567890");
-        parameters.put("partner_user_id", "1234567890");
-        parameters.put("pg_token", pgToken); // 결제승인 요청을 인증하는 토큰
-
-        HttpEntity<Map<String, String>> entity = new HttpEntity<>(parameters, getHeaders());
-
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://open-api.kakaopay.com/online/v1/payment/approve";
-        ResponseEntity<KakaoPayResponse.ApproveResponse> response = restTemplate.postForEntity(url, entity, KakaoPayResponse.ApproveResponse.class);
-
-        return response.getBody();
     }
 }
