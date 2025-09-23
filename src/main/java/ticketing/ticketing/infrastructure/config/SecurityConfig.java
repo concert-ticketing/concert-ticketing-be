@@ -53,7 +53,7 @@ public class SecurityConfig {
                                 "/uploads/thumbnail/**",
                                 "/uploads/description/**",
                                 "/upload/svg_image/**",
-                                "/uploads/notice/**"
+                                "/uploads/notices/**"
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN") // JWT role 그대로 사용
                         .requestMatchers("/site-admin/**", "/update","/user","/api/faqs/**","/api/inquiries/**",
