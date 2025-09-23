@@ -54,6 +54,7 @@ public class SecurityConfig {
                                 "/upload/svg_image/**"
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN") // JWT role 그대로 사용
+                        .requestMatchers("/api/site-admin/**").hasAuthority("SITE_ADMIN")
                         .anyRequest().hasAuthority("USER") // JWT role 그대로 사용
                 )
                 .csrf(AbstractHttpConfigurer::disable)
