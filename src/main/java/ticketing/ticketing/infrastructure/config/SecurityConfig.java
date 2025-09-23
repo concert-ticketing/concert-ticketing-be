@@ -44,7 +44,8 @@ public class SecurityConfig {
                                 "/api/review/*",
                                 "/api/admin",
                                 "/api/admin/login",
-                                "/api/banners",
+                                "/api/admin/**",
+                                "/api/banners/**",
                                 "/api/notices",
                                 "/api/faqs",
                                 "/login/**",
@@ -54,7 +55,8 @@ public class SecurityConfig {
                                 "/upload/svg_image/**"
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN") // JWT role 그대로 사용
-                        .requestMatchers("/site-admin/**").hasAuthority("SITE_ADMIN")
+                        .requestMatchers("/site-admin/**", "/update","/user","/api/faqs/**","/api/inquiries/**",
+                        "api/admin/modify-state" ).hasAuthority("SITE_ADMIN")
                         .anyRequest().hasAuthority("USER") // JWT role 그대로 사용
                 )
                 .csrf(AbstractHttpConfigurer::disable)
